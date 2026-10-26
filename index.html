@@ -424,7 +424,7 @@ const STORIES=[
  ['i3','ins','浮雕上刻著一列礦車，車上的人雙手緊握把手。這面牆的年代，比礦場早了一萬年。'],
  ['i4','ins','星圖寫著：當群星歸位，城將從海中升起。最後一顆星的位置，正是你頭頂上那顆。'],
  ['i5','ins','雕刻裡的祭司都背對神像，不敢直視。只有一個人回過頭，他戴著和你一樣的皮手套。'],
-].concat(MURALS_J()).concat([['m_madness','瘋狂山脈'],['m_falls','夢的花園'],['m_atlantis','亞特蘭提斯'],['m_factory','夢工廠'],['m_skyisles','浮空神殿'],['m_crater','火山口'],['m_maw','血盆大口'],['m_cliff','霧中高屋'],['m_temple','神殿'],['m_red','冷原之月'],['m_orange','克圖格亞的火山'],['m_yellow','卡爾克薩'],['m_green','異界之色'],['m_blue','瘋狂山脈'],['m_purple','猶格·索托斯之門'],['m_black','暗夜徘徊者']].map(([id,t])=>[id,'myth',t])).map(([id,set,text])=>({id,set,text}));
+].concat(MURALS_J()).concat([['m_madness','瘋狂山脈'],['m_falls','夢的花園'],['m_shipcross','幽靈巨艦'],['m_atlantis','亞特蘭提斯'],['m_factory','夢工廠'],['m_skyisles','浮空神殿'],['m_crater','火山口'],['m_maw','血盆大口'],['m_cliff','霧中高屋'],['m_temple','神殿'],['m_red','冷原之月'],['m_orange','克圖格亞的火山'],['m_yellow','卡爾克薩'],['m_green','異界之色'],['m_blue','瘋狂山脈'],['m_purple','猶格·索托斯之門'],['m_black','暗夜徘徊者']].map(([id,t])=>[id,'myth',t])).map(([id,set,text])=>({id,set,text}));
 let journal=new Set();try{const j=JSON.parse(localStorage.getItem('rustrail-journal')||'[]');journal=new Set(j);}catch(e){}
 const saveJournal=()=>{try{localStorage.setItem('rustrail-journal',JSON.stringify([...journal]))}catch(e){}};
 const nextStory=(ins)=>STORIES.find(s=>(ins?s.set==='ins':(s.set!=='ins'&&s.set!=='myth'&&s.set!=='chap'))&&!journal.has(s.id));
@@ -438,7 +438,7 @@ const VO={idx:null,au:null,want:false};
 function vhash(t){let h=0x811c9dc5;for(const ch of t){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
 fetch('assets/vo/index.json').then(r=>r.json()).then(j=>{VO.idx=j;}).catch(()=>{});
 const voText=t=>t.replace(/\s+/g,' ').trim();
-VO.rate=1.35;
+VO.rate=1.45;
 function voDur(text){const k=VO.idx&&VO.idx[vhash(voText(text))];return k?k/VO.rate:0;}
 function hush(){VO.want=false;VO.speaking=false;VO.q=[];VO.utts=[];try{if(VO.au){VO.au.pause();VO.au.onended=null;}}catch(e){}try{window.speechSynthesis&&speechSynthesis.cancel();}catch(e){}}
 /* speak a line to the very last word; queue=true waits for the current line instead of cutting it off */
@@ -496,7 +496,7 @@ const CHAPTERS=[
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一隻沉睡在海底的古老怪物。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在替祂看守鐵軌，他們會想辦法把你拉下車。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「這條鐵軌一次只能載一個人。牠們想把你拉下車，好把位子空出來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
-  pool:[['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
+  pool:[['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
   zones:[['green',0.22],['maw',0.45],['black',0.72]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
  {n:'第三章',t:'考察隊的營地',len:3000,speed:[13,25],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
@@ -508,7 +508,7 @@ const CHAPTERS=[
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
-  pool:[['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
+  pool:[['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['red',0.14],['atlantis',0.3],['factory',0.82]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
  {n:'第五章',t:'拉萊耶',len:2400,speed:[15,27],
   intro:'【上一章】那個巨大的東西一直盯著我，像在確認車上的人換了沒有。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
@@ -522,7 +522,7 @@ CHAPTERS.forEach((c,i)=>c.beats.forEach((b,k)=>STORIES.push({id:'c'+i+'_'+k,set:
 STORIES.sort((a,b)=>Object.keys(SETS).indexOf(a.set)-Object.keys(SETS).indexOf(b.set));
 let chCleared=0;try{chCleared=+localStorage.getItem('rustrail-ch')||0;}catch(e){}
 const ENDLESS_POOL=az0=>[['normal',1.4],['narrow',1.4],['single',0.9],['bridge',1.3],['hills',1.1],['tunnel',1.1],['coaster',az0>350?1.2:0],['mega',1.8],['slalom',1.1],['washboard',0.9],['leap',az0>300?1.1:0],['crystal',1],['weave',0.9],['floating',1],['canopy',1],
-  ['harbor',1],['camp',0.9],['waterfall',1],['whalebone',1],['lighthouse',0.9],['graveyard',1],['zone',2],['cliff',az0>400?0.8:0],['seatube',0.5],['atlantis',az0>500?0.5:0],['factory',az0>300?0.8:0],['skyisles',az0>500?0.7:0],['madness',0.5],['crater',az0>300?0.8:0],['maw',0.8]];
+  ['harbor',1],['camp',0.9],['waterfall',1],['whalebone',1],['lighthouse',0.9],['graveyard',1],['zone',2],['cliff',az0>400?0.8:0],['seatube',0.5],['atlantis',az0>500?0.5:0],['factory',az0>300?0.8:0],['shipcross',az0>350?0.8:0],['skyisles',az0>500?0.7:0],['madness',0.5],['crater',az0>300?0.8:0],['maw',0.8]];
 function genSeg(){
   const az0=segEnd,ch=CH();
   if(az0<1){pushSeg({type:'normal',len:100,lanes:[0,1,0]});return;}
@@ -554,6 +554,7 @@ function makeSeg(type,o){let s;
   else if(type==='seatube'||type==='atlantis'){const ext=type==='atlantis'||o.ext;s={type:'seatube',lanes:[1,1,1],D:15,len:720};
     if(ext){s.ext=true;s.V0=400;s.V1=s.V0+260;s.A1=s.V1+460;s.len=s.A1+260;s.DEEP=140;}}
   else if(type==='falls'){s={type,lanes:[1,1,1],len:600,pal:'valley',C0:30,C1:230,FH:48};}
+  else if(type==='shipcross'){s={type,lanes:[1,1,1],len:360,UX:220};}
   else if(type==='factory'){s={type,lanes:[1,1,1],len:440,pal:'neon'};}
   else if(type==='skyisles'){s={type,lanes:[1,1,1],len:600,pal:'sky',SH:62};}
   else if(type==='madness'){s={type,lanes:[1,1,1],len:1150,pal:'antarctic'};}
@@ -575,7 +576,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   if(ready&&SETS2[s.type])SETS2[s.type](s);
   if(ready&&s.type==='zone')buildZone(s);
 }
-const TERR_NAME={falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
+const TERR_NAME={shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
 const MEGA=['colossus','dam','cranes','ruins','city','rlyeh','rlyeh'];let lastMega='';
 const MEGA_NAME={colossus:'大袞巨像之門',dam:'大壩水門',cranes:'龍門吊船塢',ruins:'沉沒神殿',city:'淹沒的城市',rlyeh:'拉萊耶神殿'};
 function segAt(az){for(let i=0;i<segs.length;i++){const s=segs[i];if(az>=s.az0&&az<s.az1)return s;}return null;}
@@ -605,7 +606,7 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
   return 0;}
 function laneOn(L,az){if(az<0)return L===0;const s=segAt(az);return s?!!s.lanes[L+1]:true;}
 function laneEnds(){const out=[];for(let i=1;i<segs.length;i++){const p=segs[i-1],s=segs[i];for(let k=0;k<3;k++)if(p.lanes[k]&&!s.lanes[k])out.push({az:s.az0,L:k-1,key:s.az0.toFixed(2)+'_'+k});}return out;}
-function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
+function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
 function isVoid(az){for(const s of segs)if(s.voidR&&az>=s.voidR[0]&&az<=s.voidR[1])return true;return false;}
 function inTunnel(az){for(const s of segs){if(s.type==='tunnel'&&az>=s.az0-1&&az<=s.az1+1)return s;if(s.darkR&&az>=s.darkR[0]&&az<=s.darkR[1])return s;}return null;}
 /* open water where a sea giant could believably surface */
@@ -925,7 +926,7 @@ const waterMat=new T.ShaderMaterial({uniforms:waterU,fog:false,side:T.DoubleSide
     #include <tonemapping_fragment>
     #include <encodings_fragment>
   }`});
-const water=new T.Mesh(new T.PlaneGeometry(900,900).rotateX(-Math.PI/2),waterMat);water.position.z=-300;scene.add(water);
+const water=new T.Mesh(new T.PlaneGeometry(4200,4200).rotateX(-Math.PI/2),waterMat);water.position.z=-1100;water.frustumCulled=false;scene.add(water);
 
 /* ================= terrain, mountains, trees ================= */
 function bankHeight(xx,w){ // xx: distance from shore (>=0), w: along-track 0..200 periodic
@@ -1413,13 +1414,11 @@ const SCENIC={
     mesh(G.box,M.marble,hd,1.9,2.4,0,0.5,0.9,0.35);for(const k of [-0.6,0.6])mesh(G.sphLo,M.dark,hd,1.8,3.0,k,0.2,0.12,0.25);hd.rotation.y=-0.3;g.add(hd);
     const shM=bend(new T.MeshBasicMaterial({color:new T.Color('#9ae8f0'),transparent:true,opacity:0.07,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(shM);
     for(let i=0;i<14;i++){const sh=mesh(G.plane,shM,g,(rnd()-.5)*60,-D/2,-100-rnd()*(LT-200),5+rnd()*6,D+8,1);sh.rotation.set(0,rnd()*3,0.25);sh.userData.keep=true;}
-    const dol=[];for(let i=0;i<5;i++){const d=new T.Group();mesh(G.sph,M.dolphin,d,0,0,0,0.5,0.45,1.6);mesh(G.cone,M.dolphin,d,0,-0.05,1.85,0.16,0.6,0.16).rotation.x=Math.PI/2;
-      const df=mesh(G.fin,M.dolphin,d,0,0.38,0);df.rotation.y=Math.PI/2;df.scale.set(0.9,0.8,1);const tl=mesh(G.box,M.dolphin,d,0,0,-1.75,1.3,0.08,0.5);tl.userData.tail=1;
-      for(const k of [-1,1]){const f=mesh(G.box,M.dolphin,d,k*0.55,-0.2,0.5,0.7,0.05,0.3);f.rotation.z=k*0.4;}d.userData={ph:i*1.25,r:6.5+rnd()*2,off:6+i*3.5};g.add(d);dol.push(d);}
+    const dol=[];for(let i=0;i<6;i++){const d=dolphinMesh();d.scale.setScalar(1.05+rnd()*0.25);d.userData={ph:i*1.05,r:6.3+rnd()*2.2,off:6+i*3.2};g.add(d);dol.push(d);}
     const fishN=140;const fg2=new T.ConeGeometry(0.12,0.5,5).rotateX(Math.PI/2);own.push(fg2);const fsh=new T.InstancedMesh(fg2,M.fish,fishN);fsh.frustumCulled=false;g.add(fsh);const fseed=[...Array(fishN)].map(()=>[rnd()*6.28,rnd()*3,rnd()*4,rnd()]);
     anim.push(t=>{const u=Math.max(90,Math.min(LT-90,st.dist-s.az0));
       for(const d of dol){const p=d.userData;const a=t*1.1+p.ph;d.position.set(Math.cos(a)*p.r,yc+Math.sin(a)*p.r*0.6,-(u+p.off));d.rotation.set(Math.sin(a)*0.3,0,-a+Math.PI/2);d.rotateZ(Math.sin(t*6+p.ph)*0.05);
-        d.children.forEach(c=>{if(c.userData.tail)c.rotation.x=Math.sin(t*7+p.ph)*0.4;});}
+        d.children.forEach(c=>{if(c.userData.tail)c.rotation.x=Math.sin(t*6+p.ph)*0.35;if(c.userData.fluke)c.rotation.x=-Math.PI/2+Math.sin(t*6+p.ph-0.9)*0.45;});}
       const cx=-12+Math.sin(t*0.3)*6,cz=-(u+40);for(let i=0;i<fishN;i++){const f=fseed[i];const a=f[0]+t*(0.8+f[3]*0.4);_o.position.set(cx+Math.cos(a)*(3+f[2]),yc+f[1]-1+Math.sin(a*2)*0.6,cz+Math.sin(a)*(3+f[2])*1.6);_o.rotation.set(0,-a,0);_o.scale.setScalar(1);_o.updateMatrix();fsh.setMatrixAt(i,_o.matrix);}
       fsh.instanceMatrix.needsUpdate=true;});
     anim.push(storyAnim(s,'temple',[70,LS*0.36,LS*0.68]));
@@ -1481,6 +1480,9 @@ const SCENIC={
 const ZONES=['red','orange','yellow','green','blue','purple','black'];let lastZone='';
 const ZONE_NAME={red:'冷原之月',orange:'克圖格亞的火山',yellow:'卡爾克薩：黃衣之王',green:'異界之色',blue:'瘋狂山脈',purple:'猶格·索托斯之門',black:'暗夜徘徊者'};
 const ZONE_STORY={
+ shipcross:['遠方傳來一聲低沉的汽笛。霧裡有一艘船，大得像一座會移動的城市，船上的燈全亮著，卻看不到半個人。',
+  '它沒有減速，船頭直直朝著鐵軌撞過來！礦車也停不下來，只能往前衝。',
+  '礦車剛衝過去，巨艦就從我身後輾了過去。回頭一看，鐵軌像麵條一樣被扯斷了。'],
  falls:['礦車從懸崖底下鑽進一個山洞。洞裡一片漆黑，只聽得到前面的水聲越來越大，像打雷一樣。',
   '前方出現一道白光，是瀑布！鐵軌直直通向那道水牆，礦車完全沒有要停下來的意思。',
   '礦車衝破瀑布，飛到一座被霧包圍的山谷上空。巨大的樹站在湖水裡。日記寫著：「這裡是祂夢裡的花園。」'],
@@ -1793,6 +1795,24 @@ function muralTex(i){const W2=1024,H2=512,c=document.createElement('canvas');c.w
   const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;return {t,c};}
 function starGeo(ro,ri,h){const sh=new T.Shape();for(let i=0;i<=10;i++){const a=Math.PI/2+i*Math.PI/5,r=i%2?ri:ro;i?sh.lineTo(Math.cos(a)*r,Math.sin(a)*r):sh.moveTo(Math.cos(a)*r,Math.sin(a)*r);}
   const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);return g;}
+
+/* a believable bottlenose dolphin: lathed streamlined body with melon and short beak, curved dorsal fin, flippers, horizontal flukes, countershaded skin */
+let DOLG=null;
+function dolphinMesh(){if(!DOLG){const P=[[0,-1.95],[0.05,-1.85],[0.11,-1.55],[0.2,-1.15],[0.32,-0.65],[0.43,-0.1],[0.47,0.35],[0.44,0.8],[0.37,1.12],[0.3,1.32],[0.2,1.45],[0.12,1.5],[0.095,1.7],[0.07,1.88],[0,1.97]];
+    const body=new T.LatheGeometry(P.map(([r,y])=>new T.Vector2(r,y)),28,0,Math.PI*2);body.rotateX(Math.PI/2);body.scale(1,0.88,1);
+    const pos=body.attributes.position,col=new Float32Array(pos.count*3),top=new T.Color('#4c5a64'),mid=new T.Color('#7d8c96'),bel=new T.Color('#e6eaec'),c=new T.Color();
+    for(let i=0;i<pos.count;i++){const y=pos.getY(i),z=pos.getZ(i);const k=y>0.06?0:(y<-0.18?1:(0.06-y)/0.24);c.copy(top).lerp(mid,Math.min(1,Math.max(0,(0.25-y)/0.3))*0.6).lerp(bel,k);if(z>1.45&&y<0)c.lerp(bel,0.5);col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
+    body.setAttribute('color',new T.BufferAttribute(col,3));body.computeVertexNormals();
+    const fs=new T.Shape();fs.moveTo(0,0);fs.quadraticCurveTo(0.08,0.32,-0.32,0.62);fs.quadraticCurveTo(-0.18,0.3,-0.42,0);fs.lineTo(0,0);
+    const fin=new T.ExtrudeGeometry(fs,{depth:0.05,bevelEnabled:true,bevelSize:0.02,bevelThickness:0.02,bevelSegments:2});fin.translate(0,0,-0.025);fin.rotateY(Math.PI/2);
+    const ks=new T.Shape();ks.moveTo(0,0.1);ks.quadraticCurveTo(0.35,0.05,0.62,-0.32);ks.quadraticCurveTo(0.3,-0.12,0.12,-0.2);ks.lineTo(0,-0.12);ks.lineTo(-0.12,-0.2);ks.quadraticCurveTo(-0.3,-0.12,-0.62,-0.32);ks.quadraticCurveTo(-0.35,0.05,0,0.1);
+    const fluke=new T.ExtrudeGeometry(ks,{depth:0.04,bevelEnabled:true,bevelSize:0.015,bevelThickness:0.015,bevelSegments:1});fluke.translate(0,0,-0.02);
+    const fl=new T.SphereGeometry(1,12,8);fl.scale(0.32,0.035,0.13);
+    const mat=bend(new T.MeshStandardMaterial({vertexColors:true,roughness:0.32,metalness:0.08}));const dark=bend(new T.MeshStandardMaterial({color:new T.Color('#44525c'),roughness:0.35,metalness:0.08}));
+    const eye=bend(new T.MeshStandardMaterial({color:new T.Color('#0a0c0e'),roughness:0.15}));DOLG={body,fin,fluke,fl,mat,dark,eye};}
+  const D=DOLG,d=new T.Group();d.add(new T.Mesh(D.body,D.mat));const f=new T.Mesh(D.fin,D.dark);f.position.set(0,0.36,-0.05);d.add(f);
+  for(const k of [-1,1]){const p=new T.Mesh(D.fl,D.dark);p.position.set(k*0.42,-0.2,0.7);p.rotation.set(0.2,k*0.5,k*-0.5);d.add(p);const e=new T.Mesh(G.sphLo,D.eye);e.scale.setScalar(0.04);e.position.set(k*0.27,0.03,1.32);d.add(e);}
+  const tg=new T.Group();tg.position.z=-1.6;tg.userData.tail=1;const fk=new T.Mesh(D.fluke,D.dark);fk.rotation.x=-Math.PI/2;fk.position.z=-0.32;fk.userData.fluke=1;tg.add(fk);d.add(tg);return d;}
 /* ===== whirlpool drop + lost Atlantis: the far end of the undersea tube ===== */
 let swirlMat=null;const swirlU={uTime:{value:0},uCurve:bendU};
 function getSwirl(){if(swirlMat)return swirlMat;swirlMat=new T.ShaderMaterial({uniforms:swirlU,transparent:true,depthWrite:false,side:T.DoubleSide,fog:false,
@@ -1860,6 +1880,42 @@ function buildAbyss(s,g,own,anim,B){const D=s.D,V0=s.V0,V1=s.V1,A1=s.A1,L=s.len,
     if(!s.flags.vt&&u>V0+10){s.flags.vt=1;toast('被漩渦吸進去了！','warn',1800);st.shake=Math.max(st.shake,0.5);}});
 }
 const SETS2={
+  /* a colossal ghost liner ploughs across the line: it misses the cart by metres and wrecks the rails behind it */
+  shipcross(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,UX=s.UX;s.flags={};
+    const sh=new T.Group();sh.position.set(600,0,-UX);sh.rotation.y=1.137;g.add(sh);const HL=240,HB=28;
+    const side=canvasTex(1024,256,(c)=>{c.fillStyle='#2a1c16';c.fillRect(0,0,1024,256);for(let i=0;i<9000;i++){c.fillStyle=`rgba(${120+Math.random()*80|0},${50+Math.random()*30|0},20,${Math.random()*0.25})`;c.fillRect(Math.random()*1024,Math.random()*256,4,2+Math.random()*14);}
+      for(const y of [70,110,150])for(let x=10;x<1014;x+=14){c.fillStyle=Math.random()<0.55?'#ffcf80':'#140e0a';c.beginPath();c.arc(x,y,3.6,0,7);c.fill();}c.fillStyle='#120a08';c.fillRect(0,200,1024,56);});
+    side.repeat.set(1,1);own.push(side);const hm=std2({map:side,roughness:0.8,metalness:0.3,emissiveMap:side,emissive:new T.Color('#ffffff'),emissiveIntensity:0.35});own.push(hm);
+    const hull=new T.Mesh(G.box,hm);hull.scale.set(HL,26,HB);hull.position.set(HL/2,6,0);sh.add(hull);
+    const bowS=new T.Shape();bowS.moveTo(0,-HB/2);bowS.lineTo(-34,0);bowS.lineTo(0,HB/2);bowS.lineTo(0,-HB/2);const bowG=new T.ExtrudeGeometry(bowS,{depth:26,bevelEnabled:false});bowG.rotateX(-Math.PI/2);own.push(bowG);
+    const bow=new T.Mesh(bowG,M.rust);bow.position.set(0,-7,0);sh.add(bow);
+    const sup=std2({color:new T.Color('#b9b2a2'),roughness:0.7,emissiveMap:side,emissive:new T.Color('#ffffff'),emissiveIntensity:0.25});own.push(sup);
+    for(const [x,w,y,h] of [[60,120,23,8],[70,96,31,8],[80,70,39,7],[86,30,46,6]]){const m=new T.Mesh(G.box,sup);m.scale.set(w,h,HB-6-(y-23)*0.2);m.position.set(x+w/2-10,y,0);sh.add(m);}
+    for(const x of [70,105,140]){const f=new T.Mesh(cylW(4.5,5,20,14),M.rust);own.push(f.geometry);f.position.set(x,54,0);f.rotation.z=0.12;sh.add(f);mesh(G.cyl,M.dark,sh,x+1.2,64.4,0,4.6,0.6,4.6);}
+    for(const sd of [-1,1])for(let k=0;k<6;k++)mesh(G.cyl,M.iron,sh,6+k*36,24,sd*(HB/2-1),0.1,10,0.1);
+    const lamp=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffe6b0'),opacity:0.9}));own.push(lamp);
+    const beam=mesh(G.plane,lamp,sh,-20,40,0,120,20,1);mesh(G.plane,lamp,sh,-30,12,0,40,30,1).userData.keep=true;beam.userData.keep=true;for(let k=0;k<5;k++){const l=mesh(G.plane,lamp,sh,10+k*45,30,HB/2+0.6,10,10,1);l.userData.keep=true;}
+    const foamM=bend(new T.MeshBasicMaterial({map:TX.foam,transparent:true,depthWrite:false,opacity:0.95,color:new T.Color('#f4f8f8')}));own.push(foamM);
+    const wake=[];for(let k=0;k<10;k++){const m=mesh(G.disc,foamM,sh,-30+k*26,0.15,0,22,1,HB*0.9+k*1.5);m.userData.keep=true;wake.push(m);}
+    for(const sd of [-1,1]){const m=mesh(G.disc,foamM,sh,-36,0.2,sd*6,14,1,10);m.userData.keep=true;}
+    // rails twisted up where the hull will cross
+    const bent=[];for(let k=0;k<6;k++){const r=mesh(G.box,M.rail,g,(k%3-1)*1.35+(k<3?-0.6:0.6),0.2,-UX+(k<3?-HB/2-2:HB/2+2),0.14,0.12,4.2);r.visible=false;r.userData={keep:true,vx:(rnd()-.5)*6,vy:6+rnd()*8,vz:(rnd()-.5)*5,rx:rnd()*6,ry:rnd()*6};bent.push(r);}
+    const NS=260,sg=new T.BufferGeometry(),sp=new Float32Array(NS*3);sg.setAttribute('position',new T.BufferAttribute(sp,3));own.push(sg);
+    const smat=bend(new T.PointsMaterial({size:2.4,map:TX.glow,color:new T.Color('#f2f6f6'),transparent:true,opacity:0.85,depthWrite:false}));own.push(smat);const spray=new T.Points(sg,smat);spray.frustumCulled=false;g.add(spray);
+    const sseed=[...Array(NS)].map(()=>[(rnd()-.5)*30,(rnd()-.5)*HB,6+rnd()*18,rnd()*2,(rnd()-.5)*8]);
+    let crashT=-1,lt=0;
+    anim.push(t=>{const dt=Math.min(0.05,Math.max(0,t-lt));lt=t;const u=st.dist-s.az0;const sd_=(UX+43-u)*1.25,xs=Math.max(-HL-80,sd_);sh.position.x=0.42*xs;sh.position.z=-UX-0.91*xs;sh.position.y=Math.sin(t*0.6)*0.6;sh.rotation.z=Math.sin(t*0.4)*0.012;
+      for(const m of wake)m.scale.x=22+Math.sin(t*2+m.position.x)*3;beam.material.opacity=0.6+0.3*Math.sin(t*3);
+      if(st.mode==='play'){
+        if(!s.flags.horn&&xs<420){s.flags.horn=1;if(AC){const a=AC.currentTime;tone(a,'sawtooth',55,52,0.5,3.6);tone(a,'sawtooth',82,78,0.35,3.6);tone(a+4.2,'sawtooth',55,50,0.5,2.8);}toast('有船！非常大的船！','warn',1800);}
+        if(!s.flags.near&&xs<120){s.flags.near=1;st.shake=Math.max(st.shake,0.4);if(windG)windG.gain.value=0.3;}
+        if(!s.flags.crash&&xs<3){s.flags.crash=1;crashT=t;st.shake=Math.max(st.shake,1.2);st.flash=0.5;lensDrops(18);sfx.boom();sfx.splash(true);if(AC){noiseHit(AC.currentTime,'lowpass',160,1,2.4);noiseHit(AC.currentTime+0.15,'bandpass',900,0.6,1.2,2);}
+          bent.forEach(r=>{r.visible=true;});st.lookBack=1;toast('身後的鐵軌被撞爛了！','warn',2000);}}
+      if(crashT>=0){const T0=t-crashT;for(const r of bent){const q=r.userData;r.position.x+=q.vx*dt;r.position.y=Math.max(0.1,0.2+q.vy*T0-4.9*T0*T0);r.position.z+=q.vz*dt;r.rotation.x+=q.rx*dt;r.rotation.y+=q.ry*dt;}
+        for(let i=0;i<NS;i++){const q=sseed[i];const T1=(T0+q[3]*0.5)%2.4;sp[i*3]=q[0]+q[4]*T1;sp[i*3+1]=q[2]*T1-4.9*T1*T1;sp[i*3+2]=-UX+q[1];if(sp[i*3+1]<0)sp[i*3+1]=-50;}sg.attributes.position.needsUpdate=true;}
+      else{for(let i=0;i<NS;i++)sp[i*3+1]=-50;}});
+    anim.push(storyAnim(s,'shipcross',[15,UX-120,UX+45]));
+    finishSet(s,g,own,anim);},
   /* cave inside the cliff -> burst through a waterfall -> a misty lake valley far below */
   falls(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,C0=s.C0,C1=s.C1,FH=s.FH;s.flags={};
     // cliff face with the cave mouth at water level
@@ -2545,7 +2601,7 @@ const OB_NAME={beam:'倒塌的桅杆　↓ 往下滑蹲低',arm:'機械手臂　
 function placeObs(o){
   const z=o.az-st.dist,g=o.g,p=o.parts||{},t=st.time;const x=o.lane!=null?o.lane*LANE:0;const th=trackH(o.az);
   if(!o.named&&OB_NAME[o.t]&&z<40&&z>0&&st.mode==='play'){o.named=1;toast(OB_NAME[o.t],'warn',1500);}
-  if(o.t==='deepone'||o.t==='serpent'||o.t==='croc'||o.t==='tentacle'||o.t==='shark')g.visible=z>1.4;
+  if(o.t==='deepone'||o.t==='serpent'||o.t==='croc'||o.t==='tentacle'||o.t==='shark')g.visible=z>1.4||!!o.chase;
   switch(o.t){
     case 'barrel':{const raised=th>0.3;g.position.set(x,th,-o.az);p.b.position.y=raised?0:Math.sin(t*3+o.az)*0.04;p.b.rotation.z=raised?0:Math.sin(t*2+o.az)*0.06;g.children[1].visible=!raised;break;}
     case 'gap':g.position.set(x,th,-o.az);break;
@@ -2605,7 +2661,7 @@ function lensDrops(n){for(let i=0;i<n;i++)lens.push({x:rnd(),y:rnd()*0.9,r:6+rnd
 function toast(msg,kind,ms){const t=$('toast');t.textContent=msg;t.className='toast on '+(kind||'');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),ms||900);}
 function snapLane(){const az=st.dist+PZ+2;const opts=[-1,0,1].filter(L=>laneOn(L,az));if(!opts.length||opts.includes(st.lane))return;
   opts.sort((a,b)=>Math.abs(a-st.lane)-Math.abs(b-st.lane));st.lane=opts[0];}
-function hit(o,cause,boom){
+function hit(o,cause,boom){if(o)o.wasHit=true;
   if(st.inv>0)return;
   if(st.shield>0){st.inv=0.6;st.green=1;st.shake=Math.max(st.shake,0.3);if(AC){const t=AC.currentTime;tone(t,'sine',880,440,0.15,0.3);tone(t,'triangle',1320,660,0.08,0.3);}return;}st.hearts--;st.inv=2.2;st.shake=0.7;st.slow=0.5;st.red=1;sfx.hit();if(boom)sfx.boom();
   try{navigator.vibrate&&navigator.vibrate(140)}catch(e){}
@@ -2701,7 +2757,7 @@ function update(dt){
   if((nearType(st.dist+60,'seatube',160)&&!((st.vroll||0)>0.02))||nearType(st.dist+60,'cliff',30)||isSet(st.dist+60,200)){st.curveT=0;st.curveTimer=1;}
   {const c=nearType(st.dist+PZ,'cliff',0);let lw=0,pk=0;if(c){const u=st.dist+PZ-c.az0,P0=c.P[0],P1=c.P[1];lw=ss((u-P0+30)/34)*ss((P0+P1-u)/26);
     pk=Math.exp(-Math.pow((u-(P0+P1*0.22))/26,2))+Math.exp(-Math.pow((u-(P0+P1*0.6))/26,2));}
-    st.gust=Math.max(0,(st.gust||0)-dt*0.8);
+    st.gust=Math.max(0,(st.gust||0)-dt*0.8);st.lookBack=Math.max(0,(st.lookBack||0)-dt*0.42);
     st.ledgeW=lw;st.peek=pk;if(windG)windG.gain.value=0.2*lw+0.03*(st.zoneSub==='cliff'?st.zoneW:0);
     if(pk>0.55&&st.mode==='play'){st.hbT=(st.hbT||0)-dt;if(st.hbT<0){st.hbT=0.75;if(AC){const a=AC.currentTime;tone(a,'sine',62,42,0.4,0.16);tone(a+0.2,'sine',55,38,0.3,0.18);}}}}
   {const vt=nearType(st.dist+20,'seatube',0);let vr=0;if(vt&&vt.ext){const u=st.dist+20-vt.az0;const w=ss((u-vt.V0)/50)*ss((vt.V1+20-u)/50);if(w>0){st.curveT=0.0026*w;st.curveTimer=1;}vr=w;}st.vroll=(st.vroll||0)+(vr-(st.vroll||0))*Math.min(1,dt*1.5);}
@@ -2714,6 +2770,11 @@ function update(dt){
   for(const o of st.obs)if(o.t==='tsunami')o.az-=o.v*dt;
   const pl=Math.round(st.camX/LANE);
   st.surge=0;
+  for(const o of st.obs){if(!o.chase)continue;o.chase.t+=dt;const c=o.chase;if(c.t<c.dur){o.az=st.dist-4.2-Math.max(0,c.t-1.6)*3-Math.sin(c.t*5)*0.3;}else if(c.t>c.dur+2)o.kill=1;}
+  if(playing&&(st.time-(st.lastChase||-99))>18&&!narrBusy&&!isSet(st.dist,30)){for(const o of st.obs){const z=o.az-st.dist;
+    if(o.done&&!o.wasHit&&!o.chaseTried&&z<-0.4&&(o.t==='deepone'||o.t==='croc'||o.t==='serpent')){o.chaseTried=1;if(rnd()<0.75){o.chase={t:0,dur:2.7};o.lane=pl;st.lastChase=st.time;st.lookBack=1;
+      for(const q of st.obs){const zz=q.az-st.dist;if(zz>0&&zz<55&&!CALM_KEEP[q.t])q.kill=1;}st.nextSpawn=Math.max(st.nextSpawn,st.dist+55);
+      if(o.t==='croc'||o.t==='deepone')sfx.snap();if(AC)noiseHit(AC.currentTime,'lowpass',300,0.5,0.8);toast(o.t==='deepone'?'牠追上來了！':o.t==='croc'?'鱷魚在後面追！':'海蛇追過來了！','warn',1500);break;}}}}
   for(const o of st.obs){const z=o.az-st.dist;
     if(o.t==='tsunami')st.surge=Math.max(st.surge,1-Math.min(1,Math.max(0,z)/(SPAWN+45)));
     if(!o.cued&&z<20&&z>0){o.cued=true;
@@ -2806,7 +2867,8 @@ function render(){
   st.glanceV=(st.glanceV||0)+((st.glanceT||0)-(st.glanceV||0))*0.06;camera.rotation.y+=st.glanceV;
   st.lookV=(st.lookV||0)+((st.lookT||0)-(st.lookV||0))*0.05;camera.rotation.x-=st.lookV;
   {const lw=st.ledgeW||0,pk=Math.min(1,st.peek||0),gu=st.gust||0;camera.rotation.x-=(0.16+0.34*pk+0.12*gu)*lw;camera.rotation.y-=(0.3+0.12*pk)*lw;camera.rotation.z+=lw*(Math.sin(st.time*1.3)*0.028+Math.sin(st.time*3.7)*0.012)-gu*lw*(0.1+0.05*Math.sin(st.time*9));camera.position.x+=gu*lw*0.22;
-   const vr=st.vroll||0;camera.rotation.z-=vr*(0.3+0.08*Math.sin(st.time*1.4));}
+   const vr=st.vroll||0;camera.rotation.z-=vr*(0.3+0.08*Math.sin(st.time*1.4));
+   const lb=st.lookBack||0;if(lb>0){const k=Math.sin(Math.min(1,(1-lb)/0.25)*Math.PI/2)*ss(lb/0.3);camera.rotation.y+=3.08*k;camera.rotation.x+=0.1*k;}}
   mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30));for(const b of banks){b.ml.visible=b.mr.visible=!alien;}trees.trunk.visible=trees.crown.visible=!alien;for(const m of mountains)m.visible=!alien;}
   if(st.mode==='intro'){const t=intro.t;const fp=t>=27;cart.visible=fp;flashL.intensity=(t>=13&&!fp)?3.2:(fp?1.2:0);
     if(!fp){const walk=t<20;camera.position.set(Math.sin(t*0.6)*0.2+(rnd()-.5)*st.shake*0.05,(walk?1.66+Math.abs(Math.sin(t*3.6))*0.04:1.5)+(rnd()-.5)*st.shake*0.05,0);
@@ -2833,6 +2895,7 @@ function render(){
   waterU.uTime.value=st.time;waterU.uDist.value=st.dist;waterU.uFlash.value=fl;waterU.uCam.value.copy(camera.position);waterU.uDark.value=dk*0.6;
   waterU.uFog.value.copy(scene.fog.color);
   water.position.x=camera.position.x;sky.position.copy(camera.position);
+  {const far=900+1500*ss((st.camH||0)/160);if(Math.abs(camera.far-far)>20){camera.far=far;camera.updateProjectionMatrix();}}
   // particles
   const n=Math.min(parts.length,PMAX);for(let i=0;i<n;i++){const p=parts[i];pPos[i*3]=p.x;pPos[i*3+1]=p.y;pPos[i*3+2]=-p.z;const a=Math.min(1,p.life*1.5);pCol[i*3]=p.c[0]*a;pCol[i*3+1]=p.c[1]*a;pCol[i*3+2]=p.c[2]*a;}
   pts.geometry.setDrawRange(0,n);pts.geometry.attributes.position.needsUpdate=true;pts.geometry.attributes.color.needsUpdate=true;
@@ -2982,7 +3045,7 @@ function boot(){
   for(let i=0;i<5;i++){const g=new T.Group();const f=mesh(G.fin,M.shark,g,0,-0.02,0);f.rotation.y=Math.PI/2;foamRing(g,0.5);world.add(g);fins.push({g,x:(rnd()<.5?-1:1)*(4+rnd()*7),az:20+rnd()*100,ph:rnd()*6});}
   ready=true;reset();st.mode='title';
   const b=$('startBtn');b.disabled=false;refreshTitle();
-  window.__fx=(c,k)=>BEAT_FX[c][k](st.dist);window.__rr={endS:()=>END,nextShot,playEnding,END_SHOTS,SUBS,CHAPTERS,ZONE_STORY,MURALS,STORIES,vhash,voText,showChapterCard,chapterClear,puppet,pupSet,pose,bendU,kr:()=>krakens,st,update,render,startGame,segs:()=>segs,add,renderer,camera,intro,pushSeg,makeSeg,scene,world,spawnK:(kind)=>{const k={br:kind==="br",ti:kind==="ti",az:st.dist+160,x:-38,t:0,roared:false};k.g=kind==="ti"?titanMesh(k):kind==="br"?breachMesh(k):krakenMesh(k);world.add(k.g);krakens.push(k);}};
+  window.__fx=(c,k)=>BEAT_FX[c][k](st.dist);window.__rr={clearNarr,endS:()=>END,nextShot,playEnding,END_SHOTS,SUBS,CHAPTERS,ZONE_STORY,MURALS,STORIES,vhash,voText,showChapterCard,chapterClear,puppet,pupSet,pose,bendU,kr:()=>krakens,st,update,render,startGame,segs:()=>segs,add,renderer,camera,intro,pushSeg,makeSeg,scene,world,spawnK:(kind)=>{const k={br:kind==="br",ti:kind==="ti",az:st.dist+160,x:-38,t:0,roared:false};k.g=kind==="ti"?titanMesh(k):kind==="br"?breachMesh(k):krakenMesh(k);world.add(k.g);krakens.push(k);}};
   requestAnimationFrame(frame);
 }
 /* Blender-made assets (baked PBR textures + models). Falls back to the procedural set if unavailable. */
