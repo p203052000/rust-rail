@@ -1,0 +1,4 @@
+gemini/**/*.png
+gemini/**/*.mp4
+gemini/**/*.jpg
+assets/models.bin
