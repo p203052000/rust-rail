@@ -1386,9 +1386,13 @@ const SCENIC={
         if(Math.round(u)%12===0){mesh(G.box,M.lamp,g,4.6,h+3.6,z,0.08,0.12,0.8).userData.keep=false;}}
       const fg=new T.ExtrudeGeometry(archShape(4.4,5.2,9,7,-2),{depth:0.8,bevelEnabled:false});own.push(fg);const f=new T.Mesh(fg,M.concrete);f.position.set(0,0,dir>0?-u0+0.8:-u1);g.add(f);};
     portal(6,94,1);portal(L-94,L-6,-1);
-    for(let u=88;u<L-88;u+=8){const h=trackH(s.az0+u+4);const z=-u-4;const tb=new T.Mesh(G.cyl,M.tubeGlass);tb.scale.set(TR,8.05,TR);tb.rotation.x=Math.PI/2;tb.position.set(0,h+1.4,z);g.add(tb);
-      const rg=mesh(G.torus,M.iron,g,0,h+1.4,z+4,TR,TR,1.6);void rg;B(6.4,0.5,8.05,6,M.concrete,0,h-0.35,z);
-      if(Math.round(u)%16===0)for(const sd of [-1,1]){const l=mesh(G.box,M.glowCyan.clone?M.lamp:M.lamp,g,sd*2.9,h-0.05,z,0.12,0.06,0.5);void l;}}
+    // tube pieces follow the slope of the rails (short pieces on the steep whirlpool drop) so they never form steps
+    for(let u=88,ring=0;u<L-88;){const h0=trackH(s.az0+u);const step=Math.abs(trackH(s.az0+u+8)-h0)>0.5?2.5:8;const h1=trackH(s.az0+u+step);
+      const dh=h1-h0,len=Math.hypot(step,dh),a=Math.atan2(dh,step),hm=(h0+h1)/2,z=-u-step/2;
+      const tb=new T.Mesh(G.cyl,M.tubeGlass);tb.scale.set(TR,len+0.04,TR);tb.rotation.x=Math.PI/2+a;tb.position.set(0,hm+1.4,z);g.add(tb);
+      B(6.4,0.4,len+0.04,6,M.concrete,0,hm-0.32,z,a,0,0);
+      if(u>=ring){ring=u+8;const rg=mesh(G.torus,M.iron,g,0,h0+1.4,-u,TR,TR,1.6);rg.rotation.x=a;if(Math.round(u)%16<8)for(const sd of [-1,1])mesh(G.box,M.lamp,g,sd*2.9,h0-0.05,-u,0.12,0.06,0.5);}
+      u+=step;}
     for(let i=0;i<46;i++){const sd=rnd()<.5?-1:1,x=sd*(8+rnd()*40),z=-100-rnd()*(LT-200),hh=6+rnd()*12;const k=mesh(G.box,M.kelp,g,x,-D-4+hh/2,z,0.5,hh,0.05);k.rotation.y=rnd()*3;}
     const city=(u,sd)=>{const z=-u,X=sd*(14+rnd()*16);const r=rnd();
       if(r<0.4){for(let k=0;k<4;k++){const hh=5+rnd()*7;const c=new T.Mesh(cylW(0.7,0.8,hh,4),M.marble);own.push(c.geometry);c.position.set(X+k*3*sd,-D-4+hh/2,z+(rnd()-.5)*2);g.add(c);}B(13,1.2,2.2,4,M.marble,X+4.5*sd,-D+6,z,0,0,(rnd()-.5)*0.2);}
@@ -2760,7 +2764,7 @@ function update(dt){
     st.gust=Math.max(0,(st.gust||0)-dt*0.8);st.lookBack=Math.max(0,(st.lookBack||0)-dt*0.42);
     st.ledgeW=lw;st.peek=pk;if(windG)windG.gain.value=0.2*lw+0.03*(st.zoneSub==='cliff'?st.zoneW:0);
     if(pk>0.55&&st.mode==='play'){st.hbT=(st.hbT||0)-dt;if(st.hbT<0){st.hbT=0.75;if(AC){const a=AC.currentTime;tone(a,'sine',62,42,0.4,0.16);tone(a+0.2,'sine',55,38,0.3,0.18);}}}}
-  {const vt=nearType(st.dist+20,'seatube',0);let vr=0;if(vt&&vt.ext){const u=st.dist+20-vt.az0;const w=ss((u-vt.V0)/50)*ss((vt.V1+20-u)/50);if(w>0){st.curveT=0.0026*w;st.curveTimer=1;}vr=w;}st.vroll=(st.vroll||0)+(vr-(st.vroll||0))*Math.min(1,dt*1.5);}
+  {const vt=nearType(st.dist+20,'seatube',0);let vr=0;if(vt&&vt.ext){const u=st.dist+20-vt.az0;const w=ss((u-vt.V0)/50)*ss((vt.V1+20-u)/50);if(w>0){st.curveT=0.0011*w;st.curveTimer=1;}vr=w;}st.vroll=(st.vroll||0)+(vr-(st.vroll||0))*Math.min(1,dt*1.5);}
   const sl=nearType(st.dist+20,'slalom',0);if(sl){const u=st.dist+20-sl.az0;st.curveT=Math.sin(u/sl.wl*Math.PI*2)*sl.amp*ss(u/25)*ss((sl.len-u)/25);st.curveTimer=1;}
   st.curve+=(st.curveT-st.curve)*Math.min(1,dt*(sl||(st.vroll||0)>0.05?1.4:0.5));bendU.value=st.curve;
   st.clackD+=dz;if(st.clackD>=9.5){st.clackD-=9.5;if(st.mode!=='over')sfx.clack();}
@@ -2867,7 +2871,7 @@ function render(){
   st.glanceV=(st.glanceV||0)+((st.glanceT||0)-(st.glanceV||0))*0.06;camera.rotation.y+=st.glanceV;
   st.lookV=(st.lookV||0)+((st.lookT||0)-(st.lookV||0))*0.05;camera.rotation.x-=st.lookV;
   {const lw=st.ledgeW||0,pk=Math.min(1,st.peek||0),gu=st.gust||0;camera.rotation.x-=(0.16+0.34*pk+0.12*gu)*lw;camera.rotation.y-=(0.3+0.12*pk)*lw;camera.rotation.z+=lw*(Math.sin(st.time*1.3)*0.028+Math.sin(st.time*3.7)*0.012)-gu*lw*(0.1+0.05*Math.sin(st.time*9));camera.position.x+=gu*lw*0.22;
-   const vr=st.vroll||0;camera.rotation.z-=vr*(0.3+0.08*Math.sin(st.time*1.4));
+   const vr=st.vroll||0;camera.rotation.z-=vr*(0.16+0.05*Math.sin(st.time*1.4));
    const lb=st.lookBack||0;if(lb>0){const k=Math.sin(Math.min(1,(1-lb)/0.25)*Math.PI/2)*ss(lb/0.3);camera.rotation.y+=3.08*k;camera.rotation.x+=0.1*k;}}
   mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30));for(const b of banks){b.ml.visible=b.mr.visible=!alien;}trees.trunk.visible=trees.crown.visible=!alien;for(const m of mountains)m.visible=!alien;}
   if(st.mode==='intro'){const t=intro.t;const fp=t>=27;cart.visible=fp;flashL.intensity=(t>=13&&!fp)?3.2:(fp?1.2:0);
