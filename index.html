@@ -2124,7 +2124,7 @@ const SETS2={
     const rune=canvasTex(256,256,(c)=>{c.clearRect(0,0,256,256);c.strokeStyle='#9affc8';c.shadowColor='#3aff9a';c.shadowBlur=22;c.lineWidth=14;c.beginPath();c.arc(128,128,92,0,Math.PI*2);c.stroke();for(const x of [92,128,164]){c.beginPath();c.moveTo(x,68);c.lineTo(x,188);c.stroke();}});
     const rm=bend(new T.MeshBasicMaterial({map:rune,transparent:true,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(rm,rune);const runes=[];
     for(let u=80;u<L-60;u+=58){if(inC(u,10))continue;const h=trackH(s.az0+u);const sd=(u/58)%2<1?-1:1;B(2.6,7,1.2,4,M.rock,sd*4.2,h+2.2,-u);const r=mesh(G.plane,rm,g,sd*4.2,h+3,-u+0.62,2.4,2.4,1);r.userData.keep=true;runes.push(r);}
-    const temples=[];for(const [x,y,z,hh] of [[-340,H+260,-L*0.5,520],[430,H+150,-L*0.95,600],[-260,H+160,-L*0.12,300],[300,H+320,-L*0.3,420]]){const sp=sprite('skytemple',hh,0.4);if(!sp)break;sp.position.set(x,y-hh*0.5,z);g.add(sp);own.push(sp.userData.sprGeo);temples.push({sp,y:y-hh*0.5,ph:rnd()*6});}
+    const temples=[];for(const [x,y,z,hh,nm] of [[-340,H+260,-L*0.5,520,'skytemple'],[430,H+150,-L*0.95,600,'templeB'],[-300,H+170,-L*0.1,380,'templeA'],[320,H+300,-L*0.32,460,'templeB'],[-420,H+120,-L*0.78,420,'templeA']]){const sp=sprite(nm,hh,0.4)||sprite('skytemple',hh,0.4);if(!sp)break;sp.position.set(x,y-hh*0.5,z);g.add(sp);own.push(sp.userData.sprGeo);temples.push({sp,y:y-hh*0.5,ph:rnd()*6});}
     const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
     const gl=(m,x,y,z,sx,sy,ry)=>{const p=mesh(G.plane,m,g,x,y,z,sx,sy,1);if(ry)p.rotation.y=ry;p.userData.keep=true;return p;};
     const F=H-0.3;// floor top inside
@@ -2599,6 +2599,7 @@ const SETS2={
     const armL=new T.Group();armL.position.set(-0.3,0.75,0);man.add(armL);mesh(G.box,coat,armL,0,-0.25,-0.2,0.13,0.13,0.62).rotation.x=0.9;mesh(G.box,glove,armL,0,-0.52,-0.47,0.14,0.12,0.2);
     const brk=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ff2010'),opacity:0}));own.push(brk);
     for(const x of [-0.45,0.45]){const b=mesh(G.plane,brk,body,x,0.8,0.98,0.7,0.5,1);b.userData.keep=true;}
+    const drv=animSprite('miner',2.05,0.3,8);if(drv){man.visible=false;drv.position.set(0,-0.35,0.15);body.add(drv);own.push(drv.userData.sprGeo);}
     tw.visible=false;
     const S={r:-40,x:LANE,lane:1,cyc:-1};
     const say=k=>narrate('神話見聞・'+TERR_NAME.twin,ZONE_STORY.twin[k],k===0?'m_twin':null);
@@ -2620,25 +2621,34 @@ const SETS2={
       const dx=S.x-st.camX;body.rotation.y=-(tx-S.x)*0.25;brk.opacity=brake?0.9:0;
       const alongside=u>=BU-60;head.rotation.y=alongside?Math.sign(dx||1)*1.3:0;man.rotation.y=alongside?Math.sign(dx||1)*0.5:0;
       armR.rotation.z=alongside?-2.4+Math.sin(t*7)*0.4:0;armR.rotation.x=alongside?-0.4:0;
-      beam.visible=!alongside;});
+      beam.visible=!alongside;if(drv){drv.scale.x=dx>0?-1:1;drv.rotation.y=-body.rotation.y;if(alongside)playAnim(drv,t);else setFrame(drv,0);beam.visible=false;}});
     finishSet(s,g,own,anim);},
 
   /* ===== on the back of the sleeping god ===== */
   godback(s){const g=segGroup(s),own=[],anim=[],L=s.len;s.flags={};
-    const scT=canvasTex(256,256,(c)=>{c.fillStyle='#2e3a36';c.fillRect(0,0,256,256);for(let y=0;y<256;y+=22)for(let x=(y/22%2)*14;x<256;x+=28){const gr=c.createRadialGradient(x,y,2,x,y,16);gr.addColorStop(0,'#55665c');gr.addColorStop(1,'#1c2422');c.fillStyle=gr;c.beginPath();c.ellipse(x,y,14,11,0,0,7);c.fill();}});
-    scT.wrapS=scT.wrapT=T.RepeatWrapping;scT.repeat.set(6,6);
-    const skin=std2({map:scT,bumpMap:scT,bumpScale:0.3,color:new T.Color('#c0d4c4'),roughness:0.28,metalness:0.15});const pusM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#9aff60'),opacity:0.8}));own.push(pusM);const bone=M.bone;
-    const fleshM=std2({color:new T.Color('#4a2a30'),roughness:0.4});own.push(scT,skin,fleshM);
+    const hq=HQ.godskin;const scT=hq?null:canvasTex(256,256,(c)=>{c.fillStyle='#2e3a36';c.fillRect(0,0,256,256);for(let y=0;y<256;y+=22)for(let x=(y/22%2)*14;x<256;x+=28){c.fillStyle='#4a5a52';c.beginPath();c.ellipse(x,y,14,11,0,0,7);c.fill();}});
+    let cm,nm;if(hq){cm=hq.c.clone();nm=hq.n.clone();cm.needsUpdate=nm.needsUpdate=true;}else{cm=scT;}for(const t of [cm,nm])if(t){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(7,L/22);own.push(t);}
+    const skin=std2({map:cm,normalMap:nm||null,normalScale:new T.Vector2(1.6,1.6),color:new T.Color('#d8e4dc'),roughness:0.36,metalness:0.08});
+    const skinF=std2({map:cm,normalMap:nm||null,color:new T.Color('#7a8a80'),roughness:0.4});const bone=M.bone;
+    const pusM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#9aff60'),opacity:0.8}));
+    const fleshM=std2({color:new T.Color('#4a2a30'),roughness:0.4});own.push(skin,skinF,pusM,fleshM);
     const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
+    // one continuous hide: a heightfield across the body, rolled by the breath every frame
+    const WX=150,NX=60,NZ=Math.round(L/4);const hg=new T.PlaneGeometry(WX,L,NX,NZ);hg.rotateX(-Math.PI/2);hg.translate(0,0,-L/2);own.push(hg);
+    const hp=hg.attributes.position,bY=new Float32Array(hp.count),hu=new Float32Array(hp.count);
+    const nz=(x,z)=>Math.sin(x*0.21+z*0.07)*Math.sin(z*0.13-x*0.05)+0.5*Math.sin(x*0.47+z*0.31);
+    for(let i=0;i<hp.count;i++){const x=hp.getX(i),u=-hp.getZ(i);const top=s.base(u)-0.62;const head=Math.exp(-Math.pow((u-(L-150))/70,2));
+      const ax=Math.abs(x),R=34+18*head;let y=top-Math.pow(ax/R,2.2)*(14+6*head);
+      y+=Math.exp(-Math.pow((ax-4.2)/1.3,2))*0.9;y+=nz(x,u)*0.7*Math.min(1,ax/8);y-=Math.exp(-Math.pow((ax-12)/3,2))*Math.max(0,Math.sin(u*0.11))*1.2;
+      const fade=ss(u/30)*ss((L-u)/30);y=y*fade+(-6)*(1-fade);if(ax<3.2)y=Math.min(y,top);bY[i]=y;hu[i]=u;hp.setY(i,y);}
+    hg.computeVertexNormals();const hide=new T.Mesh(hg,skin);hide.userData.keep=true;hide.frustumCulled=false;g.add(hide);
     const slices=[];
-    for(let u=24;u<L-40;u+=20){const sl=new T.Group();sl.position.z=-u;g.add(sl);const head=u>L-200;const top=s.base(u)-0.65;
-      const ry=head?18:14,rx=head?50:34;mesh(G.blob,skin,sl,0,top-ry*0.97,0,rx,ry,15);
-      for(const sd of [-1,1]){for(let k=0;k<2;k++){const pz=-6+k*9+(rnd()-.5)*2;const pl=mesh(G.box,skin,sl,sd*(3.4+k*0.3),top-0.1,pz,2.4,0.9,5.5);pl.rotation.set(0.25,0,-sd*0.35);}
-        for(let k=0;k<3;k++){const x=sd*(9+rnd()*14),y=top-1-Math.pow(Math.abs(x)/rx,2)*ry*0.9;const p=mesh(G.plane,pusM,sl,x,y+0.4,(rnd()-.5)*12,1.4,1.4,1);p.rotation.x=-Math.PI/2;p.userData.keep=true;}}
-      for(const sd of [-1,1]){mesh(G.blob,skin,sl,sd*rx*0.75,top-ry*1.4,(rnd()-.5)*6,rx*0.5,ry*0.9,12);
-        for(let k=0;k<3;k++){const x=sd*(4.5+k*3.5+rnd()*2);const h=2+rnd()*5+(head?2:0);const c=mesh(G.cone,bone,sl,x,top+h/2-0.6-k*0.9,(rnd()-.5)*12,0.5+h*0.12,h,0.5+h*0.12);c.rotation.z=-sd*(0.35+k*0.15);}
-        for(let k=0;k<4;k++)mesh(G.sphLo,bone,sl,sd*(10+rnd()*20),top-1-rnd()*4,(rnd()-.5)*14,0.6+rnd()*0.8,0.4,0.6+rnd()*0.8);
-        if(!head&&rnd()<0.6){let x=sd*(rx*0.9),y=-1,z=(rnd()-.5)*8;for(let j=0;j<12;j++){const r=0.9*(1-j/12)+0.2;mesh(G.sphLo,fleshM,sl,x,y,z,r,r,r);x+=sd*(0.8+j*0.05);y+=Math.sin(j*0.7)*0.6+0.2;z+=Math.cos(j*0.5)*0.6;}}}
+    for(let u=24;u<L-40;u+=20){const sl=new T.Group();sl.position.z=-u;g.add(sl);const head=u>L-200;const top=s.base(u)-0.65;const R=head?52:34;
+      for(const sd of [-1,1]){for(let k=0;k<2;k++){const pz=-6+k*9+(rnd()-.5)*2;const pl=mesh(G.blob,skinF,sl,sd*(3.6+k*0.3),top-0.1,pz,1.3,0.55,2.6);pl.rotation.set(0.2,0,-sd*0.3);}
+        for(let k=0;k<3;k++){if(sd<0&&u>L-170&&u<L-60)break;const x=sd*(5.5+k*3.6+rnd()*2);const ys=top-Math.pow(Math.abs(x)/R,2.2)*14;const h=2+rnd()*5+(head?2:0);const c=mesh(G.cone,bone,sl,x,ys+h/2-0.4,(rnd()-.5)*12,0.45+h*0.12,h,0.45+h*0.12);c.rotation.z=-sd*(0.35+k*0.15);}
+        for(let k=0;k<5;k++){const x=sd*(8+rnd()*22),ys=top-Math.pow(Math.abs(x)/R,2.2)*14;mesh(G.sphLo,bone,sl,x,ys+0.1,(rnd()-.5)*14,0.5+rnd()*0.8,0.35,0.5+rnd()*0.8);}
+        for(let k=0;k<3;k++){const x=sd*(9+rnd()*14),ys=top-Math.pow(Math.abs(x)/R,2.2)*14;const p=mesh(G.plane,pusM,sl,x,ys+0.25,(rnd()-.5)*12,1.4,1.4,1);p.rotation.x=-Math.PI/2;}
+        if(!head&&rnd()<0.6){let x=sd*(R*0.95),y=-2,z=(rnd()-.5)*8;for(let j=0;j<14;j++){const r=1.1*(1-j/14)+0.2;mesh(G.sphLo,fleshM,sl,x,y,z,r,r,r);x+=sd*(0.9+j*0.05);y+=Math.sin(j*0.7)*0.6-0.15;z+=Math.cos(j*0.5)*0.6;}}}
       own.push(...mergeStatic(sl));sl.userData.u=u;slices.push(sl);}
     // spikes poking up through the rails' lanes
     const spikes=[];for(const [u,Ln] of s.SP){const sp=new T.Group();g.add(sp);mesh(G.cone,bone,sp,0,0.7,0,0.45,1.5,0.45);mesh(G.sphLo,skin,sp,0,0,0,0.9,0.35,0.9);sp.position.set(Ln*LANE,0,-u);sp.userData={u,Ln};spikes.push(sp);}
@@ -2649,8 +2659,9 @@ const SETS2={
     const eye=new T.Group();eye.position.set(-40,6,-(L-110));g.add(eye);mesh(G.blob,skin,eye,0,0,0,11,7,10);
     const irisM=glowM('#ff8020',0);const ir=mesh(G.plane,irisM,eye,6,0,4,12,5,1);ir.rotation.y=0.9;ir.userData.keep=true;
     const lid=mesh(G.box,fleshM,eye,9.5,0,3,0.6,0.5,12);lid.rotation.y=0.9;
+    const ea=animSprite('godeye',14,0.6,5);if(ea){eye.visible=false;ea.position.set(-10.5,s.base(L-110)-1.2,-(L-110));ea.rotation.set(-0.2,0.5,0);g.add(ea);own.push(ea.userData.sprGeo);}
     const heave=(u,t)=>s.env(u)*1.4*Math.sin(t*s.W-u*0.05);
-    anim.push(t=>{for(const sl of slices)sl.position.y=heave(sl.userData.u,t);
+    anim.push(t=>{for(const sl of slices)sl.position.y=heave(sl.userData.u,t);for(let i=0;i<hp.count;i++)hp.setY(i,bY[i]+heave(hu[i],t));hp.needsUpdate=true;
       for(const sp of spikes){const d=sp.userData;sp.position.y=s.base(d.u)+heave(d.u,t)-0.1;}
       for(const v of vents){const d=v.userData;v.position.y=s.base(d.u)+heave(d.u,t)-0.5;}
       if(st.mode!=='play'){return;}const u=st.dist+PZ-s.az0,pl=Math.round(st.camX/LANE);
@@ -2661,9 +2672,10 @@ const SETS2={
         d.m.opacity=w>0&&b<0?Math.min(0.6,w/46*0.6):b>=0&&b<14?0.95*(1-b/14):0;d.p.scale.set(6+Math.max(0,b)*0.8,9+Math.max(0,b)*1.4,1);
         if(b>=0&&!s.flags['vb'+d.u]){s.flags['vb'+d.u]=1;const nl=st.lane-d.sd;sfx.roar();st.shake=Math.max(st.shake,0.6);lensDrops(14);
           if(Math.abs(nl)>1)hit(null,'被巨神的鼻息吹下軌道');else{st.lane=nl;toast('被吹開了！','warn',900);}}}
-      if(!s.flags.eye&&u>L-150){s.flags.eye=1;sfx.roar();st.shake=Math.max(st.shake,0.9);toast('祂的眼睛……動了！','warn',1800);}
-      const eo=s.flags.eye?Math.max(0,Math.sin(Math.min(Math.PI,(u-(L-150))/60*Math.PI))):0;irisM.opacity=eo*0.95;lid.scale.y=1+eo*12;});
-    anim.push(storyAnim(s,'godback',[30,L-300,L-140]));
+      if(!s.flags.eye&&u>L-150){s.flags.eye=1;narrate('神話見聞・'+TERR_NAME.godback,ZONE_STORY.godback[2],null,null,{x:-10.5,y:s.base(L-110)-1.2+7,az:s.az0+L-110});sfx.roar();st.shake=Math.max(st.shake,0.9);toast('祂的眼睛……動了！','warn',1800);}
+      const eo=s.flags.eye?Math.max(0,Math.sin(Math.min(Math.PI,(u-(L-150))/60*Math.PI))):0;irisM.opacity=eo*0.95;lid.scale.y=1+eo*12;
+      if(ea){ea.position.y=s.base(L-110)-1.2+heave(L-110,t);if(s.flags.eye)playAnimAt(ea,Math.min(0.999,Math.max(0,(u-(L-150))/130)));else setFrame(ea,0);}});
+    anim.push(storyAnim(s,'godback',[30,L-300,1e9]));
     finishSet(s,g,own,anim);}
 };
 function titanMesh(k){if(HQ.spr&&HQ.spr.titan){const g=new T.Group();const leg=(x,z,flip)=>{const l=new T.Group();l.position.set(x,60,z);g.add(l);const sp=puppet('titan',125,0.35);sp.position.x=flip?-30:30;if(flip)sp.scale.x=-1;l.add(sp);l.userData.sp=sp;return l;};
@@ -2983,12 +2995,13 @@ const BEAT_FX=[
       const lm=mesh(G.sphLo,M.lamp,g,X-0.33,h+2.05,0,0.09,0.09,0.09);lm.userData.keep=true;const gl=mesh(G.plane,M.glowGold,g,X-0.4,h+2.05,0.1,3,3,1);gl.userData.keep=true;},
    null,
    (az)=>{const k={x:38,t:0,roared:false};k.g=krakenMesh(k);world.add(k.g);krakens.push(k);
-      let wv=null,lamp=null,gl=null;const g=propGroup(az+95,(t)=>{if(wv)wv.rotation.z=-2.4+Math.sin(t*5)*0.45;const on=Math.sin(t*7)>-0.2;if(lamp){gl.material.opacity=on?1:0.35;bm.opacity=on?0.5:0.15;}});const X=-6.5,h=trackH(az+95)+3.2;
+      let wv=null,lamp=null,gl=null;const g=propGroup(az+95,(t)=>{if(wv)wv.rotation.z=-2.4+Math.sin(t*5)*0.45;if(g&&g.userData.gp)playAnim(g.userData.gp,t);const on=Math.sin(t*7)>-0.2;if(lamp){gl.material.opacity=on?1:0.35;bm.opacity=on?0.5:0.15;}});const X=-6.5,h=trackH(az+95)+3.2;
       {const c=new T.Mesh(cylW(1.4,2.2,h+2,8),M.rock);c.position.set(X,(h-2)/2-0.2,0);g.add(c);const m=mesh(rockG(),M.rock,g,X,h-0.6,0,2,1,2);void m;}
       const cl=bend(new T.MeshStandardMaterial({color:new T.Color('#4a3e30'),roughness:0.9}));const sk=bend(new T.MeshStandardMaterial({color:new T.Color('#b08a6a'),roughness:0.8}));
       const f=new T.Group();f.position.set(X,h+0.4,0);f.scale.setScalar(1.5);g.add(f);mesh(G.cyl,cl,f,-0.18,0.55,0,0.13,1.1,0.13);mesh(G.cyl,cl,f,0.18,0.55,0,0.13,1.1,0.13);mesh(G.cyl,cl,f,0,1.55,0,0.34,1.1,0.24);
       mesh(G.sph,sk,f,0,2.32,0,0.2,0.24,0.2);mesh(G.sph,M.paintDark,f,0,2.48,0,0.24,0.14,0.26);mesh(G.cyl,cl,f,0.42,1.5,0,0.08,0.9,0.08).rotation.z=0.3;
       wv=new T.Group();wv.position.set(-0.36,1.95,0);f.add(wv);mesh(G.cyl,cl,wv,0,0.45,0,0.08,0.9,0.08);f.rotation.y=0.35;
+      const gp=animSprite('miner',3.2,0.35,8);if(gp){f.visible=false;gp.position.set(X+0.2,h-0.5,0);g.add(gp);g.userData.gp=gp;}
       lamp=mesh(G.sphLo,M.lamp,f,0,2.5,0.25,0.07,0.07,0.07);lamp.userData.keep=true;const gm=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffe2a0')}));gl=mesh(G.plane,gm,g,X+0.5,h+4.1,0.8,7,7,1);gl.userData.keep=true;
       var bm=bend(new T.MeshBasicMaterial({color:new T.Color('#fff0c0'),transparent:true,opacity:0.5,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));const cone=new T.Mesh(new T.ConeGeometry(4,26,16,1,true),bm);cone.rotation.x=Math.PI/2*1.08;cone.position.set(X+1.5,h+3.4,13);cone.userData.keep=true;g.add(cone);}]
 ];
@@ -3615,12 +3628,12 @@ const HQ={};
 async function loadHQ(){
   const tl=new T.TextureLoader();
   const load=(u,srgb)=>new Promise((res,rej)=>tl.load(u,t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;if(srgb)t.encoding=T.sRGBEncoding;res(t);},undefined,rej));
-  const names=['rust','rock','wood','paint'];
+  const names=['rust','rock','wood','paint','godskin'];
   const [tex,idx,bin]=await Promise.all([Promise.all(names.flatMap(n=>[load('assets/'+n+'_c.jpg',true),load('assets/'+n+'_n.jpg',false)])),
     fetch('assets/models_pack.json').then(r=>{if(!r.ok)throw new Error('models');return r.json();}).then(j=>{const raw=atob(j.data),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);return [j.index,u8.buffer];})]).then(([t,m])=>[t,m[0],m[1]]);
   names.forEach((n,i)=>HQ[n]={c:tex[i*2],n:tex[i*2+1]});
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
-  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
+  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
     g.setAttribute('position',new T.BufferAttribute(new Float32Array(bin,offset,count*3),3));g.setAttribute('normal',new T.BufferAttribute(new Float32Array(bin,offset+count*12,count*3),3));
     g.setAttribute('uv',new T.BufferAttribute(new Float32Array(bin,offset+count*24,count*2),2));g.computeBoundingSphere();HQ.geo[k]=g;}
@@ -3630,7 +3643,7 @@ const SPR={};
 function sprMat(n,emi){const k=n+(emi||0);if(SPR[k])return SPR[k];const t=HQ.spr[n];
   const m=bend(new T.MeshStandardMaterial({map:t,emissiveMap:t,emissive:new T.Color('#ffffff'),emissiveIntensity:emi==null?0.5:emi,roughness:1,metalness:0,alphaTest:0.3,transparent:true,side:T.DoubleSide}));SPR[k]=m;return m;}
 /* Gemini video clips turned into keyed sprite-sheet animations */
-const ANIMS={shark:{cols:5,rows:8,frames:40,aspect:1.7778}};
+const ANIMS={shark:{cols:5,rows:8,frames:40,aspect:1.7778},miner:{cols:8,rows:6,frames:48,aspect:0.6028},godeye:{cols:8,rows:6,frames:48,aspect:1}};
 function animSprite(n,height,emi,fps){const A=HQ.anim&&HQ.anim[n];if(!A)return null;const m0=A.meta;const tex=A.tex.clone();tex.needsUpdate=true;tex.repeat.set(1/m0.cols,1/m0.rows);
   const geo=new T.PlaneGeometry(height*m0.aspect,height).translate(0,height/2,0);
   const mat=bend(new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:new T.Color('#ffffff'),emissiveIntensity:emi==null?0.5:emi,roughness:1,metalness:0,alphaTest:0.3,transparent:true,side:T.DoubleSide}));
