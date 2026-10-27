@@ -136,6 +136,25 @@ h2{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1.05;
 @media (max-height:620px){ .controls{display:none} .panel{gap:10px;padding:16px} h1{font-size:40px} .lede{display:none} }
 @media (prefers-reduced-motion:reduce){ .toast{transition:none} }
 
+html,body{overscroll-behavior:none}
+.khint{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);z-index:6;pointer-events:none;display:flex;gap:6px 14px;flex-wrap:wrap;justify-content:center;
+  max-width:calc(100% - 140px);font-size:13px;color:var(--ink);background:rgba(6,10,9,.62);border:1px solid rgba(215,172,79,.35);border-radius:4px;padding:8px 14px;transition:opacity .8s}
+.khint kbd{display:inline-block;min-width:1.6em;text-align:center;font:700 12px/1.6 var(--f-body);border:1px solid rgba(255,255,255,.35);border-bottom-width:2px;border-radius:3px;padding:0 4px;margin-right:4px;color:var(--brass)}
+.khint.off{opacity:0}
+.icon-btn:hover,.pb:hover{background:rgba(40,52,52,.7)}.cv-b:hover{background:rgba(11,9,8,.08)}.ghost:hover{color:var(--ink);border-color:rgba(255,255,255,.4)}.chap:hover:not(.locked){border-color:var(--brass)}
+/* big screens: larger HUD and reading text */
+@media (min-width:1000px) and (min-height:680px){
+  .dist{font-size:38px}.pip{width:22px;height:22px}.row{font-size:16px}.icon-btn{width:50px;height:50px}.icon-btn svg{width:20px;height:20px}
+  .story{width:min(640px,calc(100% - 48px));bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}.story p{font-size:19px}.story-k,.story-h{font-size:12px}
+  .sub{font-size:20px}.toast{font-size:32px}.panel{max-width:520px}}
+/* phones held sideways: short screen, push reading card down and shrink it, menu beside the poster */
+@media (orientation:landscape) and (max-height:540px){
+  .story{bottom:calc(env(safe-area-inset-bottom,0px) + 8px);width:min(500px,calc(100% - 300px));min-width:300px;padding:6px 12px 6px;max-height:42vh}
+  .story p{font-size:14px;line-height:1.55;margin:2px 0}.story-h{display:none}.story-img{max-height:18vh}
+  .dist{font-size:24px}.hud{padding-top:calc(env(safe-area-inset-top,0px) + 8px)}.icon-btn{width:40px;height:40px}
+  .pb{width:56px;height:56px}.toast{top:22%;font-size:22px}.sub{font-size:15px}.tc-t{font-size:clamp(40px,12vh,64px)}
+  .overlay:not(.cover){align-items:center}.panel{max-height:calc(100vh - 20px)}
+  .khint{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 80px)}}
 /* avant-garde cover */
 .cover{background:#0b0908;padding:0!important;align-items:stretch}
 .cover::before{content:'';position:absolute;inset:-40px;background:url(assets/cover.webp) center/cover;filter:blur(28px) brightness(.35);pointer-events:none}
@@ -180,6 +199,12 @@ h2{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1.05;
 .cv-help summary::-webkit-details-marker{display:none}
 .cv-helpin{padding:0 12px 12px;max-height:46vh;overflow-y:auto}
 .cv-best{color:#0b0908!important;text-align:center;font-weight:700;font-size:12px;letter-spacing:.1em;min-height:0}
+@media (orientation:landscape) and (max-height:540px){
+  .cv{max-width:none}
+  .cv-img{width:calc(100% - min(420px,54%))}
+  .cv-menu{left:auto;right:0;width:min(420px,54%);top:0;justify-content:center;background:rgba(239,230,214,.97);box-sizing:border-box;padding-top:max(12px,env(safe-area-inset-top))}
+  .cv-title{right:calc(min(420px,54%) + 10px);font-size:clamp(40px,19vh,84px)}
+  .cv-marq{right:min(420px,54%)}}
 @media (prefers-reduced-motion:reduce){.cv-ring,.cv-eye,.cv-grain,.cv-marq div,.cv-title::before,.cv-title::after{animation:none}}
 .ending{position:fixed;inset:0;z-index:60;background:#000;overflow:hidden}
 .ending canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -228,11 +253,13 @@ h2{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1.05;
   </div>
   <div class="btns">
     <button class="icon-btn" id="muteBtn" aria-label="靜音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="waves" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></button>
+    <button class="icon-btn" id="fsBtn" aria-label="全螢幕" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     <button class="icon-btn" id="pauseBtn" aria-label="暫停"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="khint off" id="khint" hidden><span><kbd>←</kbd><kbd>→</kbd>換軌</span><span><kbd>↑</kbd>／<kbd>空白</kbd>跳</span><span><kbd>↓</kbd>蹲</span><span><kbd>Enter</kbd>關閉旁白</span><span><kbd>M</kbd>靜音</span><span><kbd>F</kbd>全螢幕</span><span><kbd>Esc</kbd>暫停</span></div>
 
 <div class="overlay cover" id="titleScreen">
   <div class="cv" id="cv">
@@ -327,7 +354,7 @@ h2{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1.05;
   <p id="storyT"></p>
   <img id="storyImg" class="story-img" alt="" hidden>
   <div class="story-bar"><i id="storyBar"></i></div>
-  <div class="story-h">前方暫時沒有障礙，慢慢讀・已收進日誌・點一下關閉</div>
+  <div class="story-h">前方暫時沒有障礙，慢慢讀・已收進日誌・<span id="closeHint">點一下關閉</span></div>
 </div>
 
 <div class="overlay" id="overScreen" hidden>
@@ -2765,7 +2792,7 @@ function reset(){
   for(let i=0;i<TREE_N;i++)placeTree(i,105+rnd()*VIEW);
   for(const f of fins)f.az=120+rnd()*100;
 }
-function startGame(force){clearNarr(true);clearProps();$('lbox').hidden=true;
+function startGame(force){clearNarr(true);clearProps();$('lbox').hidden=true;try{showKeyHint();}catch(e){}
   if(!ready)return;st.chStart=st.chapter>0?105:100;if(force===true||(!intro.seen&&st.chapter<=0)){playIntro();return;}initAudio();reset();if(st.chapter>0){st.dist=105;}st.mode='play';
   $('chapLbl').textContent=CH()?CH().n+'　'+CH().t:'無盡模式';$('prog').hidden=!CH();
   $('titleScreen').hidden=true;$('overScreen').hidden=true;$('pauseScreen').hidden=true;$('hud').hidden=false;renderPips();syncPad();
@@ -3037,7 +3064,19 @@ glc.addEventListener('pointerdown',e=>{tracking=true;swiped=false;sx0=e.clientX;
 glc.addEventListener('pointermove',e=>{if(!tracking||swiped)return;const dx=e.clientX-sx0,dy=e.clientY-sy0;const th=Math.max(24,Math.min(W,H)*0.05);
   if(Math.abs(dx)>th||Math.abs(dy)>th){swiped=true;if(Math.abs(dx)>Math.abs(dy))moveLane(dx>0?1:-1);else if(dy<0)jump();else duck();}});
 const endP=()=>{tracking=false;};glc.addEventListener('pointerup',endP);glc.addEventListener('pointercancel',endP);
+const finePtr=window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches;
+if(finePtr)$('closeHint').textContent='點一下或按 Enter 關閉';
+const fsOK=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
+function toggleFS(){try{const d=document;if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d);}
+  else{const el=d.documentElement;const pr=(el.requestFullscreen||el.webkitRequestFullscreen).call(el,{navigationUI:'hide'});
+    if(pr&&pr.then)pr.then(()=>{try{if(!finePtr&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(()=>{});}catch(e){}}).catch(()=>{});}}catch(e){}}
+if(fsOK){$('fsBtn').hidden=false;$('fsBtn').onclick=toggleFS;}
+let khT=0;function showKeyHint(){if(!finePtr||padOn)return;const h=$('khint');h.hidden=false;requestAnimationFrame(()=>h.classList.remove('off'));clearTimeout(khT);khT=setTimeout(()=>{h.classList.add('off');setTimeout(()=>h.hidden=true,900);},7000);}
 window.addEventListener('keydown',e=>{const k=e.key;
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
+  if(k==='m'||k==='M'){$('muteBtn').click();return;}
+  if((k==='f'||k==='F')&&fsOK){toggleFS();return;}
+  if(st.mode==='play'&&!st.paused&&k==='Enter'&&!$('story').hidden){$('story').click();e.preventDefault();return;}
   if(st.mode==='play'&&(k==='Escape'||k==='p'||k==='P')){setPause(!st.paused);return;}
   if(k==='ArrowLeft'||k==='a'||k==='A'){moveLane(-1);e.preventDefault();}
   else if(k==='ArrowRight'||k==='d'||k==='D'){moveLane(1);e.preventDefault();}
@@ -3058,7 +3097,7 @@ document.querySelectorAll('.pb').forEach(b=>{b.addEventListener('pointerdown',e=
 $('quitBtn').onclick=()=>{st.paused=false;if(AC)AC.resume();st.mode='title';st.chapter=-1;$('pauseScreen').hidden=true;$('hud').hidden=true;$('titleScreen').hidden=false;
   refreshTitle();syncPad();reset();st.mode='title';$('startBtn').focus();};
 /* cover: pin the eye glow, rune ring and marquee to the poster's eye and horizon */
-function layoutCover(){const cv=$('cv'),im=$('cvImg');if(!cv||!im)return;const W=cv.clientWidth,H=cv.clientHeight,iw=518,ih=997;const sc=Math.max(W/iw,H/ih),ox=(W-iw*sc)/2;
+function layoutCover(){const cv=$('cv'),im=$('cvImg');if(!cv||!im)return;const W=im.clientWidth||cv.clientWidth,H=cv.clientHeight,iw=518,ih=997;const sc=Math.max(W/iw,H/ih),ox=(W-iw*sc)/2;
   const ex=ox+256*sc,ey=225*sc,e=$('cvEye');e.style.left=ex+'px';e.style.top=ey+'px';e.style.width=e.style.height=(70*sc)+'px';
   const r=$('cvRing'),rs=Math.min(W*0.92,520*sc);r.style.width=r.style.height=rs+'px';r.style.left=(ex-rs/2)+'px';r.style.top=(ey+20*sc-rs/2)+'px';
   $('cvMarq').style.top=(539*sc-11)+'px';}
@@ -3139,7 +3178,7 @@ function boot(){
   for(let i=0;i<5;i++){const g=new T.Group();const f=mesh(G.fin,M.shark,g,0,-0.02,0);f.rotation.y=Math.PI/2;foamRing(g,0.5);world.add(g);fins.push({g,x:(rnd()<.5?-1:1)*(4+rnd()*7),az:20+rnd()*100,ph:rnd()*6});}
   ready=true;reset();st.mode='title';
   const b=$('startBtn');b.disabled=false;refreshTitle();
-  window.__fx=(c,k)=>BEAT_FX[c][k]&&BEAT_FX[c][k](st.dist);window.__beat=(c,k)=>{st.chapter=c;st.beat=k+1;showBeat(CHAPTERS[c],CHAPTERS[c].beats[k][1]);};window.__rr={MURAL_WRAP,clearNarr,endS:()=>END,nextShot,playEnding,END_SHOTS,SUBS,CHAPTERS,ZONE_STORY,MURALS,STORIES,vhash,voText,showChapterCard,chapterClear,puppet,pupSet,pose,bendU,kr:()=>krakens,st,update,render,startGame,segs:()=>segs,add,renderer,camera,intro,pushSeg,makeSeg,scene,world,spawnK:(kind)=>{const k={br:kind==="br",ti:kind==="ti",az:st.dist+160,x:-38,t:0,roared:false};k.g=kind==="ti"?titanMesh(k):kind==="br"?breachMesh(k):krakenMesh(k);world.add(k.g);krakens.push(k);}};
+  window.__fx=(c,k)=>BEAT_FX[c][k]&&BEAT_FX[c][k](st.dist);window.__beat=(c,k)=>{st.chapter=c;st.beat=k+1;showBeat(CHAPTERS[c],CHAPTERS[c].beats[k][1]);};window.__rr={narrate,setPause,MURAL_WRAP,clearNarr,endS:()=>END,nextShot,playEnding,END_SHOTS,SUBS,CHAPTERS,ZONE_STORY,MURALS,STORIES,vhash,voText,showChapterCard,chapterClear,puppet,pupSet,pose,bendU,kr:()=>krakens,st,update,render,startGame,segs:()=>segs,add,renderer,camera,intro,pushSeg,makeSeg,scene,world,spawnK:(kind)=>{const k={br:kind==="br",ti:kind==="ti",az:st.dist+160,x:-38,t:0,roared:false};k.g=kind==="ti"?titanMesh(k):kind==="br"?breachMesh(k):krakenMesh(k);world.add(k.g);krakens.push(k);}};
   requestAnimationFrame(frame);
 }
 /* Blender-made assets (baked PBR textures + models). Falls back to the procedural set if unavailable. */
