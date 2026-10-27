@@ -519,36 +519,36 @@ let best=0; try{best=+localStorage.getItem('rustrail-best')||0}catch(e){}
 let segs=[], segEnd=0, lastType='normal';
 /* ================= chapters ================= */
 const CHAPTERS=[
- {n:'第一章',t:'被塗掉的鐵軌',len:1750,speed:[11,22],
+ {n:'第一章',t:'被塗掉的鐵軌',len:1500,speed:[11,22],
   intro:'【故事開始】颱風夜，我收到失蹤六十年的外公寄來的日記和地圖。我照著地圖找到一座舊礦坑，結果被大水沖上一台刻著外公名字的礦車。\n\n礦車衝出山洞，外面是一個奇怪的世界：天空一直是黃昏，手錶停在 23:58 不會動。外公的日記說：「沿著鐵軌一直走，盡頭有一道門，我在那裡等你。」',
   beats:[[150,'河上漂著一艘客輪，船裡的燈還亮著，卻一個人也沒有。外公的日記寫著：「這個世界的時間，是停住的。」'],[450,'枕木上用白漆畫著一個記號：圓圈裡有三條線。日記說這是外公畫的，意思是「這裡安全，繼續走」。原來六十年前，他也坐過這台礦車。'],[800,'手機突然收到一則簡訊。寄件人竟然是我自己，時間顯示「明天」。內容只有一句：「不管發生什麼事，都不要讓礦車停下來。」'],[1750,'前面出現兩尊比山還高的石像，中間是一道巨大的門。日記寫著：「穿過這道門，就進入祂的夢裡了。」']],
   outro:'穿過石像之門時，背後有人喊我的名字，是外公的聲音。可是日記用紅筆寫著：「聽到有人叫你，千萬不要回頭。回頭的人，會被留在這裡。」\n我咬著牙，沒有回頭。',
   pool:[['normal',2],['narrow',1.4],['hills',1.4],['bridge',1.3],['washboard',1],['floating',1.2],['tunnel',1],['graveyard',1.4],['slalom',1]],megas:[],
   zones:[['yellow',0.2],['orange',0.4],['crater',0.56]],mon:{barrel:0,gap:0,croc:250,whirl:500,shark:650,beam:800},finale:[{type:'mega',sub:'colossus'}]},
- {n:'第二章',t:'印斯茅斯水道',len:1800,speed:[12,23],
+ {n:'第二章',t:'印斯茅斯水道',len:1650,speed:[12,23],
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一隻沉睡在海底的古老怪物。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在替祂看守鐵軌，他們會想辦法把你拉下車。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「這條鐵軌一次只能載一個人。牠們想把你拉下車，好把位子空出來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
   pool:[['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
   zones:[['green',0.22],['maw',0.45],['black',0.72]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
- {n:'第三章',t:'考察隊的營地',len:3000,speed:[13,25],
+ {n:'第三章',t:'考察隊的營地',len:2450,speed:[13,25],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
-  beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2600,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，祂才不會醒。祂一醒，整個世界都會毀掉。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
+  beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，祂才不會醒。祂一醒，整個世界都會毀掉。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
   outro:'大壩的另一邊，一座城市正從海底慢慢升起來。\n我終於懂了：外公不是失蹤。他是為了不讓祂醒來，留在夢裡開著這台礦車，一開就是六十年。',
   pool:[['camp',2.4],['crystal',1.6],['coaster',1.5],['mega',1.2],['waterfall',1.2],['lighthouse',1],['leap',1.3],['normal',1.4],['bridge',1]],megas:['cranes'],
-  zones:[['madness',0.07],['cliff',0.36],['purple',0.88]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:100,shark:200,mine:300,tentacle:600,sweep:900,deepone:400},finale:[{type:'mega',sub:'dam'}]},
- {n:'第四章',t:'沉沒之城',len:3000,speed:[14,26],
+  zones:[['madness',0.07],['cliff',0.36]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:100,shark:200,mine:300,tentacle:600,sweep:900,deepone:400},finale:[{type:'mega',sub:'dam'}]},
+ {n:'第四章',t:'沉沒之城',len:2300,speed:[14,26],
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
   pool:[['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['red',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
- {n:'第五章',t:'拉萊耶',len:2400,speed:[15,27],
+ {n:'第五章',t:'拉萊耶',len:1900,speed:[15,27],
   intro:'【上一章】那個巨大的東西一直盯著我，像在確認車上的人換了沒有。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
-  beats:[[300,'神殿的牆上刻著一台礦車，車上的人戴著皮手套。那個人就是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱下面放著外公的礦工帽，頭燈還亮著。帽子裡夾著日記被撕掉的最後一頁。'],[1300,'最後一頁寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，祂就不會醒，世界就會平安。現在，換你了。」'],[1800,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，像在說：別停下來。']],
+  beats:[[300,'神殿的牆上刻著一台礦車，車上的人戴著皮手套。那個人就是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱下面放著外公的礦工帽，頭燈還亮著。帽子裡夾著日記被撕掉的最後一頁。'],[1000,'最後一頁寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，祂就不會醒，世界就會平安。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，像在說：別停下來。']],
   outro:'外公終於下車回家了。而我，成了新的駕駛。\n可是，桌上那個 2086 年寄來的包裹，又是誰寄的呢？',
   pool:[['mega',2.6],['crystal',1],['coaster',1.2],['leap',1.2],['whalebone',1],['canopy',1],['weave',1],['normal',1]],megas:['rlyeh','ruins','colossus'],
-  zones:[['purple',0.18],['skyisles',0.48]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150}]},
+  zones:[['purple',0.12],['skyisles',0.6]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150}]},
 ];
 const CH=()=>st.chapter>=0?CHAPTERS[st.chapter]:null;
 /* where each chapter beat must happen: the narration (and its prop) waits for a matching stretch of track.
@@ -558,7 +558,7 @@ const BEAT_WHERE=[
  [['harbor'],['harbor'],['floating'],['fin',1,0]],
  [['camp'],['cliff'],null,['fin',0,10]],
  [['mega','city'],['normal'],['whalebone'],['sea']],
- [['mega','ruins'],['normal'],null,['coaster']]];
+ [['mega','ruins'],['normal'],null,['fin',1,5]]];
 const BEAT_OFF={floating:15,normal:15,harbor:10,camp:10,cliff:30,whalebone:5,mega:15,coaster:5,sea:20};
 const wantKey=w=>w[0]==='mega'?'mega:'+w[1]:w[0];
 const segKey=x=>x.type==='mega'?'mega:'+x.sub:x.type==='zone'?x.sub:x.type;
@@ -630,7 +630,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   if(ready&&SETS2[s.type])SETS2[s.type](s);
   if(ready&&s.type==='zone')buildZone(s);
 }
-const TERR_NAME={crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空城堡',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
+const TERR_NAME={crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
 const MEGA=['colossus','dam','cranes','ruins','city','rlyeh','rlyeh'];let lastMega='';
 const MEGA_NAME={colossus:'大袞巨像之門',dam:'大壩水門',cranes:'龍門吊船塢',ruins:'沉沒神殿',city:'淹沒的城市',rlyeh:'拉萊耶神殿'};
 function segAt(az){for(let i=0;i<segs.length;i++){const s=segs[i];if(az>=s.az0&&az<s.az1)return s;}return null;}
@@ -1582,9 +1582,9 @@ const ZONE_STORY={
  factory:['鐵軌開進一座淹水的廢棄工廠。牆上的霓虹燈寫著「2086」，跟結局那個包裹上的年份一樣。這裡，是未來。',
   '機械手臂突然動了起來，好像在搬運看不見的東西。日記寫著：「祂的夢裡有過去，也有未來。」小心頭頂！',
   '招牌一閃一閃：「夢境維修中心：換班請排隊」。原來不只外公，未來也有人在這裡換班。'],
- skyisles:['祂快醒了，夢開始崩壞。重力消失了，石頭、湖水和鐵軌全都飄在半空中。前方的雲裡，浮著兩座巨大的城堡，鐵軌直直穿進城門。',
-  '城堡裡是一座比教堂還高的大殿。所有石柱都歪向同一邊，樓梯爬在牆上、倒掛在屋頂。兩旁坐著一排戴兜帽的石像，臉上垂著觸手，眼睛還在發光。',
-  '第二座城堡是一座空心的骨塔。肋骨一根根彎成屋頂，牆上的眼睛一隻隻睜開。正中間吊著一顆巨大的眼睛，一直跟著礦車轉。'],
+ skyisles:['祂快醒了，夢開始崩壞。重力消失了，石頭、湖水和鐵軌全都飄在半空中。前方的雲裡浮著兩座神殿，鐵軌直直穿進大門。',
+  '第一座神殿裡，石柱全都歪向同一邊，牆上流著綠色的黏液，柱腳堆滿會跳動的卵。最深處站著一尊巨大的神像：章魚頭、翅膀、垂下來的觸手。礦車要從祂的腳下穿過去。',
+  '第二座神殿是活的。牆是一層層的肉，屋頂的肋骨在呼吸，地上的嘴一張一合。正中間吊著一顆巨大的眼睛，一直跟著礦車轉。我不敢再看下去。'],
  madness:['南極。考察隊的帳篷被風撕成碎片，雪地上只剩一條鐵軌，筆直伸向一列比喜馬拉雅還高的山脈。',
   '山後面是一座黑色巨石蓋成的城，比人類任何一座城市都古老。考察隊說，這是一種叫「古老者」的外星生物蓋的，牆上刻滿了牠們的歷史。路邊站著一群沒有眼睛的白色大企鵝。',
   'Tekeli-li！Tekeli-li！一團黑色、冒著泡、長滿眼睛的東西從旁邊的隧道湧出來。是壁畫裡的修格斯，牠們還活著！牠就在我身後幾公尺擦了過去。'],
@@ -2106,7 +2106,8 @@ const SETS2={
     const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
     const gl=(m,x,y,z,sx,sy,ry)=>{const p=mesh(G.plane,m,g,x,y,z,sx,sy,1);if(ry)p.rotation.y=ry;p.userData.keep=true;return p;};
     const F=H-0.3;// floor top inside
-    /* ===== castle 1: the leaning cathedral ===== */
+    const fx=[];
+    /* ===== temple 1: the leaning cathedral of the idol ===== */
     {const a0=CA[0],a1=CA[1],am=(a0+a1)/2,LA=a1-a0,HW=17,WH=46,ST=M.blackstone;
       // floating rock it sits on
       {const c=mesh(G.cone,M.rock,g,0,F-1-46,-am,62,92,LA*0.62);c.rotation.x=Math.PI;for(let k=0;k<7;k++)mesh(rockG(),M.rock,g,(rnd()-.5)*90,F-12-rnd()*30,-am+(rnd()-.5)*LA,10+rnd()*12,8+rnd()*10,10+rnd()*12);}
@@ -2143,13 +2144,13 @@ const SETS2={
       const ban=canvasTex(128,512,(c)=>{c.fillStyle='#4a0f0c';c.fillRect(0,0,128,512);c.fillStyle='#2a0806';for(let y=0;y<512;y+=6)c.fillRect(0,y,128,2);c.strokeStyle='#d8a040';c.lineWidth=7;c.beginPath();c.arc(64,170,40,0,7);c.stroke();for(const x of [48,64,80]){c.beginPath();c.moveTo(x,140);c.lineTo(x,200);c.stroke();}
         c.fillStyle='#4a0f0c';c.beginPath();c.moveTo(0,512);c.lineTo(64,450);c.lineTo(128,512);c.fill();});
       const banM=std2({map:ban,side:T.DoubleSide,roughness:0.9});own.push(ban,banM);
-      for(let u=a0+12,k=0;u<a1-6;u+=16,k++){const sx=Math.sin(ph),cx=Math.cos(ph);
+      for(let u=a0+12,k=0;u<a1-44;u+=16,k++){const sx=Math.sin(ph),cx=Math.cos(ph);
         for(const x0 of [-10,10]){const c=new T.Mesh(colG,M.marble);c.position.set(x0+CH2/2*sx,F+CH2/2*cx,-u);c.rotation.z=-ph;g.add(c);
           B(4,1.6,4,4,M.marble,x0,F+0.8,-u);const cap=B(3.8,1.4,3.8,4,M.marble,x0+CH2*sx,F+CH2*cx,-u);cap.rotation.z=-ph;
           const b=mesh(G.plane,banM,g,x0+16*sx+(x0<0?1.4:-1.4),F+20,-u,2.6,10,1);b.rotation.y=Math.PI/2;b.rotation.z=-ph;}
         const r=new T.Mesh(rib,M.marble);r.position.set(CH2*sx,F+CH2*cx,-u);r.rotation.z=-ph;g.add(r);
         // diagonal ribs to the next frame
-        if(u+16<a1-6){const d=B(0.9,0.9,Math.hypot(16,14),4,M.marble,CH2*sx+3,F+CH2*cx+8,-(u+8));d.rotation.x=Math.atan2(4,16);}
+        if(u+16<a1-44){const d=B(0.9,0.9,Math.hypot(16,14),4,M.marble,CH2*sx+3,F+CH2*cx+8,-(u+8));d.rotation.x=Math.atan2(4,16);}
         // hooded tentacle-faced statues in the bays
         if(k%2===0){for(const sd of [-1,1]){const x=sd*14.2,z=-(u+8),bs=F;
           mesh(G.box,ST,g,x,bs+1.5,z,4,3,5);mesh(G.cone,ST,g,x,bs+8,z,3.2,11,3);mesh(G.cone,ST,g,x,bs+15.4,z,2.4,4.4,2.4);
@@ -2163,19 +2164,48 @@ const SETS2={
       for(const [sd,u0,y0] of [[-1,a0+40,F+24],[1,a0+110,F+18]]){for(let k=0;k<16;k++)B(0.8+k*0.45,0.5,2.6,3,M.marble,sd*(HW-1.3-(0.4+k*0.225)),y0,-(u0+k*1.4));
         for(let k=0;k<16;k++)B(0.5,0.8+k*0.45,2.6,3,M.marble,sd*(HW-1.3-k*0.5),y0-(0.4+k*0.225)+((0.8+k*0.45)/2)-0.4,-(u0+22+k*1.4));}
       for(let k=0;k<18;k++)B(5,0.6+k*0.4,1.4,3,M.marble,4,F+WH-1-(0.3+k*0.2),-(a0+150-k*1.4));
+      // the idol: the rails run between its legs, under its hanging face
+      {const iu=a1-24,z=-iu,IM=std2({map:TX.stone.map,bumpMap:TX.stone.bump,bumpScale:0.05,color:new T.Color('#6a8a70'),roughness:0.32,metalness:0.2,emissive:new T.Color('#0c2414'),emissiveIntensity:1});own.push(IM);
+        for(const sd of [-1,1]){const lg=new T.Mesh(cylW(2.3,3.1,19,6),IM);own.push(lg.geometry);lg.position.set(sd*9,F+9.5,z);lg.rotation.z=sd*0.08;g.add(lg);
+          B(6,2.2,8,4,IM,sd*9.6,F+1.1,z+1.5);for(let c=-1;c<=1;c++){const cl=mesh(G.cone,IM,g,sd*9.6+c*1.8,F+0.8,z+6,0.6,3,0.6);cl.rotation.x=Math.PI/2;}
+          const ar=mesh(G.cyl,IM,g,sd*12.6,F+25,z+1.5,1.9,17,1.9);ar.rotation.z=sd*0.75;
+          for(let c=0;c<4;c++){const f=mesh(G.cone,IM,g,sd*15.6,F+18-c*0.3,z-1.2+c*1.1,0.5,4.4,0.5);f.rotation.z=sd*2.5;}
+          B(14,24,0.5,6,IM,sd*10,F+37,z-6,0.12,sd*0.55,sd*0.28);for(let c=0;c<4;c++){const sp=B(0.5,26,0.7,4,IM,sd*(6+c*3),F+37,z-6+c*0.3,0,0,sd*(0.3+c*0.18));void sp;}}
+        B(22,5,9,4,IM,0,F+20,z);mesh(G.blob,IM,g,0,F+29,z,9,10,7);mesh(G.blob,IM,g,0,F+39.5,z+1,6.2,7.4,6.2);
+        for(const e of [-2.3,2.3])gl(glowM('#ff3a20',1),e,F+41.2,z+7.4,3.4,1.9);gl(glowM('#40ff80',0.35),0,F+37,z-8,46,46);gl(glowM('#30ff70',0.3),0,F+4,z+3,30,10);
+        const beard=new T.Group();beard.position.set(0,F+36,z+4.5);g.add(beard);
+        for(let k=0;k<11;k++){const x0=(k-5)*0.85;let y=0,zz=0;const n=14;for(let j=0;j<n;j++){const rr=0.75*(1-j/n)+0.18;mesh(G.sphLo,IM,beard,x0+Math.sin(j*0.6+k)*0.6,y,zz,rr,1.1,rr);y-=1.15;zz+=0.35+j*0.03;}}
+        own.push(...mergeStatic(beard));fx.push(t=>{beard.rotation.x=Math.sin(t*0.7)*0.06;beard.rotation.z=Math.sin(t*0.5)*0.05;});}
+      // green ichor running down the walls, pooling on the floor
+      const slimeM=glowM('#7aff6a',0.32);for(let i=0;i<36;i++){const sd=i%2?1:-1;const u=a0+8+rnd()*(LA-16);const h=6+rnd()*18;const sl=mesh(G.plane,slimeM,g,sd*(HW-1.35),F+30-h/2-rnd()*8,-u,0.5+rnd()*0.7,h,1);sl.rotation.y=Math.PI/2;}
+      const poolM=std2({color:new T.Color('#1a3a12'),emissive:new T.Color('#3aff40'),emissiveIntensity:0.35,roughness:0.06,metalness:0.2});own.push(poolM);
+      for(let i=0;i<16;i++){const sd=i%2?1:-1;mesh(G.blob,poolM,g,sd*(4+rnd()*10),F+0.03,-(a0+10+rnd()*(LA-20)),1.5+rnd()*2.5,0.05,1+rnd()*2);}
+      // clutches of throbbing eggs at the column feet
+      const eggM=std2({color:new T.Color('#c8d070'),emissive:new T.Color('#5aff30'),emissiveIntensity:0.55,transparent:true,opacity:0.78,roughness:0.12});own.push(eggM);const eggs=[];
+      for(let u=a0+12;u<a1-44;u+=16)for(const sd of [-1,1]){if(rnd()<0.3)continue;const cg=new T.Group();cg.position.set(sd*12.7,F,-u);g.add(cg);
+        for(let k=0;k<5;k++){const r=0.6+rnd()*0.7;mesh(G.sph,eggM,cg,(rnd()-.5)*2.4,r*0.8,(rnd()-.5)*4,r,r*1.25,r);}own.push(...mergeStatic(cg));cg.userData.ph=rnd()*6;eggs.push(cg);}
+      fx.push(t=>{for(const e of eggs){const k=1+0.1*Math.sin(t*3+e.userData.ph);e.scale.set(k,1/k,k);}});
+      // something with too many sides hangs in the nave
+      {const knM=std2({color:new T.Color('#8890aa'),metalness:0.9,roughness:0.15,emissive:new T.Color('#203040'),emissiveIntensity:0.7});own.push(knM);
+        const kn=new T.Mesh(new T.TorusKnotGeometry(4.2,1.05,140,12,3,7),knM);own.push(kn.geometry);kn.position.set(0,F+15,-(a0+72));kn.userData.keep=true;g.add(kn);
+        fx.push(t=>{kn.rotation.x=t*0.3;kn.rotation.y=t*0.47;kn.scale.set(1+0.25*Math.sin(t*1.1),1+0.25*Math.sin(t*1.7+1),1+0.25*Math.sin(t*0.9+2));knM.color.setHSL((t*0.05)%1,0.55,0.55);knM.emissive.setHSL((t*0.05+0.5)%1,0.8,0.22);});}
     }
     /* ===== castle 2: the hollow bone tower with the watching eye ===== */
     const eyeG=new T.Group();const wallEyes=[];
     {const b0=CB[0],b1=CB[1],bm=(b0+b1)/2,R=(b1-b0)/2,WT=96,BN=std2({map:TX.stone.map,bumpMap:TX.stone.bump,bumpScale:0.05,color:new T.Color('#f2e4c4'),roughness:0.5,emissive:new T.Color('#3a2a18'),emissiveIntensity:0.5});own.push(BN);
       const flesh=std2({map:TX.stone.map,color:new T.Color('#6a3a40'),roughness:0.5,metalness:0.05});own.push(flesh);
+      const weT2=canvasTex(64,32,(c)=>{c.fillStyle='#ffd070';c.beginPath();c.ellipse(32,16,30,12,0,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(32,16,3,9,0,0,7);c.fill();});const weM2=bend(new T.MeshBasicMaterial({map:weT2,transparent:true,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(weT2,weM2);
+      const veinT=canvasTex(256,256,c=>{c.fillStyle='#8a4444';c.fillRect(0,0,256,256);for(let k=0;k<46;k++){c.strokeStyle=k%3?'rgba(60,10,20,.7)':'rgba(150,50,70,.8)';c.lineWidth=1+rnd()*4;c.beginPath();let x=rnd()*256,y=rnd()*256;c.moveTo(x,y);for(let j=0;j<6;j++){x+=(rnd()-.5)*80;y+=(rnd()-.5)*80;c.lineTo(x,y);}c.stroke();}});veinT.wrapS=veinT.wrapT=T.RepeatWrapping;
+      const FW=std2({map:veinT,bumpMap:TX.stone.bump,bumpScale:0.08,color:new T.Color('#e8b8b0'),roughness:0.3,metalness:0.05,emissive:new T.Color('#3a0a0a'),emissiveIntensity:0.6});own.push(veinT,FW);
+      const wet=std2({map:veinT,color:new T.Color('#7a2830'),roughness:0.45,metalness:0,emissive:new T.Color('#1a0406'),emissiveIntensity:0.5});own.push(wet);
       {const c=mesh(G.cone,M.rock,g,0,F-1-60,-bm,R+16,120,R+16);c.rotation.x=Math.PI;for(let k=0;k<9;k++){const a=k/9*6.28;mesh(rockG(),M.rock,g,Math.sin(a)*(R+6),F-14-rnd()*30,-bm+Math.cos(a)*(R+6),12+rnd()*10,10,12+rnd()*10);}
         // dangling roots under the island
         for(let k=0;k<10;k++){const a=rnd()*6.28,r=rnd()*R*0.8;const t=mesh(G.cone,flesh,g,Math.sin(a)*r,F-60-rnd()*20,-bm+Math.cos(a)*r,1.6,40+rnd()*30,1.6);t.rotation.x=Math.PI;}}
-      const fd=new T.Mesh(cylW(R+2,R,2,6),M.rock);own.push(fd.geometry);fd.position.set(0,F-1,-bm);g.add(fd);
+      const fd=new T.Mesh(cylW(R+2,R,2,6),wet);own.push(fd.geometry);fd.position.set(0,F-1,-bm);g.add(fd);
       // ring wall of bone slabs, with a gate front and back
       const N=36,pw=2*R*Math.sin(Math.PI/N)+0.6;
       for(let i=0;i<N;i++){const a=i/N*Math.PI*2,x=Math.sin(a)*R,z=-bm+Math.cos(a)*R;const gate=Math.abs(Math.sin(a))<0.12;
-        const y0=gate?F+20:F-1,hh=F+WT-y0;const w=B(pw,hh,3.4,6,BN,x,y0+hh/2,z);w.rotation.y=a;
+        const y0=gate?F+20:F-1,hh=F+WT-y0;const w=B(pw,hh,3.4,6,FW,x,y0+hh/2,z);w.rotation.y=a;
         // ribs bulging on the outer face
         if(i%2===0){const rb=B(1.6,WT*0.9,1.6,4,BN,Math.sin(a)*(R+2.2),F+WT*0.45,-bm+Math.cos(a)*(R+2.2));rb.rotation.y=a;}
         // horns crowning the wall, curling outward
@@ -2187,6 +2217,25 @@ const SETS2={
       const rg=new T.TorusGeometry(R,1.5,6,20,Math.PI/2);own.push(rg);
       for(let i=0;i<18;i++){const a=i/18*Math.PI*2;const r=new T.Mesh(rg,BN);r.position.set(0,F+WT-2,-bm);r.rotation.y=a-Math.PI/2;g.add(r);}
       mesh(G.sphLo,BN,g,0,F+WT+R-3,-bm,8,5,8);
+      // a breathing membrane stretched between the ribs
+      const memM=std2({color:new T.Color('#a0303a'),emissive:new T.Color('#801820'),emissiveIntensity:0.75,transparent:true,opacity:0.62,side:T.DoubleSide,roughness:0.35,depthWrite:false});
+      const mem=new T.Mesh(new T.SphereGeometry(R-1,28,12,0,Math.PI*2,0,Math.PI/2),memM);mem.position.set(0,F+WT-2,-bm);mem.userData.keep=true;g.add(mem);own.push(mem.geometry,memM);
+      fx.push(t=>{const k=Math.sin(t*1.4);mem.scale.set(1+0.015*k,1+0.05*k,1+0.015*k);memM.emissiveIntensity=0.6+0.25*Math.max(0,k);});
+      // mouths in the floor beside the rails
+      const toothM=BN;for(const [u,sd] of [[b0+24,-1],[b0+38,1],[b0+52,-1],[b1-52,1],[b1-38,-1],[b1-24,1]]){const m=new T.Group();m.position.set(sd*6.6,F,-u);g.add(m);
+        mesh(G.blob,flesh,m,0,0.2,0,2.6,0.7,3.2);mesh(G.blob,wet,m,0,0.35,0,1.8,0.3,2.4);for(let k=0;k<8;k++){const a=k/8*6.28;mesh(G.cone,toothM,m,Math.cos(a)*1.9,0.9,Math.sin(a)*2.5,0.3,1.4,0.3);}
+        const up=new T.Group();up.position.set(-sd*2.2,0.8,0);m.add(up);mesh(G.blob,flesh,up,sd*2.2,0.4,0,2.6,0.8,3.2);for(let k=0;k<8;k++){const a=k/8*6.28;const tt=mesh(G.cone,toothM,up,sd*2.2+Math.cos(a)*1.9,-0.2,Math.sin(a)*2.5,0.3,1.4,0.3);tt.rotation.x=Math.PI;}
+        own.push(...mergeStatic(up),...mergeStatic(m));const ph=rnd()*6;fx.push(t=>{up.rotation.z=sd*(0.15+0.55*Math.max(0,Math.sin(t*2.2+ph)));});}
+      // ropes of slime hanging from the dome
+      const drM=std2({color:new T.Color('#c8e0a0'),emissive:new T.Color('#2a4010'),emissiveIntensity:0.6,transparent:true,opacity:0.7,roughness:0.05});own.push(drM);
+      for(let k=0;k<26;k++){const a=rnd()*6.28,r=8+rnd()*(R-22);const len=30+rnd()*40;const x=Math.sin(a)*r,zz=-bm+Math.cos(a)*r;if(Math.abs(x)<4&&len>WT-20)continue;
+        mesh(G.cyl,drM,g,x,F+WT-6-len/2,zz,0.12,len,0.12);mesh(G.sphLo,drM,g,x,F+WT-6-len-0.4,zz,0.45,0.7,0.45);}
+      // shapeless masses heaving along the walls, covered in eyes
+      const shogM=std2({color:new T.Color('#141018'),roughness:0.08,metalness:0.6,emissive:new T.Color('#10221a'),emissiveIntensity:0.6});own.push(shogM);const blobs=[];
+      for(let k=0;k<10;k++){const a=(k/10)*6.28+0.3;if(Math.abs(Math.sin(a))<0.3)continue;const r=R-12-rnd()*10,sc=5+rnd()*5;const b=new T.Group();b.position.set(Math.sin(a)*r,F+sc*0.4,-bm+Math.cos(a)*r);g.add(b);
+        mesh(G.blob,shogM,b,0,0,0,sc,sc*0.75,sc);for(let e=0;e<9;e++){const th=rnd()*6.28,ph2=rnd()*1.2;const p=mesh(G.plane,weM2,b,Math.cos(th)*sc*0.9*Math.cos(ph2),sc*0.6*Math.sin(ph2)+0.4,Math.sin(th)*sc*0.9*Math.cos(ph2),1.4,0.7,1);p.lookAt(0,0,0);p.rotation.y+=Math.PI;}
+        own.push(...mergeStatic(b));b.userData.ph=rnd()*6;b.userData.sc=1;blobs.push(b);}
+      fx.push(t=>{for(const b of blobs){const k=Math.sin(t*1.7+b.userData.ph);b.scale.set(1+0.08*k,1-0.1*k,1+0.08*k);b.rotation.y=Math.sin(t*0.3+b.userData.ph)*0.4;}});
       // spiral gallery winding up the inside
       for(let t=0;t<3.1;t+=0.018){const a=Math.PI*1.1+t*Math.PI*2,y=F+6+t*24,rr=R-5;if(y>F+WT-6)break;const p=B(6,0.9,4.6,4,BN,Math.sin(a)*rr,y,-bm+Math.cos(a)*rr);p.rotation.y=a;
         if(Math.round(t/0.018)%5===0){const q=B(0.5,2,0.5,2,BN,Math.sin(a)*(rr-2.8),y+1.4,-bm+Math.cos(a)*(rr-2.8));void q;}}
@@ -2211,7 +2260,7 @@ const SETS2={
       // lidded eyes in the walls that open as the cart passes
       const weT=canvasTex(128,64,(c)=>{c.clearRect(0,0,128,64);c.fillStyle='#ffd070';c.beginPath();c.ellipse(64,32,60,24,0,0,7);c.fill();c.fillStyle='#7a1004';c.beginPath();c.arc(64,32,18,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(64,32,4,16,0,0,7);c.fill();});
       const weM=bend(new T.MeshBasicMaterial({map:weT,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(weT,weM);
-      for(let i=0;i<70;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
+      for(let i=0;i<40;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
       // pale light falling between the ribs
       for(let k=0;k<5;k++){const sh=gl(glowM('#d8f0ff',0.12),(rnd()-.5)*R,F+40,-bm+(rnd()-.5)*R,14,90);sh.rotation.z=(rnd()-.5)*0.4;}
       gl(glowM('#ffd8a0',0.35),0,F+9,-(b0-2),12,18);
@@ -2227,7 +2276,7 @@ const SETS2={
       eyeG.getWorldPosition(v3);const dx=camera.position.x-v3.x,dy=camera.position.y-v3.y,dz=camera.position.z-v3.z;
       eyeG.rotation.y=Math.atan2(dx,dz);eyeG.rotation.x=-Math.atan2(dy,Math.hypot(dx,dz))*0.9;eyeG.position.y=F+20+Math.sin(t*0.6)*1.2;
       const u=st.dist-s.az0;for(const e of wallEyes){const op=Math.max(0,Math.min(1,(u-CB[0]+30)/40))*(0.55+0.45*Math.sin(t*1.3+e.userData.ph));e.scale.y=3.5*Math.max(0.08,Math.abs(Math.sin(t*0.7+e.userData.ph))>0.97?0.08:1)*op+0.001;}
-      for(let i=0;i<NR;i++){const q=rseed[i];rp[i*3]=q[0];rp[i*3+1]=(q[1]+t*q[3])%140-10;rp[i*3+2]=-q[2];}rg2.attributes.position.needsUpdate=true;});
+      for(let i=0;i<NR;i++){const q=rseed[i];rp[i*3]=q[0];rp[i*3+1]=(q[1]+t*q[3])%140-10;rp[i*3+2]=-q[2];}rg2.attributes.position.needsUpdate=true;for(const f of fx)f(t);});
     anim.push(storyAnim(s,'skyisles',[60,CA[0]+50,CB[0]+40]));
     finishSet(s,g,own,anim);},
   madness(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};const G0=380,G1=1000;
