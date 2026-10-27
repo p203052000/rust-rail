@@ -610,7 +610,7 @@ function makeSeg(type,o){let s;
   else if(type==='falls'){s={type,lanes:[1,1,1],len:600,pal:'valley',C0:30,C1:230,FH:48};}
   else if(type==='shipcross'){s={type,lanes:[1,1,1],len:360,UX:220};}
   else if(type==='factory'){s={type,lanes:[1,1,1],len:440,pal:'neon'};}
-  else if(type==='skyisles'){s={type,lanes:[1,1,1],len:600,pal:'sky',SH:62};}
+  else if(type==='skyisles'){s={type,lanes:[1,1,1],len:1060,pal:'sky',SH:62,CS:[[250,450],[700,860]]};}
   else if(type==='madness'){s={type,lanes:[1,1,1],len:1150,pal:'antarctic'};}
   else if(type==='crater'){s={type,lanes:[1,1,1],len:720,pal:'crater'};}
   else if(type==='maw'){s={type,lanes:[1,1,1],len:430,pal:'abyss'};}
@@ -622,7 +622,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   const prev=segs[segs.length-1];
   if(prev&&!s.lanes.some((v,i)=>v&&prev.lanes[i])){const keep=prev.lanes.findIndex(v=>v);s.lanes[keep]=1;}
   s.az0=az0;s.az1=az0+s.len;segs.push(s);segEnd=s.az1;
-  if(s.sub==='dam')s.darkR=[az0+70,az0+100];if(s.type==='crater')s.voidR=[az0+342,az0+378];if(s.type==='falls')s.darkR=[az0+s.C0+4,az0+s.C1+2];if(s.type==='maw'){s.darkR=[az0+200,az0+326];s.dim=0.5;}if(s.type==='madness'){s.darkR=[az0+380,az0+1000];s.dim=0.5;}if(s.type==='leap')s.voidR=[az0+60,az0+92];if(s.type==='canopy')s.darkR=[az0+10,az0+s.len-10];
+  if(s.sub==='dam')s.darkR=[az0+70,az0+100];if(s.type==='crater')s.voidR=[az0+342,az0+378];if(s.type==='falls')s.darkR=[az0+s.C0+4,az0+s.C1+2];if(s.type==='maw'){s.darkR=[az0+200,az0+326];s.dim=0.5;}if(s.type==='madness'){s.darkR=[az0+380,az0+1000];s.dim=0.5;}if(s.type==='leap')s.voidR=[az0+60,az0+92];if(s.type==='canopy')s.darkR=[az0+10,az0+s.len-10];if(s.type==='skyisles')s.darkRs=[[az0+s.CS[0][0]+4,az0+s.CS[0][1]-2,0.55],[az0+s.CS[1][0]+4,az0+s.CS[1][1]-2,0.2]];
   if(ready&&s.type==='leap')buildLeap(s);if(ready&&s.type==='crystal')buildCrystal(s);if(ready&&s.type==='canopy')buildCanopy(s);
   if(s.type==='tunnel'&&ready)buildTunnel(s);
   if(s.type==='mega'&&ready)buildMega(s);
@@ -630,7 +630,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   if(ready&&SETS2[s.type])SETS2[s.type](s);
   if(ready&&s.type==='zone')buildZone(s);
 }
-const TERR_NAME={crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
+const TERR_NAME={crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空城堡',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
 const MEGA=['colossus','dam','cranes','ruins','city','rlyeh','rlyeh'];let lastMega='';
 const MEGA_NAME={colossus:'大袞巨像之門',dam:'大壩水門',cranes:'龍門吊船塢',ruins:'沉沒神殿',city:'淹沒的城市',rlyeh:'拉萊耶神殿'};
 function segAt(az){for(let i=0;i<segs.length;i++){const s=segs[i];if(az>=s.az0&&az<s.az1)return s;}return null;}
@@ -651,7 +651,7 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
       if(u<s.A1)return -D-s.DEEP+Math.sin((u-s.V1)*0.03)*1.5;return -(D+s.DEEP)*(1-ss((u-s.A1)/(L-10-s.A1)));}
     if(u>L-92)return -D*ss((L-10-u)/80);return -D+Math.sin((u-92)*0.025)*1.2;}
   if(s.type==='falls'){if(u<s.C0)return 0;if(u<s.C1)return s.FH*ss((u-s.C0)/(s.C1-s.C0));if(u<s.C1+14)return s.FH;if(u<s.C1+230)return s.FH*(1-ss((u-s.C1-14)/216));return 0;}
-  if(s.type==='skyisles'){const H=s.SH;if(u<140)return H*ss(u/140);if(u>L-140)return H*ss((L-u)/140);return H+Math.sin((u-140)*0.02)*4;}
+  if(s.type==='skyisles'){const H=s.SH;if(u<140)return H*ss(u/140);if(u>L-140)return H*ss((L-u)/140);let w=1;for(const c of s.CS){const d=Math.max(c[0]-u,u-c[1]);w=Math.min(w,Math.max(0,Math.min(1,d/50)));}return H+Math.sin((u-140)*0.02)*4*w;}
   if(s.type==='coaster'){const Hm=s.Hm,P=s.P;let v=u;
     if(v<P[0])return Hm*ss(v/P[0]);v-=P[0];if(v<P[1])return Hm;v-=P[1];
     if(v<P[2])return Hm*(1-ss(v/P[2]));v-=P[2];if(v<P[3])return 0;v-=P[3];
@@ -662,7 +662,7 @@ function laneOn(L,az){if(az<0)return L===0;const s=segAt(az);return s?!!s.lanes[
 function laneEnds(){const out=[];for(let i=1;i<segs.length;i++){const p=segs[i-1],s=segs[i];for(let k=0;k<3;k++)if(p.lanes[k]&&!s.lanes[k])out.push({az:s.az0,L:k-1,key:s.az0.toFixed(2)+'_'+k});}return out;}
 function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
 function isVoid(az){for(const s of segs)if(s.voidR&&az>=s.voidR[0]&&az<=s.voidR[1])return true;return false;}
-function inTunnel(az){for(const s of segs){if(s.type==='tunnel'&&az>=s.az0-1&&az<=s.az1+1)return s;if(s.darkR&&az>=s.darkR[0]&&az<=s.darkR[1])return s;}return null;}
+function inTunnel(az){for(const s of segs){if(s.type==='tunnel'&&az>=s.az0-1&&az<=s.az1+1)return s;if(s.darkR&&az>=s.darkR[0]&&az<=s.darkR[1])return s;if(s.darkRs)for(const r of s.darkRs)if(az>=r[0]&&az<=r[1])return {dim:r[2]};}return null;}
 /* open water where a sea giant could believably surface */
 const SEA_OK={normal:1,narrow:1,single:1,hills:1,bridge:1,harbor:1,lighthouse:1,whalebone:1,graveyard:1,floating:1,weave:1,slalom:1,washboard:1,leap:1,coaster:1};
 function seaOpen(az){const s=segAt(az);if(!s)return true;if(s.type==='zone')return s.sub!=='orange'&&s.sub!=='yellow'&&s.sub!=='green';if(s.type==='mega')return s.sub!=='dam';return !!SEA_OK[s.type];}
@@ -1582,9 +1582,9 @@ const ZONE_STORY={
  factory:['鐵軌開進一座淹水的廢棄工廠。牆上的霓虹燈寫著「2086」，跟結局那個包裹上的年份一樣。這裡，是未來。',
   '機械手臂突然動了起來，好像在搬運看不見的東西。日記寫著：「祂的夢裡有過去，也有未來。」小心頭頂！',
   '招牌一閃一閃：「夢境維修中心：換班請排隊」。原來不只外公，未來也有人在這裡換班。'],
- skyisles:['祂快醒了，夢開始崩壞。重力消失了，石頭、湖水和鐵軌全都飄在半空中。',
-  '巨石陣在空中慢慢旋轉，瀑布往天上倒流。遠方有一座神殿浮在雲上，那是夢的最高處。',
-  '每一塊浮石上，都刻著同一個發光的符號：圓圈裡三條線。那是外公的記號。他也曾經走過這裡。'],
+ skyisles:['祂快醒了，夢開始崩壞。重力消失了，石頭、湖水和鐵軌全都飄在半空中。前方的雲裡，浮著兩座巨大的城堡，鐵軌直直穿進城門。',
+  '城堡裡是一座比教堂還高的大殿。所有石柱都歪向同一邊，樓梯爬在牆上、倒掛在屋頂。兩旁坐著一排戴兜帽的石像，臉上垂著觸手，眼睛還在發光。',
+  '第二座城堡是一座空心的骨塔。肋骨一根根彎成屋頂，牆上的眼睛一隻隻睜開。正中間吊著一顆巨大的眼睛，一直跟著礦車轉。'],
  madness:['南極。考察隊的帳篷被風撕成碎片，雪地上只剩一條鐵軌，筆直伸向一列比喜馬拉雅還高的山脈。',
   '山後面是一座黑色巨石蓋成的城，比人類任何一座城市都古老。考察隊說，這是一種叫「古老者」的外星生物蓋的，牆上刻滿了牠們的歷史。路邊站著一群沒有眼睛的白色大企鵝。',
   'Tekeli-li！Tekeli-li！一團黑色、冒著泡、長滿眼睛的東西從旁邊的隧道湧出來。是壁畫裡的修格斯，牠們還活著！牠就在我身後幾公尺擦了過去。'],
@@ -2084,35 +2084,151 @@ const SETS2={
 
   /* the dream breaking apart: rails, stone and water floating in the sky */
   skyisles(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,H=s.SH;s.flags={};
+    const [CA,CB]=s.CS,inC=(u,p)=>s.CS.some(c=>u>c[0]-p&&u<c[1]+p);
     const isl=[];const island=(x,y,z,r)=>{const o=new T.Group();o.position.set(x,y,z);g.add(o);const c=mesh(G.cone,M.rock,o,0,-r*0.9,0,r,r*1.8,r);c.rotation.x=Math.PI;
       {const m=mesh(rockG(),M.rock,o,(rnd()-.5)*r*0.5,-r*0.5,(rnd()-.5)*r*0.5,r*0.7,r*0.7,r*0.7);m.rotation.y=rnd()*3;}
       mesh(G.blob,M.leaf,o,0,0.2,0,r*1.05,r*0.25,r*1.05);
       o.userData={y,ph:rnd()*6,r};isl.push(o);return o;};
-    // stepping-stones the rails rest on
-    for(let u=10;u<L-10;u+=11){const h=trackH(s.az0+u);if(h<3)continue;const st0=new T.Group();st0.position.set(0,h-0.9,-u);g.add(st0);B(3.6,1.2,2.6,4,M.rock,0,h-0.9,-u);
-      if(Math.round(u)%77<11)island(0,h-7,-u-4,7+rnd()*3);}
-    for(let i=0;i<10;i++){const sd=rnd()<.5?-1:1;island(sd*(20+rnd()*60),H*(0.3+rnd()*1.2),-(rnd()*L),6+rnd()*10);}
-    for(let i=0;i<16;i++){const sd=i%2?1:-1;const r=40+rnd()*110;island(sd*(r+70+rnd()*300),H*(-1+rnd()*4.5),-(rnd()*L*1.4-L*0.2),r);}
+    // stepping-stones the rails rest on (outside the castles)
+    for(let u=10;u<L-10;u+=11){if(inC(u,6))continue;const h=trackH(s.az0+u);if(h<3)continue;B(3.6,1.2,2.6,4,M.rock,0,h-0.9,-u);
+      if(Math.round(u)%77<11&&!inC(u,40))island(0,h-7,-u-4,7+rnd()*3);}
+    for(let i=0;i<10;i++){const sd=rnd()<.5?-1:1;const z=rnd()*L;island(sd*((inC(z,90)?110:20)+rnd()*60),H*(0.3+rnd()*1.2),-z,6+rnd()*10);}
+    for(let i=0;i<16;i++){const sd=i%2?1:-1;const r=40+rnd()*110;island(sd*(r+120+rnd()*300),H*(-1+rnd()*4.5),-(rnd()*L*1.4-L*0.2),r);}
     island(-330,H+70,-L*0.5,190);island(420,H-60,-L*0.95,170);
-    // upside-down waterfalls pouring into the sky
     for(let i=0;i<9;i++){const o=isl[(i*5+3)%isl.length];const f=new T.Mesh(G.plane,getFall());f.scale.set(3+o.userData.r*0.4,60+rnd()*60,1);f.rotation.z=Math.PI;f.position.set(o.userData.r*0.8,32,0);f.userData.keep=true;o.add(f);}
-    // floating monolith ring
-    const ring=new T.Group();ring.position.set(150,H+20,-L*0.42);ring.scale.setScalar(2.6);g.add(ring);for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const m=mesh(G.box,M.rock,ring,Math.cos(a)*24,0,Math.sin(a)*24,3,13,2.2);m.rotation.y=-a;
+    const ring=new T.Group();ring.position.set(170,H+20,-L*0.55);ring.scale.setScalar(2.6);g.add(ring);for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const m=mesh(G.box,M.rock,ring,Math.cos(a)*24,0,Math.sin(a)*24,3,13,2.2);m.rotation.y=-a;
       if(k%2===0){const l=mesh(G.box,M.rock,ring,Math.cos(a+0.26)*24,7.4,Math.sin(a+0.26)*24,7,1.6,2.2);l.rotation.y=-a-0.26-Math.PI/2;}}
-    island(150,H-20,-L*0.42,70);
-    // grandfather's sign carved in glowing stone along the way
+    island(170,H-20,-L*0.55,70);
     const rune=canvasTex(256,256,(c)=>{c.clearRect(0,0,256,256);c.strokeStyle='#9affc8';c.shadowColor='#3aff9a';c.shadowBlur=22;c.lineWidth=14;c.beginPath();c.arc(128,128,92,0,Math.PI*2);c.stroke();for(const x of [92,128,164]){c.beginPath();c.moveTo(x,68);c.lineTo(x,188);c.stroke();}});
     const rm=bend(new T.MeshBasicMaterial({map:rune,transparent:true,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(rm,rune);const runes=[];
-    for(let u=80;u<L-60;u+=58){const h=trackH(s.az0+u);const sd=(u/58)%2<1?-1:1;B(2.6,7,1.2,4,M.rock,sd*4.2,h+2.2,-u);const r=mesh(G.plane,rm,g,sd*4.2-sd*0.0,h+3,-u+0.62,2.4,2.4,1);r.userData.keep=true;runes.push(r);}
-    const temples=[];for(const [x,y,z,hh] of [[-340,H+260,-L*0.5,520],[430,H+150,-L*0.95,600],[-180,H+120,-L*0.18,260],[260,H+320,-L*0.35,420]]){const sp=sprite('skytemple',hh,0.4);if(!sp)break;sp.position.set(x,y-hh*0.5,z);g.add(sp);own.push(sp.userData.sprGeo);temples.push({sp,y:y-hh*0.5,ph:rnd()*6});}
-    const NR=160,rg=new T.BufferGeometry(),rp=new Float32Array(NR*3);rg.setAttribute('position',new T.BufferAttribute(rp,3));own.push(rg);
-    const rmat=bend(new T.PointsMaterial({size:0.7,color:new T.Color('#6a5a50'),transparent:true,opacity:0.9,depthWrite:false}));own.push(rmat);const rocks=new T.Points(rg,rmat);rocks.frustumCulled=false;g.add(rocks);
+    for(let u=80;u<L-60;u+=58){if(inC(u,10))continue;const h=trackH(s.az0+u);const sd=(u/58)%2<1?-1:1;B(2.6,7,1.2,4,M.rock,sd*4.2,h+2.2,-u);const r=mesh(G.plane,rm,g,sd*4.2,h+3,-u+0.62,2.4,2.4,1);r.userData.keep=true;runes.push(r);}
+    const temples=[];for(const [x,y,z,hh] of [[-340,H+260,-L*0.5,520],[430,H+150,-L*0.95,600],[-260,H+160,-L*0.12,300],[300,H+320,-L*0.3,420]]){const sp=sprite('skytemple',hh,0.4);if(!sp)break;sp.position.set(x,y-hh*0.5,z);g.add(sp);own.push(sp.userData.sprGeo);temples.push({sp,y:y-hh*0.5,ph:rnd()*6});}
+    const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
+    const gl=(m,x,y,z,sx,sy,ry)=>{const p=mesh(G.plane,m,g,x,y,z,sx,sy,1);if(ry)p.rotation.y=ry;p.userData.keep=true;return p;};
+    const F=H-0.3;// floor top inside
+    /* ===== castle 1: the leaning cathedral ===== */
+    {const a0=CA[0],a1=CA[1],am=(a0+a1)/2,LA=a1-a0,HW=17,WH=46,ST=M.blackstone;
+      // floating rock it sits on
+      {const c=mesh(G.cone,M.rock,g,0,F-1-46,-am,62,92,LA*0.62);c.rotation.x=Math.PI;for(let k=0;k<7;k++)mesh(rockG(),M.rock,g,(rnd()-.5)*90,F-12-rnd()*30,-am+(rnd()-.5)*LA,10+rnd()*12,8+rnd()*10,10+rnd()*12);}
+      B(HW*2+6,2,LA+6,6,M.marble,0,F-1,-am);
+      // floor inlay: dark runner with the rune
+      B(7,0.1,LA,4,ST,0,F+0.02,-am);
+      // side walls: solid lower wall, piers with tall windows above
+      const win=glowM('#ffe2a8',0.55),shaft=glowM('#fff0c8',0.16);
+      for(const sd of [-1,1]){B(2.6,30,LA,6,ST,sd*HW,F+15,-am);
+        for(let u=a0;u<=a1;u+=20){B(2.6,WH-30,6,6,ST,sd*HW,F+30+(WH-30)/2,-u);
+          if(u<a1-5){gl(win,sd*(HW-1.4),F+37,-(u+10),14,14,Math.PI/2);const sh=gl(shaft,sd*(HW-9),F+22,-(u+10),9,34,Math.PI/2);sh.rotation.z=sd*0.45;}}
+        // flying buttresses outside
+        for(let u=a0+10;u<a1;u+=20){B(2,34,3,6,ST,sd*(HW+8),F+17,-u);const fb=B(13,1.8,2.4,6,ST,sd*(HW+4),F+34,-u);fb.rotation.z=-sd*0.5;mesh(G.cone,ST,g,sd*(HW+8),F+38,-u,1.6,8,1.6);}}
+      // pitched roof
+      const th=0.48;for(const sd of [-1,1]){B(HW/Math.cos(th)+3,1.6,LA+4,6,ST,sd*HW/2,F+WH+HW/2*Math.tan(th),-am,0,0,-sd*th);}
+      for(let u=a0+15;u<a1;u+=34)mesh(G.cone,ST,g,0,F+WH+HW*Math.tan(th)+10,-u,1.8,20,1.8);
+      // front & back facades with a pointed gate
+      for(const [u,fr] of [[a0,1],[a1,0]]){const gw=5,gh=16;
+        B(HW-gw+2.6,WH+8,3,6,ST,-(gw+(HW-gw)/2),F+(WH+8)/2,-u);B(HW-gw+2.6,WH+8,3,6,ST,gw+(HW-gw)/2,F+(WH+8)/2,-u);
+        B(gw*2,WH+8-gh-4,3,6,ST,0,F+gh+4+(WH+8-gh-4)/2,-u);for(const sd of [-1,1]){const a=B(gw*1.2,1.4,3.2,6,ST,sd*gw*0.55,F+gh+1.6,-u);a.rotation.z=-sd*0.62;}
+        // gable
+        for(const sd of [-1,1]){const gb=B(HW*1.15,8,3,6,ST,sd*HW*0.45,F+WH+6+HW*0.2,-u);gb.rotation.z=-sd*th;}
+        // corner towers with spires
+        for(const sd of [-1,1]){const tw=new T.Mesh(cylW(4,4.6,WH+30,6),ST);own.push(tw.geometry);tw.position.set(sd*(HW+3),F+(WH+30)/2,-u);g.add(tw);
+          mesh(G.cone,ST,g,sd*(HW+3),F+WH+30+16,-u,5.6,32,5.6);gl(glowM('#ffc070',0.7),sd*(HW+3),F+WH+10,-u+(fr?4.7:-4.7),2.2,3.6);}
+        if(fr){gl(glowM('#ffd28a',0.45),0,F+8,-u+2,12,16);}}
+      // rose window above the far gate
+      const rose=canvasTex(512,512,(c)=>{c.clearRect(0,0,512,512);const cx=256;const gr=c.createRadialGradient(cx,cx,10,cx,cx,250);gr.addColorStop(0,'#fff2c0');gr.addColorStop(0.4,'#d8902c');gr.addColorStop(0.8,'#4a7a6a');gr.addColorStop(1,'rgba(0,0,0,0)');
+        c.fillStyle=gr;c.beginPath();c.arc(cx,cx,240,0,7);c.fill();c.strokeStyle='#120c08';c.lineWidth=14;for(let k=0;k<16;k++){const a=k/16*Math.PI*2;c.beginPath();c.moveTo(cx,cx);c.lineTo(cx+Math.cos(a)*240,cx+Math.sin(a)*240);c.stroke();}
+        for(const r of [60,130,200,238]){c.beginPath();c.arc(cx,cx,r,0,7);c.stroke();}c.lineWidth=6;for(let k=0;k<16;k++){const a=(k+.5)/16*Math.PI*2;c.beginPath();c.arc(cx+Math.cos(a)*165,cx+Math.sin(a)*165,30,0,7);c.stroke();}});
+      const roseM=bend(new T.MeshBasicMaterial({map:rose,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(rose,roseM);gl(roseM,0,F+33,-(a1-1.8),22,22);
+      // leaning columns + ribbed vault: every frame leans the same wrong way
+      const ph=0.075,CH2=34,colG=cylW(1.25,1.6,CH2,6);own.push(colG);const rib=new T.TorusGeometry(10,0.5,6,22,Math.PI);own.push(rib);
+      const ban=canvasTex(128,512,(c)=>{c.fillStyle='#4a0f0c';c.fillRect(0,0,128,512);c.fillStyle='#2a0806';for(let y=0;y<512;y+=6)c.fillRect(0,y,128,2);c.strokeStyle='#d8a040';c.lineWidth=7;c.beginPath();c.arc(64,170,40,0,7);c.stroke();for(const x of [48,64,80]){c.beginPath();c.moveTo(x,140);c.lineTo(x,200);c.stroke();}
+        c.fillStyle='#4a0f0c';c.beginPath();c.moveTo(0,512);c.lineTo(64,450);c.lineTo(128,512);c.fill();});
+      const banM=std2({map:ban,side:T.DoubleSide,roughness:0.9});own.push(ban,banM);
+      for(let u=a0+12,k=0;u<a1-6;u+=16,k++){const sx=Math.sin(ph),cx=Math.cos(ph);
+        for(const x0 of [-10,10]){const c=new T.Mesh(colG,M.marble);c.position.set(x0+CH2/2*sx,F+CH2/2*cx,-u);c.rotation.z=-ph;g.add(c);
+          B(4,1.6,4,4,M.marble,x0,F+0.8,-u);const cap=B(3.8,1.4,3.8,4,M.marble,x0+CH2*sx,F+CH2*cx,-u);cap.rotation.z=-ph;
+          const b=mesh(G.plane,banM,g,x0+16*sx+(x0<0?1.4:-1.4),F+20,-u,2.6,10,1);b.rotation.y=Math.PI/2;b.rotation.z=-ph;}
+        const r=new T.Mesh(rib,M.marble);r.position.set(CH2*sx,F+CH2*cx,-u);r.rotation.z=-ph;g.add(r);
+        // diagonal ribs to the next frame
+        if(u+16<a1-6){const d=B(0.9,0.9,Math.hypot(16,14),4,M.marble,CH2*sx+3,F+CH2*cx+8,-(u+8));d.rotation.x=Math.atan2(4,16);}
+        // hooded tentacle-faced statues in the bays
+        if(k%2===0){for(const sd of [-1,1]){const x=sd*14.2,z=-(u+8),bs=F;
+          mesh(G.box,ST,g,x,bs+1.5,z,4,3,5);mesh(G.cone,ST,g,x,bs+8,z,3.2,11,3);mesh(G.cone,ST,g,x,bs+15.4,z,2.4,4.4,2.4);
+          mesh(G.sphLo,M.rock,g,x-sd*0.5,bs+13.6,z,1.5,1.7,1.5);
+          for(let t=0;t<6;t++){const tc=mesh(G.cyl,M.rock,g,x-sd*1.6,bs+11.2-t*0.05,z-1+t*0.4,0.22,3.4+(t%3),0.22);tc.rotation.x=(t-2.5)*0.12;tc.rotation.z=sd*0.25;}
+          for(const e of [-0.5,0.5])gl(glowM('#7affc0',0.9),x-sd*1.55,bs+14,z+e,0.5,0.35,-sd*Math.PI/2);
+          for(const e of [-1.6,1.6])mesh(G.box,ST,g,x-sd*1.8,bs+5,z+e,2.4,0.9,1.1);}}
+        // chains with burning censers
+        if(k%2===1){for(const x of [-6,6]){B(0.12,18,0.12,2,M.iron,x,F+30,-(u+8));mesh(G.sphLo,M.iron,g,x,F+20.6,-(u+8),0.9,1.1,0.9);gl(glowM('#ffb040',0.9),x,F+20.6,-(u+8)+0.5,3.4,3.4);}}}
+      // sideways staircases climbing the walls, and one hanging upside down from the roof
+      for(const [sd,u0,y0] of [[-1,a0+40,F+24],[1,a0+110,F+18]]){for(let k=0;k<16;k++)B(0.8+k*0.45,0.5,2.6,3,M.marble,sd*(HW-1.3-(0.4+k*0.225)),y0,-(u0+k*1.4));
+        for(let k=0;k<16;k++)B(0.5,0.8+k*0.45,2.6,3,M.marble,sd*(HW-1.3-k*0.5),y0-(0.4+k*0.225)+((0.8+k*0.45)/2)-0.4,-(u0+22+k*1.4));}
+      for(let k=0;k<18;k++)B(5,0.6+k*0.4,1.4,3,M.marble,4,F+WH-1-(0.3+k*0.2),-(a0+150-k*1.4));
+    }
+    /* ===== castle 2: the hollow bone tower with the watching eye ===== */
+    const eyeG=new T.Group();const wallEyes=[];
+    {const b0=CB[0],b1=CB[1],bm=(b0+b1)/2,R=(b1-b0)/2,WT=96,BN=std2({map:TX.stone.map,bumpMap:TX.stone.bump,bumpScale:0.05,color:new T.Color('#f2e4c4'),roughness:0.5,emissive:new T.Color('#3a2a18'),emissiveIntensity:0.5});own.push(BN);
+      const flesh=std2({map:TX.stone.map,color:new T.Color('#6a3a40'),roughness:0.5,metalness:0.05});own.push(flesh);
+      {const c=mesh(G.cone,M.rock,g,0,F-1-60,-bm,R+16,120,R+16);c.rotation.x=Math.PI;for(let k=0;k<9;k++){const a=k/9*6.28;mesh(rockG(),M.rock,g,Math.sin(a)*(R+6),F-14-rnd()*30,-bm+Math.cos(a)*(R+6),12+rnd()*10,10,12+rnd()*10);}
+        // dangling roots under the island
+        for(let k=0;k<10;k++){const a=rnd()*6.28,r=rnd()*R*0.8;const t=mesh(G.cone,flesh,g,Math.sin(a)*r,F-60-rnd()*20,-bm+Math.cos(a)*r,1.6,40+rnd()*30,1.6);t.rotation.x=Math.PI;}}
+      const fd=new T.Mesh(cylW(R+2,R,2,6),M.rock);own.push(fd.geometry);fd.position.set(0,F-1,-bm);g.add(fd);
+      // ring wall of bone slabs, with a gate front and back
+      const N=36,pw=2*R*Math.sin(Math.PI/N)+0.6;
+      for(let i=0;i<N;i++){const a=i/N*Math.PI*2,x=Math.sin(a)*R,z=-bm+Math.cos(a)*R;const gate=Math.abs(Math.sin(a))<0.12;
+        const y0=gate?F+20:F-1,hh=F+WT-y0;const w=B(pw,hh,3.4,6,BN,x,y0+hh/2,z);w.rotation.y=a;
+        // ribs bulging on the outer face
+        if(i%2===0){const rb=B(1.6,WT*0.9,1.6,4,BN,Math.sin(a)*(R+2.2),F+WT*0.45,-bm+Math.cos(a)*(R+2.2));rb.rotation.y=a;}
+        // horns crowning the wall, curling outward
+        if(i%3===0){const h=mesh(G.cone,BN,g,Math.sin(a)*(R+3),F+WT+9,-bm+Math.cos(a)*(R+3),2.2,22,2.2);h.rotation.set(Math.cos(a)*0.5,0,-Math.sin(a)*0.5);}
+        if(gate){for(const sd of [-1,1]){const t=B(2,22,3.6,4,BN,x+sd*5.2,F+10,z);t.rotation.y=a;}const lt=B(14,2.4,3.8,4,BN,x,F+20.6,z);lt.rotation.y=a;
+          // teeth over the gate
+          for(let t=-2;t<=2;t++){const th=mesh(G.cone,BN,g,x+t*2.4,F+18,z+(Math.cos(a)>0?1.8:-1.8),0.7,3.2,0.7);th.rotation.x=Math.PI;}}}
+      // dome of curved ribs closing over the hall
+      const rg=new T.TorusGeometry(R,1.5,6,20,Math.PI/2);own.push(rg);
+      for(let i=0;i<18;i++){const a=i/18*Math.PI*2;const r=new T.Mesh(rg,BN);r.position.set(0,F+WT-2,-bm);r.rotation.y=a-Math.PI/2;g.add(r);}
+      mesh(G.sphLo,BN,g,0,F+WT+R-3,-bm,8,5,8);
+      // spiral gallery winding up the inside
+      for(let t=0;t<3.1;t+=0.018){const a=Math.PI*1.1+t*Math.PI*2,y=F+6+t*24,rr=R-5;if(y>F+WT-6)break;const p=B(6,0.9,4.6,4,BN,Math.sin(a)*rr,y,-bm+Math.cos(a)*rr);p.rotation.y=a;
+        if(Math.round(t/0.018)%5===0){const q=B(0.5,2,0.5,2,BN,Math.sin(a)*(rr-2.8),y+1.4,-bm+Math.cos(a)*(rr-2.8));void q;}}
+      // the eye hangs from sinews at the top of the dome
+      // a ribcage corridor leads the rails toward the eye
+      const crib=new T.TorusGeometry(1,0.07,6,18,Math.PI);own.push(crib);
+      for(let u=b0+10,k=0;u<b1-8;u+=14,k++){if(Math.abs(u-bm)<30)continue;const c=1-Math.abs((u-bm)/(R-8));const rr=7+c*6;const r=new T.Mesh(crib,BN);r.scale.set(rr,rr*1.15,rr*1.2);r.position.set(0,F,-u);g.add(r);
+        mesh(G.sphLo,BN,g,0,F+rr*1.15,-u,1.4,1,1.8);for(const sd of [-1,1]){const sp=mesh(G.cone,BN,g,sd*rr*0.72,F+rr*0.9,-u,0.6,3.6,0.6);sp.rotation.z=-sd*0.9;}}
+      
+      eyeG.position.set(0,F+20,-bm);g.add(eyeG);
+      const eyeT=canvasTex(512,512,(c)=>{c.fillStyle='#e8d8b0';c.fillRect(0,0,512,512);c.strokeStyle='rgba(150,30,20,.6)';c.lineWidth=2;for(let k=0;k<70;k++){c.beginPath();let x=rnd()*512,y=rnd()<.5?0:512;c.moveTo(x,y);for(let j=0;j<8;j++){x+=(rnd()-.5)*60;y+=(y<256?1:-1)*24;c.lineTo(x,y);}c.stroke();}});
+      const scl=std2({map:eyeT,roughness:0.35,emissive:new T.Color('#3a1a10'),emissiveIntensity:0.6});own.push(eyeT,scl);
+      mesh(G.sph,scl,eyeG,0,0,0,9,9,9);
+      const irisT=canvasTex(256,256,(c)=>{const gr=c.createRadialGradient(128,128,10,128,128,128);gr.addColorStop(0,'#ffde70');gr.addColorStop(0.5,'#ff6a10');gr.addColorStop(0.9,'#6a0a04');gr.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=gr;c.beginPath();c.arc(128,128,128,0,7);c.fill();
+        c.strokeStyle='rgba(60,0,0,.5)';c.lineWidth=2;for(let k=0;k<60;k++){const a=k/60*6.28;c.beginPath();c.moveTo(128+Math.cos(a)*30,128+Math.sin(a)*30);c.lineTo(128+Math.cos(a)*120,128+Math.sin(a)*120);c.stroke();}
+        c.fillStyle='#050000';c.beginPath();c.ellipse(128,128,14,70,0,0,7);c.fill();});
+      const irisM=bend(new T.MeshBasicMaterial({map:irisT,transparent:true}));own.push(irisT,irisM);const iris=mesh(G.plane,irisM,eyeG,0,0,8.75,11,11,1);iris.userData.keep=true;
+      const eglow=mesh(G.plane,glowM('#ff5a20',0.55),eyeG,0,0,9.4,30,30,1);eglow.userData.keep=true;
+      for(let k=0;k<6;k++){const a=k/6*6.28;const s1=new T.Mesh(G.cyl,flesh);const len=74;s1.scale.set(0.8,len,0.8);s1.position.set(Math.sin(a)*7,len/2+3,Math.cos(a)*7);s1.rotation.set(Math.cos(a)*0.32,0,-Math.sin(a)*0.32);eyeG.add(s1);}
+      // tentacles drooping from the dome
+      for(let k=0;k<22;k++){const a=k/22*6.28+0.2,r=16+rnd()*(R-26);let y=F+WT-6;const n=24+(rnd()*10|0);for(let j=0;j<n;j++){const rr=1.3*(1-j/n)+0.25;mesh(G.sphLo,flesh,g,Math.sin(a)*r+Math.sin(j*0.7+k)*0.8,y,-bm+Math.cos(a)*r,rr,1.6,rr);y-=2.2;}}
+      // lidded eyes in the walls that open as the cart passes
+      const weT=canvasTex(128,64,(c)=>{c.clearRect(0,0,128,64);c.fillStyle='#ffd070';c.beginPath();c.ellipse(64,32,60,24,0,0,7);c.fill();c.fillStyle='#7a1004';c.beginPath();c.arc(64,32,18,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(64,32,4,16,0,0,7);c.fill();});
+      const weM=bend(new T.MeshBasicMaterial({map:weT,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(weT,weM);
+      for(let i=0;i<70;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
+      // pale light falling between the ribs
+      for(let k=0;k<5;k++){const sh=gl(glowM('#d8f0ff',0.12),(rnd()-.5)*R,F+40,-bm+(rnd()-.5)*R,14,90);sh.rotation.z=(rnd()-.5)*0.4;}
+      gl(glowM('#ffd8a0',0.35),0,F+9,-(b0-2),12,18);
+    }
+    const NR=160,rg2=new T.BufferGeometry(),rp=new Float32Array(NR*3);rg2.setAttribute('position',new T.BufferAttribute(rp,3));own.push(rg2);
+    const rmat=bend(new T.PointsMaterial({size:0.7,color:new T.Color('#6a5a50'),transparent:true,opacity:0.9,depthWrite:false}));own.push(rmat);const rocks=new T.Points(rg2,rmat);rocks.frustumCulled=false;g.add(rocks);
     const rseed=[...Array(NR)].map(()=>[(rnd()-.5)*90,rnd()*120,rnd()*L,1+rnd()*3]);
+    const v3=new T.Vector3();
     anim.push(t=>{for(const o of isl){const p=o.userData;o.position.y=p.y+Math.sin(t*0.5*Math.min(1,12/p.r+0.15)+p.ph)*Math.min(1.6,p.r*0.08+0.6)*(p.r>30?3:1);o.rotation.y=Math.sin(t*0.1+p.ph)*0.2;}
       ring.rotation.y=t*0.08;ring.position.y=H+20+Math.sin(t*0.4)*4;for(const q of temples)q.sp.position.y=q.y+Math.sin(t*0.3+q.ph)*3;
       for(const r of runes)r.material.opacity=0.6+0.4*Math.sin(t*2);
-      for(let i=0;i<NR;i++){const q=rseed[i];rp[i*3]=q[0];rp[i*3+1]=(q[1]+t*q[3])%140-10;rp[i*3+2]=-q[2];}rg.attributes.position.needsUpdate=true;});
-    anim.push(storyAnim(s,'skyisles',[60,L*0.4,L*0.7]));
+      // the eye follows the cart
+      eyeG.getWorldPosition(v3);const dx=camera.position.x-v3.x,dy=camera.position.y-v3.y,dz=camera.position.z-v3.z;
+      eyeG.rotation.y=Math.atan2(dx,dz);eyeG.rotation.x=-Math.atan2(dy,Math.hypot(dx,dz))*0.9;eyeG.position.y=F+20+Math.sin(t*0.6)*1.2;
+      const u=st.dist-s.az0;for(const e of wallEyes){const op=Math.max(0,Math.min(1,(u-CB[0]+30)/40))*(0.55+0.45*Math.sin(t*1.3+e.userData.ph));e.scale.y=3.5*Math.max(0.08,Math.abs(Math.sin(t*0.7+e.userData.ph))>0.97?0.08:1)*op+0.001;}
+      for(let i=0;i<NR;i++){const q=rseed[i];rp[i*3]=q[0];rp[i*3+1]=(q[1]+t*q[3])%140-10;rp[i*3+2]=-q[2];}rg2.attributes.position.needsUpdate=true;});
+    anim.push(storyAnim(s,'skyisles',[60,CA[0]+50,CB[0]+40]));
     finishSet(s,g,own,anim);},
   madness(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};const G0=380,G1=1000;
     const sky=new T.Group();s.skyG=sky;s.skyMats=[];sky.visible=false;skyRig.add(sky);const sm=(c,op,add)=>{const m=skyM(c,op,add);s.skyMats.push(m);own.push(m);return m;};
