@@ -2283,11 +2283,11 @@ const SETS2={
       const weT=canvasTex(128,64,(c)=>{c.clearRect(0,0,128,64);c.fillStyle='#ffd070';c.beginPath();c.ellipse(64,32,60,24,0,0,7);c.fill();c.fillStyle='#7a1004';c.beginPath();c.arc(64,32,18,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(64,32,4,16,0,0,7);c.fill();});
       const weM=bend(new T.MeshBasicMaterial({map:weT,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(weT,weM);
       const animEyes=[];for(let i=0;i<40;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);
-        const ae=i%2===0&&animSprite('godeye',6.5,0.45,5);if(ae){ae.position.set(Math.sin(a)*(R-1.9),y-3.25,-bm+Math.cos(a)*(R-1.9));ae.rotation.y=a+Math.PI;ae.userData.anim.mat.color.set('#ffb8a8');g.add(ae);own.push(ae.userData.sprGeo);ae.userData.ph=rnd();animEyes.push(ae);continue;}
+        const ae=i%2===0&&(animSprite('flesheye',6.5,0.4,10)||animSprite('godeye',6.5,0.45,5));if(ae){ae.position.set(Math.sin(a)*(R-1.9),y-3.25,-bm+Math.cos(a)*(R-1.9));ae.rotation.y=a+Math.PI;if(ae.userData.anim.meta!==ANIMS.flesheye)ae.userData.anim.mat.color.set('#ffb8a8');g.add(ae);own.push(ae.userData.sprGeo);ae.userData.ph=rnd();animEyes.push(ae);continue;}
         const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
-      fx.push(t=>{for(const e of animEyes)playAnimAt(e,(t*0.09+e.userData.ph)%1);});
+      fx.push(t=>{for(const e of animEyes)playAnimAt(e,(t*(e.userData.anim.meta===ANIMS.flesheye?0.2:0.09)+e.userData.ph)%1);});
       // the hanging eye: a raw flesh ball with a real eye opening on its face
-      const bigE=animSprite('godeye',16,0.7,5);if(bigE){bigE.position.set(0,-8,8.6);eyeG.add(bigE);iris.visible=false;eglow.visible=false;ball.material=flesh;own.push(bigE.userData.sprGeo);fx.push(t=>playAnimAt(bigE,Math.min(0.55,0.25+((t*0.05)%1)*0.3)));}
+      const bigE=animSprite('flesheye',17,0.55,10)||animSprite('godeye',16,0.7,5);const bigF=bigE&&bigE.userData.anim.meta===ANIMS.flesheye;if(bigE){bigE.position.set(0,-8,8.6);eyeG.add(bigE);iris.visible=false;eglow.visible=false;ball.material=flesh;own.push(bigE.userData.sprGeo);fx.push(t=>playAnimAt(bigE,bigF?((t*0.2)%1):Math.min(0.55,0.25+((t*0.05)%1)*0.3)));}
       // pale light falling between the ribs
       for(let k=0;k<5;k++){const sh=gl(glowM('#d8f0ff',0.12),(rnd()-.5)*R,F+40,-bm+(rnd()-.5)*R,14,90);sh.rotation.z=(rnd()-.5)*0.4;}
       gl(glowM('#ffd8a0',0.35),0,F+9,-(b0-2),12,18);
@@ -3650,7 +3650,7 @@ const SPR={};
 function sprMat(n,emi){const k=n+(emi||0);if(SPR[k])return SPR[k];const t=HQ.spr[n];
   const m=bend(new T.MeshStandardMaterial({map:t,emissiveMap:t,emissive:new T.Color('#ffffff'),emissiveIntensity:emi==null?0.5:emi,roughness:1,metalness:0,alphaTest:0.3,transparent:true,side:T.DoubleSide}));SPR[k]=m;return m;}
 /* Gemini video clips turned into keyed sprite-sheet animations */
-const ANIMS={shark:{cols:5,rows:8,frames:40,aspect:1.7778},miner:{cols:8,rows:6,frames:48,aspect:0.6028},godeye:{cols:8,rows:6,frames:48,aspect:1}};
+const ANIMS={shark:{cols:5,rows:8,frames:40,aspect:1.7778},miner:{cols:8,rows:6,frames:48,aspect:0.6028},godeye:{cols:8,rows:6,frames:48,aspect:1},flesheye:{cols:8,rows:6,frames:48,aspect:1}};
 function animSprite(n,height,emi,fps){const A=HQ.anim&&HQ.anim[n];if(!A)return null;const m0=A.meta;const tex=A.tex.clone();tex.needsUpdate=true;tex.repeat.set(1/m0.cols,1/m0.rows);
   const geo=new T.PlaneGeometry(height*m0.aspect,height).translate(0,height/2,0);
   const mat=bend(new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:new T.Color('#ffffff'),emissiveIntensity:emi==null?0.5:emi,roughness:1,metalness:0,alphaTest:0.3,transparent:true,side:T.DoubleSide}));
