@@ -467,7 +467,7 @@ const VO={idx:null,au:null,want:false};
 function vhash(t){let h=0x811c9dc5;for(const ch of t){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
 fetch('assets/vo/index.json').then(r=>r.json()).then(j=>{VO.idx=j;}).catch(()=>{});
 const voText=t=>t.replace(/\s+/g,' ').trim();
-VO.rate=1.45;
+VO.rate=1.12;
 function voDur(text){const k=VO.idx&&VO.idx[vhash(voText(text))];return k?k/VO.rate:0;}
 function hush(){VO.want=false;VO.speaking=false;VO.q=[];VO.utts=[];try{if(VO.au){VO.au.pause();VO.au.onended=null;}}catch(e){}try{window.speechSynthesis&&speechSynthesis.cancel();}catch(e){}}
 /* speak a line to the very last word; queue=true waits for the current line instead of cutting it off */
@@ -2270,7 +2270,7 @@ const SETS2={
       eyeG.position.set(0,F+20,-bm);g.add(eyeG);
       const eyeT=canvasTex(512,512,(c)=>{c.fillStyle='#e8d8b0';c.fillRect(0,0,512,512);c.strokeStyle='rgba(150,30,20,.6)';c.lineWidth=2;for(let k=0;k<70;k++){c.beginPath();let x=rnd()*512,y=rnd()<.5?0:512;c.moveTo(x,y);for(let j=0;j<8;j++){x+=(rnd()-.5)*60;y+=(y<256?1:-1)*24;c.lineTo(x,y);}c.stroke();}});
       const scl=std2({map:eyeT,roughness:0.35,emissive:new T.Color('#3a1a10'),emissiveIntensity:0.6});own.push(eyeT,scl);
-      mesh(G.sph,scl,eyeG,0,0,0,9,9,9);
+      const ball=mesh(G.sph,scl,eyeG,0,0,0,9,9,9);
       const irisT=canvasTex(256,256,(c)=>{const gr=c.createRadialGradient(128,128,10,128,128,128);gr.addColorStop(0,'#ffde70');gr.addColorStop(0.5,'#ff6a10');gr.addColorStop(0.9,'#6a0a04');gr.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=gr;c.beginPath();c.arc(128,128,128,0,7);c.fill();
         c.strokeStyle='rgba(60,0,0,.5)';c.lineWidth=2;for(let k=0;k<60;k++){const a=k/60*6.28;c.beginPath();c.moveTo(128+Math.cos(a)*30,128+Math.sin(a)*30);c.lineTo(128+Math.cos(a)*120,128+Math.sin(a)*120);c.stroke();}
         c.fillStyle='#050000';c.beginPath();c.ellipse(128,128,14,70,0,0,7);c.fill();});
@@ -2282,7 +2282,12 @@ const SETS2={
       // lidded eyes in the walls that open as the cart passes
       const weT=canvasTex(128,64,(c)=>{c.clearRect(0,0,128,64);c.fillStyle='#ffd070';c.beginPath();c.ellipse(64,32,60,24,0,0,7);c.fill();c.fillStyle='#7a1004';c.beginPath();c.arc(64,32,18,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(64,32,4,16,0,0,7);c.fill();});
       const weM=bend(new T.MeshBasicMaterial({map:weT,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(weT,weM);
-      for(let i=0;i<40;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
+      const animEyes=[];for(let i=0;i<40;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);
+        const ae=i%2===0&&animSprite('godeye',6.5,0.45,5);if(ae){ae.position.set(Math.sin(a)*(R-1.9),y-3.25,-bm+Math.cos(a)*(R-1.9));ae.rotation.y=a+Math.PI;ae.userData.anim.mat.color.set('#ffb8a8');g.add(ae);own.push(ae.userData.sprGeo);ae.userData.ph=rnd();animEyes.push(ae);continue;}
+        const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
+      fx.push(t=>{for(const e of animEyes)playAnimAt(e,(t*0.09+e.userData.ph)%1);});
+      // the hanging eye: a raw flesh ball with a real eye opening on its face
+      const bigE=animSprite('godeye',16,0.7,5);if(bigE){bigE.position.set(0,-8,8.6);eyeG.add(bigE);iris.visible=false;eglow.visible=false;ball.material=flesh;own.push(bigE.userData.sprGeo);fx.push(t=>playAnimAt(bigE,Math.min(0.55,0.25+((t*0.05)%1)*0.3)));}
       // pale light falling between the ribs
       for(let k=0;k<5;k++){const sh=gl(glowM('#d8f0ff',0.12),(rnd()-.5)*R,F+40,-bm+(rnd()-.5)*R,14,90);sh.rotation.z=(rnd()-.5)*0.4;}
       gl(glowM('#ffd8a0',0.35),0,F+9,-(b0-2),12,18);
@@ -2599,6 +2604,8 @@ const SETS2={
     const armL=new T.Group();armL.position.set(-0.3,0.75,0);man.add(armL);mesh(G.box,coat,armL,0,-0.25,-0.2,0.13,0.13,0.62).rotation.x=0.9;mesh(G.box,glove,armL,0,-0.52,-0.47,0.14,0.12,0.2);
     const brk=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ff2010'),opacity:0}));own.push(brk);
     for(const x of [-0.45,0.45]){const b=mesh(G.plane,brk,body,x,0.8,0.98,0.7,0.5,1);b.userData.keep=true;}
+    const poolM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffd890'),opacity:0.42}));own.push(poolM);
+    const pool=mesh(G.plane,poolM,tw,0,0.12,-6.5,3.2,9,1);pool.rotation.x=-Math.PI/2;pool.userData.keep=true;
     const drv=animSprite('miner',2.05,0.3,8);if(drv){man.visible=false;drv.position.set(0,-0.35,0.15);body.add(drv);own.push(drv.userData.sprGeo);}
     tw.visible=false;
     const S={r:-40,x:LANE,lane:1,cyc:-1};
@@ -2621,7 +2628,7 @@ const SETS2={
       const dx=S.x-st.camX;body.rotation.y=-(tx-S.x)*0.25;brk.opacity=brake?0.9:0;
       const alongside=u>=BU-60;head.rotation.y=alongside?Math.sign(dx||1)*1.3:0;man.rotation.y=alongside?Math.sign(dx||1)*0.5:0;
       armR.rotation.z=alongside?-2.4+Math.sin(t*7)*0.4:0;armR.rotation.x=alongside?-0.4:0;
-      beam.visible=!alongside;if(drv){drv.scale.x=dx>0?-1:1;drv.rotation.y=-body.rotation.y;if(alongside)playAnim(drv,t);else setFrame(drv,0);beam.visible=false;}});
+      beam.visible=!alongside;pool.visible=!alongside;poolM.opacity=0.32+0.08*Math.sin(t*9);if(drv){drv.scale.x=dx>0?-1:1;drv.rotation.y=-body.rotation.y;if(alongside)playAnim(drv,t);else setFrame(drv,0);beam.visible=false;}});
     finishSet(s,g,own,anim);},
 
   /* ===== on the back of the sleeping god ===== */
