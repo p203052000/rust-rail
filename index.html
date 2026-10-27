@@ -453,7 +453,7 @@ const STORIES=[
  ['i3','ins','浮雕上刻著一列礦車，車上的人雙手緊握把手。這面牆的年代，比礦場早了一萬年。'],
  ['i4','ins','星圖寫著：當群星歸位，城將從海中升起。最後一顆星的位置，正是你頭頂上那顆。'],
  ['i5','ins','雕刻裡的祭司都背對神像，不敢直視。只有一個人回過頭，他戴著和你一樣的皮手套。'],
-].concat(MURALS_J()).concat([['mural_wrap','mural','']]).concat([['m_madness','瘋狂山脈'],['m_falls','夢的花園'],['m_crystal','巨晶洞窟'],['m_shipcross','幽靈巨艦'],['m_atlantis','亞特蘭提斯'],['m_factory','夢工廠'],['m_skyisles','浮空神殿'],['m_crater','火山口'],['m_maw','血盆大口'],['m_cliff','霧中高屋'],['m_temple','神殿'],['m_red','冷原之月'],['m_orange','克圖格亞的火山'],['m_yellow','卡爾克薩'],['m_green','異界之色'],['m_blue','瘋狂山脈'],['m_purple','猶格·索托斯之門'],['m_black','暗夜徘徊者']].map(([id,t])=>[id,'myth',t])).map(([id,set,text])=>({id,set,text}));
+].concat(MURALS_J()).concat([['mural_wrap','mural','']]).concat([['m_clock','巨鐘內部'],['m_loop','無限迴廊'],['m_twin','另一台礦車'],['m_godback','沉睡巨神'],['m_madness','瘋狂山脈'],['m_falls','夢的花園'],['m_crystal','巨晶洞窟'],['m_shipcross','幽靈巨艦'],['m_atlantis','亞特蘭提斯'],['m_factory','夢工廠'],['m_skyisles','浮空神殿'],['m_crater','火山口'],['m_maw','血盆大口'],['m_cliff','霧中高屋'],['m_temple','神殿'],['m_red','冷原之月'],['m_orange','克圖格亞的火山'],['m_yellow','卡爾克薩'],['m_green','異界之色'],['m_blue','瘋狂山脈'],['m_purple','猶格·索托斯之門'],['m_black','暗夜徘徊者']].map(([id,t])=>[id,'myth',t])).map(([id,set,text])=>({id,set,text}));
 let journal=new Set();try{const j=JSON.parse(localStorage.getItem('rustrail-journal')||'[]');journal=new Set(j);}catch(e){}
 const saveJournal=()=>{try{localStorage.setItem('rustrail-journal',JSON.stringify([...journal]))}catch(e){}};
 const nextStory=(ins)=>STORIES.find(s=>(ins?s.set==='ins':(s.set!=='ins'&&s.set!=='myth'&&s.set!=='chap'))&&!journal.has(s.id));
@@ -519,18 +519,18 @@ let best=0; try{best=+localStorage.getItem('rustrail-best')||0}catch(e){}
 let segs=[], segEnd=0, lastType='normal';
 /* ================= chapters ================= */
 const CHAPTERS=[
- {n:'第一章',t:'被塗掉的鐵軌',len:1500,speed:[11,22],
+ {n:'第一章',t:'被塗掉的鐵軌',len:1350,speed:[11,22],
   intro:'【故事開始】颱風夜，我收到失蹤六十年的外公寄來的日記和地圖。我照著地圖找到一座舊礦坑，結果被大水沖上一台刻著外公名字的礦車。\n\n礦車衝出山洞，外面是一個奇怪的世界：天空一直是黃昏，手錶停在 23:58 不會動。外公的日記說：「沿著鐵軌一直走，盡頭有一道門，我在那裡等你。」',
   beats:[[150,'河上漂著一艘客輪，船裡的燈還亮著，卻一個人也沒有。外公的日記寫著：「這個世界的時間，是停住的。」'],[450,'枕木上用白漆畫著一個記號：圓圈裡有三條線。日記說這是外公畫的，意思是「這裡安全，繼續走」。原來六十年前，他也坐過這台礦車。'],[800,'手機突然收到一則簡訊。寄件人竟然是我自己，時間顯示「明天」。內容只有一句：「不管發生什麼事，都不要讓礦車停下來。」'],[1750,'前面出現兩尊比山還高的石像，中間是一道巨大的門。日記寫著：「穿過這道門，就進入祂的夢裡了。」']],
   outro:'穿過石像之門時，背後有人喊我的名字，是外公的聲音。可是日記用紅筆寫著：「聽到有人叫你，千萬不要回頭。回頭的人，會被留在這裡。」\n我咬著牙，沒有回頭。',
   pool:[['normal',2],['narrow',1.4],['hills',1.4],['bridge',1.3],['washboard',1],['floating',1.2],['tunnel',1],['graveyard',1.4],['slalom',1]],megas:[],
-  zones:[['yellow',0.2],['orange',0.4],['crater',0.56]],mon:{barrel:0,gap:0,croc:250,whirl:500,shark:650,beam:800},finale:[{type:'mega',sub:'colossus'}]},
- {n:'第二章',t:'印斯茅斯水道',len:1650,speed:[12,23],
+  zones:[['yellow',0.18],['clock',0.36],['crater',0.62]],mon:{barrel:0,gap:0,croc:250,whirl:500,shark:650,beam:800},finale:[{type:'mega',sub:'colossus'}]},
+ {n:'第二章',t:'印斯茅斯水道',len:1450,speed:[12,23],
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一隻沉睡在海底的古老怪物。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在替祂看守鐵軌，他們會想辦法把你拉下車。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「這條鐵軌一次只能載一個人。牠們想把你拉下車，好把位子空出來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
   pool:[['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
-  zones:[['green',0.22],['maw',0.45],['black',0.72]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
+  zones:[['green',0.22],['maw',0.45],['loop',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
  {n:'第三章',t:'考察隊的營地',len:2450,speed:[13,25],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
   beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，祂才不會醒。祂一醒，整個世界都會毀掉。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
@@ -542,13 +542,13 @@ const CHAPTERS=[
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
   pool:[['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
-  zones:[['red',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
- {n:'第五章',t:'拉萊耶',len:1900,speed:[15,27],
+  zones:[['twin',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
+ {n:'第五章',t:'拉萊耶',len:1800,speed:[15,27],
   intro:'【上一章】那個巨大的東西一直盯著我，像在確認車上的人換了沒有。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
   beats:[[300,'神殿的牆上刻著一台礦車，車上的人戴著皮手套。那個人就是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱下面放著外公的礦工帽，頭燈還亮著。帽子裡夾著日記被撕掉的最後一頁。'],[1000,'最後一頁寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，祂就不會醒，世界就會平安。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，像在說：別停下來。']],
   outro:'外公終於下車回家了。而我，成了新的駕駛。\n可是，桌上那個 2086 年寄來的包裹，又是誰寄的呢？',
   pool:[['mega',2.6],['crystal',1],['coaster',1.2],['leap',1.2],['whalebone',1],['canopy',1],['weave',1],['normal',1]],megas:['rlyeh','ruins','colossus'],
-  zones:[['purple',0.12],['skyisles',0.6]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150}]},
+  zones:[['godback',0.12],['skyisles',0.6]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150}]},
 ];
 const CH=()=>st.chapter>=0?CHAPTERS[st.chapter]:null;
 /* where each chapter beat must happen: the narration (and its prop) waits for a matching stretch of track.
@@ -571,7 +571,7 @@ CHAPTERS.forEach((c,i)=>c.beats.forEach((b,k)=>STORIES.push({id:'c'+i+'_'+k,set:
 STORIES.sort((a,b)=>Object.keys(SETS).indexOf(a.set)-Object.keys(SETS).indexOf(b.set));
 let chCleared=0;try{chCleared=+localStorage.getItem('rustrail-ch')||0;}catch(e){}
 const ENDLESS_POOL=az0=>[['normal',1.4],['narrow',1.4],['single',0.9],['bridge',1.3],['hills',1.1],['tunnel',1.1],['coaster',az0>350?1.2:0],['mega',1.8],['slalom',1.1],['washboard',0.9],['leap',az0>300?1.1:0],['crystal',1],['weave',0.9],['floating',1],['canopy',1],
-  ['harbor',1],['camp',0.9],['waterfall',1],['whalebone',1],['lighthouse',0.9],['graveyard',1],['zone',2],['cliff',az0>400?0.8:0],['seatube',0.5],['atlantis',az0>500?0.5:0],['factory',az0>300?0.8:0],['shipcross',az0>350?0.8:0],['skyisles',az0>500?0.7:0],['madness',0.5],['crater',az0>300?0.8:0],['maw',0.8]];
+  ['harbor',1],['camp',0.9],['waterfall',1],['whalebone',1],['lighthouse',0.9],['graveyard',1],['zone',2],['cliff',az0>400?0.8:0],['seatube',0.5],['atlantis',az0>500?0.5:0],['factory',az0>300?0.8:0],['shipcross',az0>350?0.8:0],['skyisles',az0>500?0.7:0],['madness',0.5],['crater',az0>300?0.8:0],['maw',0.8],['clock',az0>400?0.7:0],['loop',az0>600?0.6:0],['twin',az0>300?0.7:0],['godback',az0>500?0.7:0]];
 function genSeg(){
   const az0=segEnd,ch=CH();
   if(az0<1){pushSeg({type:'normal',len:100,lanes:[0,1,0]});return;}
@@ -610,6 +610,11 @@ function makeSeg(type,o){let s;
   else if(type==='falls'){s={type,lanes:[1,1,1],len:600,pal:'valley',C0:30,C1:230,FH:48};}
   else if(type==='shipcross'){s={type,lanes:[1,1,1],len:360,UX:220};}
   else if(type==='factory'){s={type,lanes:[1,1,1],len:440,pal:'neon'};}
+  else if(type==='clock'){s={type,lanes:[1,1,1],len:460,CH:8,spd:15,pal:'brassp',GAPS:[130,175,220],PU:290,HU:360};}
+  else if(type==='loop'){s={type,lanes:[1,1,1],RL:100,NR:4,spd:11,pal:'hall'};s.len=20+s.NR*s.RL+70;}
+  else if(type==='twin'){s={type,lanes:[1,1,1],len:560,BU:450};}
+  else if(type==='godback'){const L=640;s={type,lanes:[1,1,1],len:L,spd:15,W:Math.PI*2/4.6,SP:[[150,0],[205,-1],[250,1],[300,0]],VENTS:[[L-235,-1],[L-195,1],[L-158,-1]]};
+    s.base=u=>5.2*ss((u-6)/70)*ss((L-u-6)/70)+3.2*Math.exp(-Math.pow((u-(L-150))/60,2));s.env=u=>ss((u-40)/50)*ss((L-60-u)/60)*(u>L-260?0.45:1);}
   else if(type==='skyisles'){s={type,lanes:[1,1,1],len:1060,pal:'sky',SH:62,CS:[[250,450],[700,860]]};}
   else if(type==='madness'){s={type,lanes:[1,1,1],len:1150,pal:'antarctic'};}
   else if(type==='crater'){s={type,lanes:[1,1,1],len:720,pal:'crater'};}
@@ -622,7 +627,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   const prev=segs[segs.length-1];
   if(prev&&!s.lanes.some((v,i)=>v&&prev.lanes[i])){const keep=prev.lanes.findIndex(v=>v);s.lanes[keep]=1;}
   s.az0=az0;s.az1=az0+s.len;segs.push(s);segEnd=s.az1;
-  if(s.sub==='dam')s.darkR=[az0+70,az0+100];if(s.type==='crater')s.voidR=[az0+342,az0+378];if(s.type==='falls')s.darkR=[az0+s.C0+4,az0+s.C1+2];if(s.type==='maw'){s.darkR=[az0+200,az0+326];s.dim=0.5;}if(s.type==='madness'){s.darkR=[az0+380,az0+1000];s.dim=0.5;}if(s.type==='leap')s.voidR=[az0+60,az0+92];if(s.type==='canopy')s.darkR=[az0+10,az0+s.len-10];if(s.type==='skyisles')s.darkRs=[[az0+s.CS[0][0]+4,az0+s.CS[0][1]-2,0.55],[az0+s.CS[1][0]+4,az0+s.CS[1][1]-2,0.2]];
+  if(s.sub==='dam')s.darkR=[az0+70,az0+100];if(s.type==='crater')s.voidR=[az0+342,az0+378];if(s.type==='falls')s.darkR=[az0+s.C0+4,az0+s.C1+2];if(s.type==='maw'){s.darkR=[az0+200,az0+326];s.dim=0.5;}if(s.type==='madness'){s.darkR=[az0+380,az0+1000];s.dim=0.5;}if(s.type==='leap')s.voidR=[az0+60,az0+92];if(s.type==='canopy')s.darkR=[az0+10,az0+s.len-10];if(s.type==='clock'){s.voidRs=s.GAPS.map(q=>[az0+q+0.5,az0+q+5.5]);s.darkRs=[[az0+28,az0+s.len-30,0.5]];}if(s.type==='loop')s.darkRs=[[az0+18,az0+20+s.NR*s.RL,0.45]];if(s.type==='skyisles')s.darkRs=[[az0+s.CS[0][0]+4,az0+s.CS[0][1]-2,0.55],[az0+s.CS[1][0]+4,az0+s.CS[1][1]-2,0.2]];
   if(ready&&s.type==='leap')buildLeap(s);if(ready&&s.type==='crystal')buildCrystal(s);if(ready&&s.type==='canopy')buildCanopy(s);
   if(s.type==='tunnel'&&ready)buildTunnel(s);
   if(s.type==='mega'&&ready)buildMega(s);
@@ -630,7 +635,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   if(ready&&SETS2[s.type])SETS2[s.type](s);
   if(ready&&s.type==='zone')buildZone(s);
 }
-const TERR_NAME={crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
+const TERR_NAME={clock:'巨鐘內部・23:58',loop:'無限迴廊',twin:'另一台礦車',godback:'沉睡巨神的背上',crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
 const MEGA=['colossus','dam','cranes','ruins','city','rlyeh','rlyeh'];let lastMega='';
 const MEGA_NAME={colossus:'大袞巨像之門',dam:'大壩水門',cranes:'龍門吊船塢',ruins:'沉沒神殿',city:'淹沒的城市',rlyeh:'拉萊耶神殿'};
 function segAt(az){for(let i=0;i<segs.length;i++){const s=segs[i];if(az>=s.az0&&az<s.az1)return s;}return null;}
@@ -651,6 +656,9 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
       if(u<s.A1)return -D-s.DEEP+Math.sin((u-s.V1)*0.03)*1.5;return -(D+s.DEEP)*(1-ss((u-s.A1)/(L-10-s.A1)));}
     if(u>L-92)return -D*ss((L-10-u)/80);return -D+Math.sin((u-92)*0.025)*1.2;}
   if(s.type==='falls'){if(u<s.C0)return 0;if(u<s.C1)return s.FH*ss((u-s.C0)/(s.C1-s.C0));if(u<s.C1+14)return s.FH;if(u<s.C1+230)return s.FH*(1-ss((u-s.C1-14)/216));return 0;}
+  if(s.type==='clock'){const H=s.CH;if(u<30)return H*ss(u/30);if(u>L-20)return H*ss((L-u)/20);return H;}
+  if(s.type==='loop'){if(u<16)return 0.8*ss(u/16);if(u>L-16)return 0.8*ss((L-u)/16);return 0.8;}
+  if(s.type==='godback')return s.base(u)+s.env(u)*1.4*Math.sin(st.time*s.W-u*0.05);
   if(s.type==='skyisles'){const H=s.SH;if(u<140)return H*ss(u/140);if(u>L-140)return H*ss((L-u)/140);let w=1;for(const c of s.CS){const d=Math.max(c[0]-u,u-c[1]);w=Math.min(w,Math.max(0,Math.min(1,d/50)));}return H+Math.sin((u-140)*0.02)*4*w;}
   if(s.type==='coaster'){const Hm=s.Hm,P=s.P;let v=u;
     if(v<P[0])return Hm*ss(v/P[0]);v-=P[0];if(v<P[1])return Hm;v-=P[1];
@@ -660,11 +668,11 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
   return 0;}
 function laneOn(L,az){if(az<0)return L===0;const s=segAt(az);return s?!!s.lanes[L+1]:true;}
 function laneEnds(){const out=[];for(let i=1;i<segs.length;i++){const p=segs[i-1],s=segs[i];for(let k=0;k<3;k++)if(p.lanes[k]&&!s.lanes[k])out.push({az:s.az0,L:k-1,key:s.az0.toFixed(2)+'_'+k});}return out;}
-function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
-function isVoid(az){for(const s of segs)if(s.voidR&&az>=s.voidR[0]&&az<=s.voidR[1])return true;return false;}
+function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross'||s.type==='clock'||s.type==='loop'||s.type==='twin'||s.type==='godback')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
+function isVoid(az){for(const s of segs){if(s.voidR&&az>=s.voidR[0]&&az<=s.voidR[1])return true;if(s.voidRs)for(const r of s.voidRs)if(az>=r[0]&&az<=r[1])return true;}return false;}
 function inTunnel(az){for(const s of segs){if(s.type==='tunnel'&&az>=s.az0-1&&az<=s.az1+1)return s;if(s.darkR&&az>=s.darkR[0]&&az<=s.darkR[1])return s;if(s.darkRs)for(const r of s.darkRs)if(az>=r[0]&&az<=r[1])return {dim:r[2]};}return null;}
 /* open water where a sea giant could believably surface */
-const SEA_OK={normal:1,narrow:1,single:1,hills:1,bridge:1,harbor:1,lighthouse:1,whalebone:1,graveyard:1,floating:1,weave:1,slalom:1,washboard:1,leap:1,coaster:1};
+const SEA_OK={twin:1,normal:1,narrow:1,single:1,hills:1,bridge:1,harbor:1,lighthouse:1,whalebone:1,graveyard:1,floating:1,weave:1,slalom:1,washboard:1,leap:1,coaster:1};
 function seaOpen(az){const s=segAt(az);if(!s)return true;if(s.type==='zone')return s.sub!=='orange'&&s.sub!=='yellow'&&s.sub!=='green';if(s.type==='mega')return s.sub!=='dam';return !!SEA_OK[s.type];}
 function nearType(az,type,pad){for(const s of segs)if(s.type===type&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
 
@@ -1071,7 +1079,7 @@ function updateTrack(){
     for(let y=12;y<h-6;y+=18)tw(0,y,-z,2*X,0.16,0.16);tw(0,h-0.3,-z,2*X+0.4,0.3,0.5);
     tw(-X,h-0.25,-(z+3.3),0.25,0.25,6.6);tw(X,h-0.25,-(z+3.3),0.25,0.25,6.6);}
   for(;wi<towers.count;wi++)towers.setMatrixAt(wi,_z);towers.instanceMatrix.needsUpdate=true;
-  for(let az=b0;az<st.dist+TRACKV&&ti<stilts.count-2;az+=3.3){const h=trackH(az),z=az-st.dist;if(h<0.35||h>6)continue;
+  for(let az=b0;az<st.dist+TRACKV&&ti<stilts.count-2;az+=3.3){const h=trackH(az),z=az-st.dist;if(h<0.35||h>6)continue;if(nearType(az,'clock',0)||nearType(az,'godback',0)||nearType(az,'loop',0))continue;
     if(isVoid(az))continue;for(const L of [-1,0,1]){if(!laneOn(L,az))continue;const x=L*LANE;
       for(const sd of [-1,1]){_o.position.set(x+sd*0.58,h/2-0.2,-z);_o.rotation.set(0,0,0);_o.scale.set(0.16,h+0.4,0.16);_o.updateMatrix();stilts.setMatrixAt(ti++,_o.matrix);}
       const len=Math.hypot(1.16,h);_o.position.set(x,h/2,-z);_o.rotation.set(0,0,Math.atan2(h,1.16));_o.scale.set(len,0.09,0.09);_o.updateMatrix();braces.setMatrixAt(bi++,_o.matrix);}}
@@ -1582,6 +1590,18 @@ const ZONE_STORY={
  factory:['鐵軌開進一座淹水的廢棄工廠。牆上的霓虹燈寫著「2086」，跟結局那個包裹上的年份一樣。這裡，是未來。',
   '機械手臂突然動了起來，好像在搬運看不見的東西。日記寫著：「祂的夢裡有過去，也有未來。」小心頭頂！',
   '招牌一閃一閃：「夢境維修中心：換班請排隊」。原來不只外公，未來也有人在這裡換班。'],
+ clock:['礦車開進一座巨大的時鐘裡。齒輪轉個不停，滴答聲大得像心跳。',
+  '鐘擺從頭頂盪過，每盪一次，就是一秒。外公的手錶，就停在 23:58。',
+  '這是鐘面的背後。指針停在 23:58，差兩分鐘就是午夜。我終於知道，這個夢的時間為什麼不會走。'],
+ loop:['這是一條老旅館的走廊，牆上的鐘停在 23:58。走廊盡頭有三扇門，每扇門上都掛著一張外公的照片。',
+  '……又回到同一條走廊了。外公的日記寫著：「照片裡，總有一張不一樣。走那扇門。」',
+  '走廊開始崩塌。牆壁一片片剝落，外面是夢的天空。'],
+ twin:['背後傳來另一台礦車的聲音。它越來越近，開到了旁邊的軌道上。',
+  '車上的人轉過頭來看我。他戴著跟我一樣的皮手套，那是我的臉，只是老了很多。',
+  '他對我揮了揮手，開上一條岔路，消失在霧裡。那是……六十年後的我嗎？'],
+ godback:['鐵軌鋪在一個沉睡巨神的背上。祂每呼吸一次，整段軌道就跟著起伏。',
+  '越靠近祂的頭，熱氣越重。祂的鼻孔一噴氣，就會把礦車往旁邊吹。別待在會被吹出去的那一邊。',
+  '祂的眼皮動了一下。千萬，不要吵醒祂。'],
  skyisles:['祂快醒了，夢開始崩壞。重力消失了，石頭、湖水和鐵軌全都飄在半空中。前方的雲裡浮著兩座神殿，鐵軌直直穿進大門。',
   '第一座神殿裡，石柱全都歪向同一邊，牆上流著綠色的黏液，柱腳堆滿會跳動的卵。最深處站著一尊巨大的神像：章魚頭、翅膀、垂下來的觸手。礦車要從祂的腳下穿過去。',
   '第二座神殿是活的。牆是一層層的肉，屋頂的肋骨在呼吸，地上的嘴一張一合。正中間吊著一顆巨大的眼睛，一直跟著礦車轉。我不敢再看下去。'],
@@ -1638,6 +1658,8 @@ const PAL={
   valley:{fog:'#7d9a86',zen:'#2a4a52',hor:'#c4dcc0',cd:'#3a5a50',cl:'#e0ecd8',murk:'#1e3a30',deep:'#0c1e18',hemi:'#e0f4d8',sun:'#fff0c8',hemiI:1.35,sunI:1.15,rain:0,stars:0,exp:1.1,fogk:0.55},
   neon:{fog:'#2a1436',zen:'#07030f',hor:'#4a1a52',cd:'#12061c',cl:'#6a2a70',murk:'#140a1c',deep:'#06030a',hemi:'#b890ff',sun:'#40e0ff',hemiI:0.7,sunI:0.35,rain:0.7,stars:0,exp:1.18,fogk:1.25},
   sky:{fog:'#d8d4e6',zen:'#3e5c9a',hor:'#f6dcc0',cd:'#8a90b8',cl:'#fff2e2',murk:'#2c4a6c',deep:'#10243a',hemi:'#eef0ff',sun:'#ffe8c8',hemiI:1.4,sunI:1.3,rain:0,stars:0.25,exp:1.06,fogk:0.38},
+  brassp:{fog:'#3a2c1c',zen:'#0e0a06',hor:'#5a4428',cd:'#1a120a',cl:'#6a4a24',murk:'#2a2014',deep:'#120c06',hemi:'#ffd8a0',sun:'#ffc070',hemiI:0.85,sunI:0.6,rain:0,stars:0,exp:1.15,fogk:0.8},
+  hall:{fog:'#2a2a20',zen:'#0a0a08',hor:'#3a3828',cd:'#141410',cl:'#4a4430',murk:'#20201a',deep:'#0e0e0a',hemi:'#ffe8b8',sun:'#ffe0a0',hemiI:0.95,sunI:0.4,rain:0,stars:0,exp:1.15,fogk:0.9},
   geode:{fog:'#4a3c2c',zen:'#120e0a',hor:'#6a5638',cd:'#1c160f',cl:'#5a4a34',murk:'#3a3020',deep:'#14100a',hemi:'#ffe6c0',sun:'#cfe6ff',hemiI:0.9,sunI:0.55,rain:0,stars:0,exp:1.15,fogk:0.85},
   deepsea:{fog:'#021820',zen:'#01141a',hor:'#021820',cd:'#01141a',cl:'#032a34',murk:'#021820',deep:'#010a0e',hemi:'#4ab8d0',sun:'#3aa0c0',hemiI:0.55,sunI:0.15,rain:0,stars:0,exp:1.2,fogk:1.25},
   black:{fog:'#040506',zen:'#000000',hor:'#08090a',cd:'#030304',cl:'#0e1012',murk:'#050707',deep:'#020303',hemi:'#506070',sun:'#405060',hemiI:0.12,sunI:0.05,rain:0.6,stars:0,exp:0.95},
@@ -2424,6 +2446,225 @@ const SETS2={
       if(u>60&&u<128)st.glanceT=0.04*Math.sin(t*0.7);});
     anim.push(storyAnim(s,'maw',[40,118,300]));
     finishSet(s,g,own,anim);},
+  /* ===== the giant clock: 23:58 ===== */
+  clock(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,H=s.CH;s.flags={};
+    const brass=std2({map:TX.rust.map,color:new T.Color('#e0b060'),metalness:0.85,roughness:0.3,emissive:new T.Color('#2a1a06'),emissiveIntensity:0.6});
+    const dark=std2({map:TX.stone.map,color:new T.Color('#3a3430'),roughness:0.7,metalness:0.2});own.push(brass,dark);
+    const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
+    const W=14,HT=46,a0=26,a1=L-24,LA=a1-a0,am=(a0+a1)/2,FY=H-7;
+    // shell
+    for(const sd of [-1,1])B(2,HT,LA,6,dark,sd*W,FY+HT/2,-am);B(2*W+2,2,LA,6,dark,0,FY+HT,-am);B(2*W+2,1,LA,6,dark,0,FY,-am);
+    for(const sd of [-1,1])B(W-3,HT,2,6,dark,sd*(3+(W-3)/2),FY+HT/2,-a0);B(6,FY+HT-(H+5),2,6,dark,0,(H+5+FY+HT)/2,-a0);B(6,H-5-FY,2,6,dark,0,(FY+H-5)/2,-a0);
+    // brass girders carrying the rails, broken where the gears turn
+    const gapAt=u=>s.GAPS.some(q=>u>q-0.5&&u<q+6);
+    for(const L2 of [-1,0,1]){let u=a0;while(u<a1){if(gapAt(u)){u+=1;continue;}let e=u;while(e<a1&&!gapAt(e))e+=1;B(0.5,0.7,e-u,3,brass,L2*LANE,H-0.65,-(u+e)/2);u=e;}}
+    for(let u=a0+3;u<a1;u+=6){if(gapAt(u))continue;B(4.4,0.4,0.5,3,brass,0,H-1.1,-u);B(0.4,H-1-FY,0.4,3,brass,-2.6,(FY+H-1)/2,-u);B(0.4,H-1-FY,0.4,3,brass,2.6,(FY+H-1)/2,-u);}
+    // gear factory: a merged disk + teeth + spokes, spinning about its local y
+    const gear=(R,th,teeth)=>{const gg=new T.Group();mesh(G.cyl,brass,gg,0,0,0,R*0.84,th,R*0.84);mesh(G.cyl,brass,gg,0,0,0,R*0.22,th*1.8,R*0.22);
+      for(let k=0;k<teeth;k++){const a=k/teeth*Math.PI*2;const t=mesh(G.box,brass,gg,Math.cos(a)*R*0.92,0,Math.sin(a)*R*0.92,R*0.18,th,Math.PI*2*R/teeth*0.5);t.rotation.y=-a;}
+      for(let k=0;k<6;k++){const a=k/6*Math.PI;const sp=mesh(G.box,dark,gg,0,th*0.6,0,R*1.5,th*0.3,R*0.08);sp.rotation.y=a;}
+      own.push(...mergeStatic(gg));return gg;};
+    const spin=[];const mount=(R,teeth,x,y,u,axis,speed)=>{const h=new T.Group();h.position.set(x,y,-u);if(axis==='x')h.rotation.z=Math.PI/2;else if(axis==='z')h.rotation.x=Math.PI/2;g.add(h);const gg=gear(R,Math.max(0.6,R*0.12),Math.round(R*3.2));h.add(gg);spin.push([gg,speed]);return gg;};
+    for(const sd of [-1,1]){let k=0;for(const [u,y,R] of [[52,H+9,8],[74,H+21,5],[98,H+7,7],[138,H+17,11],[190,H+8,8],[214,H+23,6],[262,H+12,10],[318,H+22,7],[352,H+8,6],[392,H+15,9]]){
+      mount(R,0,sd*(W-1.6),y,u,'x',(k%2?1:-1)*sd*0.9/R*3);k++;}}
+    // giant floor gears turning under each broken stretch
+    for(const q of s.GAPS){mount(9,0,0,H-3.4,q+3,'y',(q%2?1:-1)*0.35);mount(6,0,sd2(q)*9,H-4.6,q+12,'y',-0.5);}
+    function sd2(q){return (q/45|0)%2?1:-1;}
+    // escapement on the ceiling that steps with the tick
+    const esc=mount(7,0,0,H+30,236,'z',0);
+    // amber lamps
+    for(let u=a0+20;u<a1;u+=38)for(const sd of [-1,1]){mesh(G.sphLo,brass,g,sd*(W-1.4),H+6,-u,0.5,0.5,0.5);const p=mesh(G.plane,glowM('#ffb050',0.7),g,sd*(W-1.6),H+6,-u,5,5,1);p.rotation.y=-sd*Math.PI/2;p.userData.keep=true;}
+    // pendulum
+    const PU=s.PU,PL=34.5;const pend=new T.Group();pend.position.set(0,H+36,-PU);g.add(pend);
+    mesh(G.box,brass,pend,0,-PL/2,0,0.45,PL,0.45);const bob=mesh(G.cyl,brass,pend,0,-PL,0,2.6,0.7,2.6);bob.rotation.x=Math.PI/2;
+    {const p=mesh(G.plane,glowM('#ffd080',0.35),pend,0,-PL,0.5,7,7,1);p.userData.keep=true;}
+    mesh(G.box,dark,g,0,H+36,-PU,8,1.4,2);
+    const theta=t=>0.16*Math.sin(t*Math.PI*2/3.0);
+    // the minute hand
+    const HU=s.HU;const hand=new T.Group();hand.position.set(-8.5,H+1.9,-HU);g.add(hand);
+    mesh(G.box,dark,hand,8,0,0,16,0.35,0.9);const tip=mesh(G.box,dark,hand,16.2,0,0,1.8,0.36,1.8);tip.rotation.y=Math.PI/4;mesh(G.cyl,brass,hand,0,0,0,1.4,0.6,1.4);mesh(G.cyl,dark,hand,-2.2,0,0,1.1,0.4,1.1);
+    mesh(G.cyl,brass,g,-8.5,(FY+H+1.6)/2,-HU,0.6,H+1.6-FY,0.6);
+    // the clock face, seen from behind, with the rails passing through its centre
+    const DU=L-40;const dial=canvasTex(1024,1024,(c)=>{c.clearRect(0,0,1024,1024);c.save();c.translate(1024,0);c.scale(-1,1);const C=512;
+      const gr=c.createRadialGradient(C,C,120,C,C,510);gr.addColorStop(0,'rgba(255,236,190,.95)');gr.addColorStop(1,'rgba(200,150,80,.85)');c.fillStyle=gr;c.beginPath();c.arc(C,C,505,0,7);c.fill();
+      c.fillStyle='rgba(0,0,0,1)';c.globalCompositeOperation='destination-out';c.beginPath();c.arc(C,C,128,0,7);c.fill();c.globalCompositeOperation='source-over';
+      c.strokeStyle='#2a1a0a';c.lineWidth=10;c.beginPath();c.arc(C,C,500,0,7);c.stroke();c.beginPath();c.arc(C,C,132,0,7);c.stroke();
+      const R=['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];c.fillStyle='#2a1a0a';c.font='bold 64px serif';c.textAlign='center';c.textBaseline='middle';
+      for(let k=0;k<12;k++){const a=k/12*Math.PI*2-Math.PI/2;c.save();c.translate(C+Math.cos(a)*420,C+Math.sin(a)*420);c.rotate(a+Math.PI/2);c.fillText(R[k],0,0);c.restore();}
+      for(let k=0;k<60;k++){const a=k/60*Math.PI*2;c.lineWidth=k%5?3:7;c.beginPath();c.moveTo(C+Math.cos(a)*470,C+Math.sin(a)*470);c.lineTo(C+Math.cos(a)*(k%5?455:440),C+Math.sin(a)*(k%5?455:440));c.stroke();}
+      const hnd=(ang,r0,r1,w)=>{c.lineWidth=w;c.beginPath();c.moveTo(C+Math.cos(ang)*r0,C+Math.sin(ang)*r0);c.lineTo(C+Math.cos(ang)*r1,C+Math.sin(ang)*r1);c.stroke();};
+      hnd((58/60)*Math.PI*2-Math.PI/2,140,430,16);hnd(((11+58/60)/12)*Math.PI*2-Math.PI/2,140,300,26);c.restore();});
+    const dm=bend(new T.MeshBasicMaterial({map:dial,transparent:true,side:T.DoubleSide}));own.push(dial,dm);const dp=mesh(G.plane,dm,g,0,H+3,-DU,40,40,1);dp.userData.keep=true;
+    {const p=mesh(G.plane,glowM('#ffd8a0',0.55),g,0,H+3,-(DU+3),60,60,1);p.userData.keep=true;}
+    for(const sd of [-1,1])B(W-5,HT,2,6,dark,sd*(W-(W-5)/2+1),FY+HT/2,-(DU+1.5));
+    let last=-1;
+    anim.push(t=>{for(const [gg,sp] of spin)gg.rotation.y=t*sp;
+      const tk=Math.floor(t*2);esc.rotation.y=tk*0.21+Math.min(1,(t*2-tk)*6)*0.21;pend.rotation.z=theta(t);
+      const u=st.dist+PZ-s.az0;const d=HU-u;hand.rotation.y=Math.max(-1.35,Math.min(1.35,(d)/11));
+      if(u>a0&&u<a1+10&&tk!==last){last=tk;if(AC&&st.mode==='play'){const a=AC.currentTime;noiseHit(a,'bandpass',tk%2?2600:1900,0.22,0.05,9);tone(a,'sine',tk%2?180:150,90,0.18,0.12);}}
+      if(st.mode!=='play')return;const pl=Math.round(st.camX/LANE);
+      if(!s.flags.g0&&u>s.GAPS[0]-42){s.flags.g0=1;toast('齒輪轉開了缺口，跳過去！','warn',1800);}
+      if(!s.flags.p0&&u>PU-62){s.flags.p0=1;toast('鐘擺！看準空檔換軌','warn',1800);}
+      if(!s.flags.pc&&u>=PU){s.flags.pc=1;const bx=PL*Math.sin(theta(t));if(Math.abs(bx-pl*LANE)<1.7)hit(null,'被巨大的鐘擺撞飛',true);else if(AC)noiseHit(AC.currentTime,'lowpass',260,0.5,0.6);}
+      if(!s.flags.h0&&u>HU-46){s.flags.h0=1;toast('分針掃過來了，蹲下！','warn',1800);}
+      if(!s.flags.hc&&u>=HU){s.flags.hc=1;if(st.duck<0.45)hit(null,'被巨大的分針掃中');else{st.shake=Math.max(st.shake,0.3);sfx.clunk();}}
+      for(let i=0;i<s.GAPS.length;i++){const q=s.GAPS[i];if(!s.flags['gp'+i]&&u>q+1&&u<q+5.5){if(st.jumpY<0.12){s.flags['gp'+i]=1;hit(null,'掉進轉動的齒輪裡',true);}}
+        if(u>q+5.5)s.flags['gp'+i]=1;}
+      if(!s.flags.end&&u>DU){s.flags.end=1;st.flash=0.6;sfx.boom();}});
+    anim.push(storyAnim(s,'clock',[30,240,DU-30]));
+    finishSet(s,g,own,anim);},
+
+  /* ===== the endless corridor ===== */
+  loop(s){const g=segGroup(s),own=[],anim=[],L=s.len,RL=s.RL,NR=s.NR,U0=20,CW=4.2,CHt=5.8;s.flags={};
+    const wallT=canvasTex(256,256,(c)=>{c.fillStyle='#4a5a46';c.fillRect(0,0,256,256);c.fillStyle='rgba(30,40,28,.6)';for(let y=0;y<256;y+=64)for(let x=(y/64%2)*32;x<256;x+=64){c.beginPath();c.ellipse(x+16,y+20,10,18,0,0,7);c.fill();c.beginPath();c.arc(x+16,y+44,5,0,7);c.fill();}
+      const gr=c.createLinearGradient(0,0,0,256);gr.addColorStop(0,'rgba(60,40,20,.25)');gr.addColorStop(1,'rgba(20,10,0,.0)');c.fillStyle=gr;c.fillRect(0,0,256,256);});wallT.wrapS=wallT.wrapT=T.RepeatWrapping;
+    const wallM=std2({map:wallT,roughness:0.85});const woodM=M.wood;const trimM=std2({map:TX.stone.map,color:new T.Color('#3a2418'),roughness:0.6});own.push(wallT,wallM,trimM);
+    const plate=(txt)=>{const t=canvasTex(128,64,(c)=>{c.fillStyle='#c8a050';c.fillRect(0,0,128,64);c.fillStyle='#2a1a08';c.font='bold 40px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(txt,64,34);});const m=bend(new T.MeshBasicMaterial({map:t}));own.push(t,m);return m;};
+    const clockT=canvasTex(128,128,(c)=>{c.fillStyle='#eadcb8';c.beginPath();c.arc(64,64,60,0,7);c.fill();c.strokeStyle='#2a1a0a';c.lineWidth=5;c.stroke();c.lineWidth=4;
+      c.beginPath();c.moveTo(64,64);c.lineTo(64+Math.cos(-Math.PI/2-0.2)*48,64+Math.sin(-Math.PI/2-0.2)*48);c.stroke();c.lineWidth=7;c.beginPath();c.moveTo(64,64);c.lineTo(64+Math.cos(-Math.PI/2-0.02)*32,64+Math.sin(-Math.PI/2-0.02)*32);c.stroke();});
+    const clockM=bend(new T.MeshBasicMaterial({map:clockT,transparent:true}));own.push(clockT,clockM);
+    // portraits of grandfather; the odd one out is the way out
+    const portrait=(v)=>{const t=canvasTex(256,320,(c)=>{c.fillStyle='#5a3a18';c.fillRect(0,0,256,320);c.fillStyle='#2a1c12';c.fillRect(18,18,220,284);
+      if(v==='inv'){c.translate(256,320);c.rotate(Math.PI);}
+      if(v!=='none'){c.fillStyle='#1c1410';c.beginPath();c.ellipse(128,300,90,70,0,Math.PI,0);c.fill();
+        c.fillStyle='#d8c0a0';c.beginPath();c.ellipse(128,160,52,64,0,0,7);c.fill();
+        c.fillStyle='#3a3020';c.beginPath();c.ellipse(128,108,64,30,0,Math.PI,0);c.fill();c.fillRect(60,104,136,12);
+        c.fillStyle=v==='red'?'#301010':'#ffe080';c.beginPath();c.arc(128,96,11,0,7);c.fill();
+        if(v==='tent'){c.strokeStyle='#4a6a50';c.lineWidth=9;c.lineCap='round';for(let k=0;k<7;k++){c.beginPath();c.moveTo(96+k*11,150);c.quadraticCurveTo(90+k*13+(k%2?14:-14),200,100+k*9,236);c.stroke();}
+          c.fillStyle='#c8ffd0';c.beginPath();c.arc(108,140,6,0,7);c.arc(148,140,6,0,7);c.fill();}
+        else{c.fillStyle=v==='red'?'#ff2010':'#1a1008';c.beginPath();c.arc(108,150,v==='red'?7:5,0,7);c.arc(148,150,v==='red'?7:5,0,7);c.fill();
+          c.fillStyle='#e8e4dc';c.beginPath();c.ellipse(128,198,30,18,0,0,Math.PI);c.fill();
+          c.strokeStyle='#4a2010';c.lineWidth=4;c.beginPath();if(v==='smile'){c.moveTo(84,184);c.quadraticCurveTo(128,236,172,184);}else{c.moveTo(112,186);c.lineTo(144,186);}c.stroke();}}
+      else{c.fillStyle='#120c08';c.fillRect(70,150,116,150);}
+      c.fillStyle='rgba(0,0,0,.25)';for(let k=0;k<40;k++)c.fillRect(rnd()*256,rnd()*320,2,2);});
+      const m=bend(new T.MeshBasicMaterial({map:t}));own.push(t,m);return m;};
+    const normP=portrait('n');const VAR=['red','inv','tent','smile','none'].sort(()=>rnd()-0.5);
+    const ans=[null];for(let k=1;k<NR;k++)ans.push([-1,0,1][rnd()*3|0]);s.ans=ans;
+    const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
+    const lampM=glowM('#ffd890',0.65),redM=glowM('#ff4030',0.55);const flick=[];
+    const rooms=[],ruins=[];
+    for(let k=0;k<NR;k++){const rg=new T.Group();rg.position.y=0.8;g.add(rg);rooms.push(rg);const RB=SB(rg,own);const uS=U0+k*RL,uE=uS+RL,um=uS+RL/2;
+      RB(2*CW,0.4,RL,4,woodM,0,-0.42,-um);for(const sd of [-1,1]){RB(0.3,CHt,RL,4,wallM,sd*CW,CHt/2-0.25,-um);RB(0.2,1.1,RL,3,trimM,sd*(CW-0.2),0.3,-um);RB(0.25,0.18,RL,3,trimM,sd*(CW-0.2),0.9,-um);}
+      RB(2*CW,0.3,RL,4,trimM,0,CHt,-um);
+      for(let u=uS+8,i=0;u<uE-8;u+=14,i++){for(const sd of [-1,1]){RB(0.15,2.7,1.3,3,trimM,sd*(CW-0.1),1.1,-u);RB(0.2,0.1,1.5,3,trimM,sd*(CW-0.12),2.5,-u);
+        const p=mesh(G.plane,plate(String(301+i*2+(sd>0?1:0))),rg,sd*(CW-0.2),2.8,-u,0.5,0.25,1);p.rotation.y=-sd*Math.PI/2;}}
+      for(let u=uS+6;u<uE-4;u+=10){RB(0.6,0.2,0.6,2,trimM,0,CHt-0.2,-u);const lm=mesh(G.plane,(k>=2&&u%20<10)?redM:lampM,rg,0,CHt-0.5,-u,3.4,3.4,1);lm.rotation.x=Math.PI/2;lm.userData.keep=true;if(k>=1&&(u|0)%30<10)flick.push([lm,rnd()*6]);}
+      {const c=mesh(G.plane,clockM,rg,-(CW-0.2),3.4,-(um),0.9,0.9,1);c.rotation.y=Math.PI/2;if(k===NR-1)c.scale.x=-0.9;}
+      // escalating wrongness
+      if(k>=2){const hm=bend(new T.MeshBasicMaterial({color:new T.Color('#5a0806'),transparent:true,opacity:0.8}));own.push(hm);for(let i=0;i<10;i++){const sd=rnd()<.5?-1:1;const p=mesh(G.plane,hm,rg,sd*(CW-0.17),0.8+rnd()*2.5,-(uS+rnd()*RL),0.3,0.4,1);p.rotation.y=-sd*Math.PI/2;}}
+      if(k===NR-1){const fg=new T.Group();fg.position.set(-(CW-0.9),0,-(um+20));rg.add(fg);mesh(G.cap,M.sleeveDark,fg,0,1.1,0,0.32,0.9,0.32);mesh(G.sphLo,M.sleeveDark,fg,0,1.95,0,0.24,0.28,0.24);
+        const e1=mesh(G.plane,glowM('#ffe0a0',0.9),fg,0.08,2.18,0.24,0.4,0.4,1);e1.userData.keep=true;}
+      // end wall with three doors
+      const dh=3.2;for(const [x0,x1] of [[-CW,-2.05],[-0.65,0.65],[2.05,CW]])RB(x1-x0,dh,0.4,3,wallM,(x0+x1)/2,dh/2-0.25,-uE);RB(2*CW,CHt-dh+0.25,0.4,3,wallM,0,(dh-0.25+CHt)/2,-uE);
+      for(const Ln of [-1,0,1]){const x=Ln*LANE;for(const sd of [-1,1])RB(0.14,dh,0.5,2,trimM,x+sd*0.7,dh/2-0.25,-(uE-0.05));RB(1.6,0.18,0.5,2,trimM,x,dh-0.2,-(uE-0.05));
+        const pm=(ans[k]===Ln)?portrait(VAR[(k-1)%VAR.length]):normP;const p=mesh(G.plane,pm,rg,x,4.45,-(uE-0.25),1.22,1.5,1);void p;
+        RB(1.36,0.08,0.08,2,trimM,x,5.24,-(uE-0.25));}
+      // what is left if the corridor gives way
+      const ru=new T.Group();ru.visible=false;ru.position.y=0.8;g.add(ru);ruins.push(ru);
+      for(let i=0;i<14;i++){const sd=rnd()<.5?-1:1;const p=mesh(G.box,woodM,ru,sd*(2.4+rnd()*2),-0.4-rnd()*1.5,-(uS+rnd()*RL),1.2+rnd()*2,0.2,2+rnd()*3);p.rotation.set(rnd()*0.4,rnd(),rnd()*0.5);}
+      for(let i=0;i<10;i++){const sd=rnd()<.5?-1:1;const p=mesh(G.box,wallM,ru,sd*(6+rnd()*14),rnd()*10-2,-(uS+rnd()*RL),0.3,2+rnd()*4,2+rnd()*5);p.rotation.set(rnd(),rnd(),rnd()*0.8);}
+      for(const Ln of [-1,0,1]){const x=Ln*LANE;for(const sd of [-1,1])mesh(G.box,trimM,ru,x+sd*0.7,1.35,-(uE-0.05),0.14,3.2,0.5);}}
+    {const ex=mesh(G.plane,glowM('#fff4d8',0.9),g,0,2,-(U0+NR*RL+30),30,20,1);ex.userData.keep=true;}
+    for(const rg of rooms)own.push(...mergeStatic(rg));
+    const say=k=>narrate('神話見聞・'+TERR_NAME.loop,ZONE_STORY.loop[k],k===0?'m_loop':null);
+    const escape=k=>{s.escaped=k;for(let j=k+1;j<NR;j++){rooms[j].visible=false;ruins[j].visible=true;}if(s.darkRs)s.darkRs[0][1]=s.az0+U0+(k+1)*RL;
+      st.shake=Math.max(st.shake,0.7);sfx.boom();st.flash=0.7;toast('牆壁崩開了！','good',1800);s.flags.n2||(s.flags.n2=1,say(2));};
+    anim.push(t=>{for(const [lm,ph] of flick)lm.visible=Math.sin(t*19+ph)+Math.sin(t*5.3+ph*2)>-1.1;
+      if(st.mode!=='play')return;const u=st.dist+PZ-s.az0,pl=Math.round(st.camX/LANE);
+      if(!s.flags.n0&&u>U0-6){s.flags.n0=1;say(0);}
+      for(let k=0;k<NR;k++){const uE=U0+(k+1)*RL;if(s.flags['d'+k]||u<uE)continue;s.flags['d'+k]=1;if(s.escaped!=null)continue;
+        if(ans[k]!=null&&pl===ans[k])escape(k);
+        else if(k<NR-1){st.flash=0.45;if(AC){const a=AC.currentTime;tone(a,'sine',140,70,0.3,1.2);noiseHit(a,'lowpass',300,0.3,0.8);}toast('……又是同一條走廊','warn',1800);if(!s.flags.n1){s.flags.n1=1;say(1);}}
+        else{hit(null,'在無限迴廊裡迷失了');escape(k);}}});
+    finishSet(s,g,own,anim);},
+
+  /* ===== the other cart: an old man who is me ===== */
+  twin(s){const g=segGroup(s),own=[],anim=[],L=s.len,BU=s.BU;s.flags={};
+    // forked rails peeling off both sides near the end
+    for(const sd of [-1,1]){for(let u=BU;u<L;u+=2.2){const k=(u-BU)/90,x=sd*(LANE*1+k*k*16),x2=sd*(LANE*1+((u+2.2-BU)/90)**2*16);const a=Math.atan2(x2-x,2.2);
+      const sl=mesh(G.box,M.wood,g,x,-0.05,-u,1.36,0.13,0.24);sl.rotation.y=a;for(const r of [-0.62,0.62]){const rl=mesh(G.box,M.rust,g,x+r*Math.cos(a),0.08,-u+r*Math.sin(a)*0,0.075,0.13,2.3);rl.rotation.y=-a;}}}
+    // the cart and its driver
+    const tw=new T.Group();g.add(tw);const body=new T.Group();tw.add(body);
+    const rustM=M.rust,ironM=M.iron;const coat=std2({color:new T.Color('#2a2e30'),roughness:0.8});const skin=std2({color:new T.Color('#c8a68a'),roughness:0.7});const hair=std2({color:new T.Color('#d8d4cc'),roughness:0.9});
+    const glove=std2({color:new T.Color('#6a4028'),roughness:0.55});own.push(coat,skin,hair,glove);
+    mesh(G.box,rustM,body,0,0.62,0,1.3,0.8,1.9);mesh(G.box,ironM,body,0,1.05,0,1.42,0.1,2.02);for(const x of [-0.55,0.55])for(const z of [-0.65,0.65]){const w=mesh(G.cyl,ironM,body,x,0.24,z,0.28,0.14,0.28);w.rotation.z=Math.PI/2;}
+    const man=new T.Group();man.position.set(0,0.9,0.25);body.add(man);
+    mesh(G.cap,coat,man,0,0.55,0,0.32,0.5,0.26);const head=new T.Group();head.position.set(0,1.2,0);man.add(head);
+    mesh(G.sphLo,skin,head,0,0,0,0.19,0.22,0.2);mesh(G.cone,hair,head,0,-0.2,-0.12,0.15,0.28,0.1).rotation.x=Math.PI*0.92;mesh(G.sphLo,glove,head,0,0.1,0,0.22,0.13,0.23);mesh(G.cyl,glove,head,0,0.08,0,0.27,0.03,0.27);
+    const lamp=mesh(G.sphLo,M.glowGold,head,0,0.12,-0.21,0.06,0.06,0.04);lamp.userData.keep=true;
+    const beamM=bend(new T.MeshBasicMaterial({color:new T.Color('#ffe8b0'),transparent:true,opacity:0.05,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(beamM);
+    const beam=mesh(G.cone,beamM,head,0,0.1,-2.6,0.6,5,0.6);beam.rotation.x=Math.PI/2;beam.userData.keep=true;
+    for(const sd of [-1,1])mesh(G.box,glove,man,sd*0.32,0.25,-0.62,0.14,0.12,0.2);
+    const armR=new T.Group();armR.position.set(0.3,0.75,0);man.add(armR);mesh(G.box,coat,armR,0,-0.25,-0.2,0.13,0.13,0.62).rotation.x=0.9;const hnd=mesh(G.box,glove,armR,0,-0.52,-0.47,0.14,0.12,0.2);void hnd;
+    const armL=new T.Group();armL.position.set(-0.3,0.75,0);man.add(armL);mesh(G.box,coat,armL,0,-0.25,-0.2,0.13,0.13,0.62).rotation.x=0.9;mesh(G.box,glove,armL,0,-0.52,-0.47,0.14,0.12,0.2);
+    const brk=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ff2010'),opacity:0}));own.push(brk);
+    for(const x of [-0.45,0.45]){const b=mesh(G.plane,brk,body,x,0.8,0.98,0.7,0.5,1);b.userData.keep=true;}
+    tw.visible=false;
+    const S={r:-40,x:LANE,lane:1,cyc:-1};
+    const say=k=>narrate('神話見聞・'+TERR_NAME.twin,ZONE_STORY.twin[k],k===0?'m_twin':null);
+    const sideOf=pl=>pl===1?-1:pl===-1?1:(rnd()<.5?-1:1);
+    anim.push(t=>{const u=st.dist+PZ-s.az0,pl=Math.round(st.camX/LANE),play=st.mode==='play';
+      let rT=S.r,lT=S.lane,brake=0;
+      if(u<70){rT=-40;}
+      else if(u<150){if(!s.flags.a){s.flags.a=1;S.lane=pl+sideOf(pl);S.x=S.lane*LANE;S.r=-30;if(play){say(0);st.lookBack=1.2;if(AC){const a=AC.currentTime;noiseHit(a,'bandpass',900,0.3,1.4,2);}}}rT=-30+(u-70)/80*27;lT=S.lane;}
+      else if(u<200){rT=-3+(u-150)/50*10;lT=S.lane;}
+      else if(u<380){const c=Math.floor((u-200)/60),cu=(u-200)%60;if(c!==S.cyc){S.cyc=c;S.cut=pl;}
+        lT=S.cut;if(cu<20)rT=16;else if(cu<45){rT=16-(cu-20)/25*17;brake=1;}else rT=Math.min(16,-1+(cu-45)/15*17);
+        if(play&&brake&&!s.flags['w'+c]&&cu>20){s.flags['w'+c]=1;toast(c===0?'它突然煞車！快換軌！':'又煞車了！','warn',1300);if(AC)tone(AC.currentTime,'square',1200,800,0.06,0.3);}
+        if(play&&!s.flags['c'+c]&&Math.abs(S.x-pl*LANE)<0.8&&S.r<PZ+2.1&&S.r>-1.2){s.flags['c'+c]=1;hit(null,'追撞上另一台礦車');S.r=8;}}
+      else if(u<BU){if(!s.flags.b){s.flags.b=1;S.lane=pl+sideOf(pl);if(play)say(1);}lT=S.lane;rT=3.2;}
+      else{if(!s.flags.c){s.flags.c=1;if(play)say(2);}lT=S.lane;rT=3.2-(u-BU)*0.05;}
+      S.r+=(rT-S.r)*Math.min(1,0.06*(brake?2:1));let tx=lT*LANE;
+      const az=st.dist+PZ+S.r,tu=az-s.az0;if(tu>BU){const k=(tu-BU)/90;tx=Math.sign(lT||1)*(LANE+k*k*16);}
+      S.x+=(tx-S.x)*0.08;tw.visible=u>70&&u<L+20;tw.position.set(S.x,trackH(az)+0.02,-tu);
+      const dx=S.x-st.camX;body.rotation.y=-(tx-S.x)*0.25;brk.opacity=brake?0.9:0;
+      const alongside=u>=BU-60;head.rotation.y=alongside?Math.sign(dx||1)*1.3:0;man.rotation.y=alongside?Math.sign(dx||1)*0.5:0;
+      armR.rotation.z=alongside?-2.4+Math.sin(t*7)*0.4:0;armR.rotation.x=alongside?-0.4:0;
+      beam.visible=!alongside;});
+    finishSet(s,g,own,anim);},
+
+  /* ===== on the back of the sleeping god ===== */
+  godback(s){const g=segGroup(s),own=[],anim=[],L=s.len;s.flags={};
+    const scT=canvasTex(256,256,(c)=>{c.fillStyle='#2e3a36';c.fillRect(0,0,256,256);for(let y=0;y<256;y+=22)for(let x=(y/22%2)*14;x<256;x+=28){const gr=c.createRadialGradient(x,y,2,x,y,16);gr.addColorStop(0,'#55665c');gr.addColorStop(1,'#1c2422');c.fillStyle=gr;c.beginPath();c.ellipse(x,y,14,11,0,0,7);c.fill();}});
+    scT.wrapS=scT.wrapT=T.RepeatWrapping;scT.repeat.set(6,6);
+    const skin=std2({map:scT,bumpMap:scT,bumpScale:0.3,color:new T.Color('#c0d4c4'),roughness:0.28,metalness:0.15});const pusM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#9aff60'),opacity:0.8}));own.push(pusM);const bone=M.bone;
+    const fleshM=std2({color:new T.Color('#4a2a30'),roughness:0.4});own.push(scT,skin,fleshM);
+    const glowM=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o==null?1:o}));own.push(m);return m;};
+    const slices=[];
+    for(let u=24;u<L-40;u+=20){const sl=new T.Group();sl.position.z=-u;g.add(sl);const head=u>L-200;const top=s.base(u)-0.65;
+      const ry=head?18:14,rx=head?50:34;mesh(G.blob,skin,sl,0,top-ry*0.97,0,rx,ry,15);
+      for(const sd of [-1,1]){for(let k=0;k<2;k++){const pz=-6+k*9+(rnd()-.5)*2;const pl=mesh(G.box,skin,sl,sd*(3.4+k*0.3),top-0.1,pz,2.4,0.9,5.5);pl.rotation.set(0.25,0,-sd*0.35);}
+        for(let k=0;k<3;k++){const x=sd*(9+rnd()*14),y=top-1-Math.pow(Math.abs(x)/rx,2)*ry*0.9;const p=mesh(G.plane,pusM,sl,x,y+0.4,(rnd()-.5)*12,1.4,1.4,1);p.rotation.x=-Math.PI/2;p.userData.keep=true;}}
+      for(const sd of [-1,1]){mesh(G.blob,skin,sl,sd*rx*0.75,top-ry*1.4,(rnd()-.5)*6,rx*0.5,ry*0.9,12);
+        for(let k=0;k<3;k++){const x=sd*(4.5+k*3.5+rnd()*2);const h=2+rnd()*5+(head?2:0);const c=mesh(G.cone,bone,sl,x,top+h/2-0.6-k*0.9,(rnd()-.5)*12,0.5+h*0.12,h,0.5+h*0.12);c.rotation.z=-sd*(0.35+k*0.15);}
+        for(let k=0;k<4;k++)mesh(G.sphLo,bone,sl,sd*(10+rnd()*20),top-1-rnd()*4,(rnd()-.5)*14,0.6+rnd()*0.8,0.4,0.6+rnd()*0.8);
+        if(!head&&rnd()<0.6){let x=sd*(rx*0.9),y=-1,z=(rnd()-.5)*8;for(let j=0;j<12;j++){const r=0.9*(1-j/12)+0.2;mesh(G.sphLo,fleshM,sl,x,y,z,r,r,r);x+=sd*(0.8+j*0.05);y+=Math.sin(j*0.7)*0.6+0.2;z+=Math.cos(j*0.5)*0.6;}}}
+      own.push(...mergeStatic(sl));sl.userData.u=u;slices.push(sl);}
+    // spikes poking up through the rails' lanes
+    const spikes=[];for(const [u,Ln] of s.SP){const sp=new T.Group();g.add(sp);mesh(G.cone,bone,sp,0,0.7,0,0.45,1.5,0.45);mesh(G.sphLo,skin,sp,0,0,0,0.9,0.35,0.9);sp.position.set(Ln*LANE,0,-u);sp.userData={u,Ln};spikes.push(sp);}
+    // breathing vents on the head
+    const vents=[];for(const [u,sd] of s.VENTS){const v=new T.Group();g.add(v);v.position.set(sd*7.5,0,-u);mesh(G.torus,fleshM,v,0,0,0,2.2,2.2,1.4).rotation.x=Math.PI/2;mesh(G.cyl,M.blackstone,v,0,-0.1,0,1.9,0.3,1.9);
+      const m=glowM('#e8f4ff',0);const p=mesh(G.plane,m,v,0,3,0,6,9,1);p.userData.keep=true;v.userData={u,sd,m,p};vents.push(v);}
+    // the eye, shut, on the flank of the head
+    const eye=new T.Group();eye.position.set(-40,6,-(L-110));g.add(eye);mesh(G.blob,skin,eye,0,0,0,11,7,10);
+    const irisM=glowM('#ff8020',0);const ir=mesh(G.plane,irisM,eye,6,0,4,12,5,1);ir.rotation.y=0.9;ir.userData.keep=true;
+    const lid=mesh(G.box,fleshM,eye,9.5,0,3,0.6,0.5,12);lid.rotation.y=0.9;
+    const heave=(u,t)=>s.env(u)*1.4*Math.sin(t*s.W-u*0.05);
+    anim.push(t=>{for(const sl of slices)sl.position.y=heave(sl.userData.u,t);
+      for(const sp of spikes){const d=sp.userData;sp.position.y=s.base(d.u)+heave(d.u,t)-0.1;}
+      for(const v of vents){const d=v.userData;v.position.y=s.base(d.u)+heave(d.u,t)-0.5;}
+      if(st.mode!=='play'){return;}const u=st.dist+PZ-s.az0,pl=Math.round(st.camX/LANE);
+      if(AC&&Math.floor(t/4.6)!==s.flags.br&&u>0&&u<L){s.flags.br=Math.floor(t/4.6);noiseHit(AC.currentTime,'lowpass',160,0.35,2.6);}
+      for(const sp of spikes){const d=sp.userData;if(!s.flags['s'+d.u]&&u>=d.u){s.flags['s'+d.u]=1;if(pl===d.Ln&&st.jumpY<0.7)hit(null,'撞上巨神背上的骨刺');}}
+      for(const v of vents){const d=v.userData;const w=u-(d.u-52),b=u-(d.u-6);
+        if(w>0&&!s.flags['vw'+d.u]){s.flags['vw'+d.u]=1;toast((d.sd<0?'左':'右')+'邊的鼻孔要噴氣了！別待在'+(d.sd<0?'最右邊':'最左邊'),'warn',1700);if(AC)noiseHit(AC.currentTime,'bandpass',300,0.25,1.4,1);}
+        d.m.opacity=w>0&&b<0?Math.min(0.6,w/46*0.6):b>=0&&b<14?0.95*(1-b/14):0;d.p.scale.set(6+Math.max(0,b)*0.8,9+Math.max(0,b)*1.4,1);
+        if(b>=0&&!s.flags['vb'+d.u]){s.flags['vb'+d.u]=1;const nl=st.lane-d.sd;sfx.roar();st.shake=Math.max(st.shake,0.6);lensDrops(14);
+          if(Math.abs(nl)>1)hit(null,'被巨神的鼻息吹下軌道');else{st.lane=nl;toast('被吹開了！','warn',900);}}}
+      if(!s.flags.eye&&u>L-150){s.flags.eye=1;sfx.roar();st.shake=Math.max(st.shake,0.9);toast('祂的眼睛……動了！','warn',1800);}
+      const eo=s.flags.eye?Math.max(0,Math.sin(Math.min(Math.PI,(u-(L-150))/60*Math.PI))):0;irisM.opacity=eo*0.95;lid.scale.y=1+eo*12;});
+    anim.push(storyAnim(s,'godback',[30,L-300,L-140]));
+    finishSet(s,g,own,anim);}
 };
 function titanMesh(k){if(HQ.spr&&HQ.spr.titan){const g=new T.Group();const leg=(x,z,flip)=>{const l=new T.Group();l.position.set(x,60,z);g.add(l);const sp=puppet('titan',125,0.35);sp.position.x=flip?-30:30;if(flip)sp.scale.x=-1;l.add(sp);l.userData.sp=sp;return l;};
     k.parts={A:leg(6,0,false),B:leg(-62,-80,true)};return g;}
@@ -3019,6 +3260,7 @@ function update(dt){
   else if(cs&&cs.type==='madness'){const u=st.dist+PZ-cs.az0;const tg=cs.cut&&cs.cut.on?1.1:(u>370&&u<1000)?7.5:17;st.slow=1;st.speed+=(tg-st.speed)*Math.min(1,dt*1.0);}
   else if(cs&&cs.type==='crater'){st.slow=1;const u=st.dist+PZ-cs.az0;const tg=(u>190&&u<530)?14:23;st.speed+=(tg-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.type==='maw'){st.slow=1;st.speed+=(15-st.speed)*Math.min(1,dt*1.2);}
+  else if(cs&&cs.spd&&playing){st.slow=1;st.speed+=(cs.spd-st.speed)*Math.min(1,dt*1.2);}
   else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.005):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
   {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.5:1;const F=st.focus;
    if(F&&slowOK){const dzT=F.az-st.dist;const near=Math.abs(F.x)>2?(dzT<(F.far?24:9)&&dzT>-1):(dzT<16&&dzT>2);tk=near?0.03:(dzT>14?1:0.45);}
@@ -3173,7 +3415,7 @@ function render(){
       let yaw=Math.atan2(-dx,-dzw);yaw=Math.max(-1.5,Math.min(1.5,yaw));const pit=Math.atan2(dy,Math.hypot(dx,dzw));
       camera.rotation.y+=(yaw-camera.rotation.y)*fw;camera.rotation.x+=(pit-camera.rotation.x)*fw*0.85;camera.rotation.z*=1-fw*0.8;}}
    const lb=st.lookBack||0;if(lb>0){const k=Math.sin(Math.min(1,(1-lb)/0.25)*Math.PI/2)*ss(lb/0.3);camera.rotation.y+=3.08*k;camera.rotation.x+=0.1*k;}}
-  mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30));for(const b of banks){b.ml.visible=b.mr.visible=!alien;}trees.trunk.visible=trees.crown.visible=!alien;for(const m of mountains)m.visible=!alien;}
+  mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30)||nearType(st.dist+40,'clock',40)||nearType(st.dist+40,'loop',40)||nearType(st.dist+40,'godback',40));for(const b of banks){b.ml.visible=b.mr.visible=!alien;}trees.trunk.visible=trees.crown.visible=!alien;for(const m of mountains)m.visible=!alien;}
   if(st.mode==='intro'){const t=intro.t;const fp=t>=27;cart.visible=fp;flashL.intensity=(t>=13&&!fp)?3.2:(fp?1.2:0);
     if(!fp){const walk=t<20;camera.position.set(Math.sin(t*0.6)*0.2+(rnd()-.5)*st.shake*0.05,(walk?1.66+Math.abs(Math.sin(t*3.6))*0.04:1.5)+(rnd()-.5)*st.shake*0.05,0);
       camera.rotation.set(walk?-0.04+Math.sin(t*3.6)*0.006:-0.13,Math.sin(t*0.45)*0.05,Math.sin(t*1.8)*0.008);}}
