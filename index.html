@@ -1474,12 +1474,12 @@ const SCENIC={
       for(const [k,f] of [[0,0.22],[1,0.6]]){if(!s.flags['pk'+k]&&u>a0+P[1]*f-30&&st.mode==='play'){s.flags['pk'+k]=1;toast(k?'不要往下看…':'風好大，抓緊','warn',2200);}}});
     anim.push(storyAnim(s,'cliff',[a0*0.45,a0+P[1]*0.32,a0+P[1]*0.78]));
     finishSet(s,g,own,anim);},
-  seatube(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,D=s.D;s.flags={};const LT=s.ext?s.V0+100:L,LS=s.ext?s.V0:L;const TR=4.6,yc=-D+1.4;
-    const sb=new T.PlaneGeometry(460,LT+300,8,40);sb.rotateX(-Math.PI/2);const uv=sb.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*46,uv.getY(i)*(LT+300)/10);own.push(sb);
-    const bed=new T.Mesh(sb,M.sand);bed.position.set(0,-D-4,-LT/2);g.add(bed);
+  seatube(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,D=s.D;s.flags={};const LT=s.ext?s.V0+100:L,LS=s.ext?s.V0:L;const TR=4.6,yc=-D+1.4;const BL=s.ext?s.V0+150:LT+300,BZ=s.ext?-(s.V0-150)/2-2:-LT/2;// in the long version the seabed stops at the lip of the whirlpool instead of the rails diving through it
+    const sb=new T.PlaneGeometry(460,BL,8,40);sb.rotateX(-Math.PI/2);const uv=sb.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*46,uv.getY(i)*BL/10);own.push(sb);
+    const bed=new T.Mesh(sb,M.sand);bed.position.set(0,-D-4,BZ);g.add(bed);
     const cm=bend(new T.MeshBasicMaterial({map:getCaustic(),transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#5ab8c8'),opacity:0.55}));own.push(cm);
-    cm.map=getCaustic().clone();cm.map.needsUpdate=true;cm.map.repeat.set(40,(LT+300)/12);own.push(cm.map);
-    const cp=new T.Mesh(new T.PlaneGeometry(460,LT+300,8,40).rotateX(-Math.PI/2),cm);own.push(cp.geometry);cp.position.set(0,-D-3.95,-LT/2);cp.userData.keep=true;g.add(cp);
+    cm.map=getCaustic().clone();cm.map.needsUpdate=true;cm.map.repeat.set(40,BL/12);own.push(cm.map);
+    const cp=new T.Mesh(new T.PlaneGeometry(460,BL,8,40).rotateX(-Math.PI/2),cm);own.push(cp.geometry);cp.position.set(0,-D-3.95,BZ);cp.userData.keep=true;g.add(cp);
     anim.push(t=>{cm.map.offset.set(t*0.04,t*0.025);});
     const portal=(u0,u1,dir)=>{for(let u=u0;u<u1;u+=4){const h=trackH(s.az0+u+2);const z=-u-2;for(const sd of [-1,1])B(0.6,8,4.05,6,M.concrete,sd*5,h+1.4,z);B(10.6,0.6,4.05,6,M.concrete,0,h+5.4,z);B(10.6,0.5,4.05,6,M.concrete,0,h-0.4,z);
         if(Math.round(u)%12===0){mesh(G.box,M.lamp,g,4.6,h+3.6,z,0.08,0.12,0.8).userData.keep=false;}}
@@ -2029,8 +2029,9 @@ function getSwirl(){if(swirlMat)return swirlMat;swirlMat=new T.ShaderMaterial({u
     float al=(0.32+0.45*n+0.35*st)*smoothstep(260.0,40.0,vD)*smoothstep(14.0,45.0,vD);gl_FragColor=vec4(c,al);}`});return swirlMat;}
 function buildAbyss(s,g,own,anim,B){const D=s.D,V0=s.V0,V1=s.V1,A1=s.A1,L=s.len,Y0=-D-s.DEEP;s.flags=s.flags||{};
   // the funnel: a spinning cone of water narrowing to the city below
-  const prof=[];for(let i=0;i<=24;i++){const y=-175+i*175/24;prof.push(new T.Vector2(9+150*Math.pow(i/24,1.7),y));}
-  const fgeo=new T.LatheGeometry(prof,64);own.push(fgeo);const fun=new T.Mesh(fgeo,getSwirl());fun.position.set(0,0,-(V1-30));fun.userData.keep=true;g.add(fun);
+  // wide enough that the dropping rails stay inside the vortex the whole way down, and it ends above the drowned city
+  const prof=[];for(let i=0;i<=24;i++){const f=i/24;const y=-130+f*126;prof.push(new T.Vector2(40+222*Math.pow(f,1.15),y));}
+  const fgeo=new T.LatheGeometry(prof,64);own.push(fgeo);const fun=new T.Mesh(fgeo,getSwirl());fun.position.set(0,0,-(V1-20));fun.userData.keep=true;g.add(fun);
   
   // wreckage caught in the current
   const dN=70,dgeo=new T.BoxGeometry(1,1,1);own.push(dgeo);const deb=new T.InstancedMesh(dgeo,M.wood,dN);deb.frustumCulled=false;g.add(deb);
@@ -2075,7 +2076,7 @@ function buildAbyss(s,g,own,anim,B){const D=s.D,V0=s.V0,V1=s.V1,A1=s.A1,L=s.len,
     if(Math.round(u)%27<9){const gl=mesh(G.plane,glowC,g,7.4,h+4,-u,3,3,1);gl.rotation.y=-Math.PI/2;gl.userData.keep=true;}}
   let lt=0;
   anim.push(t=>{const dt=Math.min(0.05,Math.max(0,t-lt));lt=t;swirlU.uTime.value=t;fun.rotation.y=t*0.35;
-    for(let i=0;i<dN;i++){const q=dseed[i];const r=Math.max(16,9+150*Math.pow((q[1]+175)/175,1.7)*q[2]);const a=q[0]+t*q[4]*(1.4-q[2]);_o.position.set(Math.cos(a)*r,q[1]+Math.sin(t+q[0])*2,fun.position.z+Math.sin(a)*r);
+    for(let i=0;i<dN;i++){const q=dseed[i];const r=Math.max(16,(40+222*Math.pow(Math.max(0,Math.min(1,(q[1]+130)/126)),1.15))*q[2]);const a=q[0]+t*q[4]*(1.4-q[2]);_o.position.set(Math.cos(a)*r,q[1]+Math.sin(t+q[0])*2,fun.position.z+Math.sin(a)*r);
       _o.rotation.set(t*q[4],a,t*0.3);_o.scale.set(q[3],q[5]*0.4+0.2,q[5]);_o.updateMatrix();deb.setMatrixAt(i,_o.matrix);}deb.instanceMatrix.needsUpdate=true;
     for(let i=0;i<bubN;i++){const q=bseed[i];const y=((q[1]+t*q[3]*3)%170)-170+ -D*0;bp[i*3]=q[0]+Math.sin(t*2+i)*0.3;bp[i*3+1]=y;bp[i*3+2]=-q[2];}bg.attributes.position.needsUpdate=true;
     for(const j of jel){const p=j.userData;j.position.set(p.x+Math.sin(t*0.3+p.ph)*2,p.y+Math.sin(t*0.8+p.ph)*1.5,-p.u);j.scale.y=1+0.15*Math.sin(t*2+p.ph);}
