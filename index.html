@@ -1423,7 +1423,7 @@ const SCENIC={
     const rays=sm('#fff4dc',0.08,true);for(let i=0;i<5;i++){const r=new T.Mesh(G.plane,rays);r.position.set(330+i*40,40,-520);r.scale.set(26,300,1);r.rotation.z=0.35+i*0.05;sky.add(r);}
     // the mountain the track clings to: a sheer wall on the left for the whole climb and ledge
     for(let u=0;u<a1+24;u+=30)B(36,H+140,30.5,16,M.rock,-2.7-18,(H+140)/2-62,-u-15,0,0,(rnd()-.5)*0.02);
-    for(let u=a0-30;u<a1;u+=18){const m=mesh(rockG(),M.rock,g,-3.4-rnd()*2,H+6+rnd()*30,-u-rnd()*10,5+rnd()*7,4+rnd()*6,5+rnd()*7);m.rotation.y=rnd()*3;}
+    for(let u=a0-30;u<a1;u+=18){const sc=5+rnd()*7;const m=mesh(rockG(),M.rock,g,-2.9-sc*1.15,H+6+rnd()*30,-u-rnd()*10,sc,4+rnd()*6,sc);m.rotation.y=rnd()*3;}
     // the ledge: one rock shelf just wider than the rails; its outer face drops straight to the sea
     const gaps=[[a0+P[1]*0.38,a0+P[1]*0.38+16],[a0+P[1]*0.66,a0+P[1]*0.66+22]];s.gaps=gaps;
     for(const [g0,g1] of gaps){for(let u=g0;u<=g1;u+=3.2){const h=trackH(s.az0+u);const p=mesh(G.box,M.wood,g,-0.15,h-4.6,-u,0.16,9,0.16);p.rotation.z=0.55;const q=mesh(G.box,M.wood,g,0.05,h-0.28,-u,1.5,0.14,0.2);}
@@ -3622,6 +3622,8 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
         case 'bottle':if(pl===o.lane&&st.duck<0.8){o.got=true;sfx.gear();st.bonus+=40;showStory(nextStory(false));}break;
         case 'sign':if(pl===o.lane&&st.duck<0.8){o.got=true;st.hearts=MAXH;renderPips();st.shield=8;sfx.heal();if(AC){const t=AC.currentTime;[660,880,1320].forEach((f,i)=>tone(t+0.1+i*0.09,'sine',f,f*1.01,0.1,0.6));}toast(st.signTold?'✶ 舊印：血量補滿・8 秒無敵':'✶ 撿到舊印！血量全滿，接下來 8 秒什麼都傷不了你','good',st.signTold?1600:2600);st.signTold=1;}break;
       }}
+    // long single-track set pieces (the cliff ledge, the fork): steer the cart over in good time instead of slamming into the end board
+    for(const e of laneEnds()){const z=e.az-st.dist;if(z>4&&z<34&&st.lane===e.L&&playing){const nx=segAt(e.az+1);if(nx&&(nx.msg||nx.type==='cliff'||nx.type==='fork')){const opts=[-1,0,1].filter(L=>laneOn(L,e.az+2));if(opts.length){opts.sort((a,b)=>Math.abs(a-st.lane)-Math.abs(b-st.lane));const tl=opts[0];if(Math.abs(tl-st.lane)>1)st.lane+=Math.sign(tl-st.lane);else st.lane=tl;if(!st.autoT||st.time-st.autoT>3){st.autoT=st.time;toast(nx.msg||'只剩一條軌道，礦車自己切了過去','warn',1600);}}}}}
     for(const e of laneEnds()){const z=e.az-st.dist;if(z<=PZ&&z+dz>PZ&&pl===e.L){sfx.clunk();st.shake=Math.max(st.shake,0.5);st.slow=0.6;st.red=0.4;toast('差點衝出軌道！','warn');snapLane();}}
     if(!laneOn(st.lane,st.dist+PZ+0.5))snapLane();
   }
