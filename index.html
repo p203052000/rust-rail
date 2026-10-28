@@ -624,7 +624,7 @@ function makeSeg(type,o){let s;
   else if(type==='madness'){s={type,lanes:[1,1,1],len:1150,pal:'antarctic'};}
   else if(type==='spiral'){s={type,lanes:[1,1,1],len:380};}
   else if(type==='fork'){s={type,lanes:[1,0,1],len:230};}
-  else if(type==='crater'){s={type,lanes:[1,1,1],len:720,pal:'crater'};}
+  else if(type==='crater'){s={type,lanes:[1,1,1],len:740,pal:'crater'};}
   else if(type==='maw'){s={type,lanes:[1,1,1],len:430,pal:'abyss'};}
   else if(type==='zone'){const sub=o.sub||pick(ZONES.filter(z=>z!==lastZone));lastZone=sub;s={type,sub,len:300,lanes:[1,1,1],pal:sub};}
   else if(['harbor','camp','waterfall','whalebone','lighthouse','graveyard'].includes(type))s={type,len:type==='waterfall'?120:type==='whalebone'?140:170+rnd()*40,lanes:[1,1,1]};
@@ -656,7 +656,7 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
     if(v<G){const t=v/G,m0=2*s.H1/b*G,m1=-2*s.H2/c*G;const t2=t*t,t3=t2*t;return (2*t3-3*t2+1)*s.H1+(t3-2*t2+t)*m0+(-2*t3+3*t2)*s.H2+(t3-t2)*m1;}v-=G;
     if(v<c)return s.H2*Math.pow(1-v/c,2);return 0;}
   if(s.type==='cliff'){const H=s.H,P=s.P;let v=u;if(v<P[0])return H*ss(v/P[0]);v-=P[0];if(v<P[1])return H;v-=P[1];if(v<P[2])return H*(1-ss(v/P[2]));return 0;}
-  if(s.type==='crater'){if(u<200)return 76*ss(u/200)+0.3;if(u<300)return 76.3-44*ss((u-200)/100);if(u<420){let h=32.3;const d=u-360;if(Math.abs(d)<40)h+=9*(1-(d/40)*(d/40));return h;}if(u<520)return 32.3+44*ss((u-420)/100);if(u<700)return 76*(1-ss((u-520)/180))+0.3;return 0;}
+  if(s.type==='crater'){if(u<200)return 76*ss(u/200)+0.3;if(u<300)return 76.3-44*ss((u-200)/100);if(u<420){let h=32.3;const d=u-360;if(Math.abs(d)<40)h+=9*(1-(d/40)*(d/40));return h;}if(u<520)return 32.3+44*ss((u-420)/100);if(u<732)return Math.min(76.3,76*ss((732-u)/200)+0.3);return 0.3*(1-ss((u-732)/6));}
   if(s.type==='maw'){return 0.45*ss((u-90)/20)*ss((L-60-u)/20);}
   if(s.type==='seatube'){const D=s.D;if(u<92)return -D*ss((u-10)/80);
     if(s.ext){if(u<s.V0)return -D+Math.sin((u-92)*0.025)*1.2;if(u<s.V1)return -D-s.DEEP*ss((u-s.V0)/(s.V1-s.V0))+Math.sin((u-92)*0.025)*1.2*(1-ss((u-s.V0)/60));
@@ -1670,7 +1670,7 @@ const PAL={
   base:{storm:0,fog:'#8a9798',zen:'#283033',hor:'#8a9798',cd:'#2a3134',cl:'#6e7a7d',murk:'#2c3a33',deep:'#1a2724',hemi:'#b7c4c8',sun:'#e4ebee',hemiI:1.15,sunI:0.9,rain:1,stars:0,exp:1.05,fogk:1},
   red:{fog:'#6e2a22',zen:'#1e0606',hor:'#9a3a28',cd:'#300a08',cl:'#a8402a',murk:'#4e1610',deep:'#260706',hemi:'#ff9a84',sun:'#ff6a4a',hemiI:1.05,sunI:0.9,rain:0.5,stars:0,exp:1.1},
   orange:{fog:'#8a4e26',zen:'#24100a',hor:'#d0702e',cd:'#40180a',cl:'#e0843a',murk:'#4a2a16',deep:'#22120a',hemi:'#ffb878',sun:'#ff9a4a',hemiI:1.15,sunI:1.1,rain:0,stars:0,exp:1.12},
-  yellow:{fog:'#b09a58',zen:'#4a3c18',hor:'#f0d27a',cd:'#6a5628',cl:'#ffe6a0',murk:'#5e4e28',deep:'#2e2610',hemi:'#fff0b8',sun:'#ffe2a0',hemiI:1.35,sunI:1.2,rain:0,stars:0,exp:1.12},
+  yellow:{fog:'#9a7e40',zen:'#24180a',hor:'#c8964a',cd:'#4a3a1c',cl:'#d8b870',murk:'#5e4e28',deep:'#2e2610',hemi:'#fff0b8',sun:'#ffe2a0',hemiI:1.35,sunI:1.2,rain:0,stars:0,exp:1.12},
   green:{fog:'#24463a',zen:'#04120c',hor:'#2c6450',cd:'#08180f',cl:'#2a5a44',murk:'#12281c',deep:'#06120c',hemi:'#80ffc4',sun:'#8affd0',hemiI:0.85,sunI:0.4,rain:0.3,stars:0.35,exp:1.15},
   blue:{fog:'#9cc6e2',zen:'#2a5c90',hor:'#cfe8f6',cd:'#7090b0',cl:'#eaf6ff',murk:'#1c4c6c',deep:'#0a2a42',hemi:'#d8f0ff',sun:'#ffffff',hemiI:1.45,sunI:1.3,rain:0,stars:0,exp:1.05},
   purple:{fog:'#2c1c50',zen:'#06020f',hor:'#4e2c80',cd:'#140828',cl:'#5a3290',murk:'#160c2c',deep:'#080410',hemi:'#c8a8ff',sun:'#b090ff',hemiI:0.9,sunI:0.5,rain:0,stars:1,exp:1.15},
@@ -1738,10 +1738,19 @@ function mythDecor(s,g,sky,own,anim,SM,skyMesh,E,zu,pts){const L=s.len;
     const fv=pts(90,'#ffdd80',0.35,null,()=>[rnd()*6,rnd()*Math.PI*2,0,rnd()*6]);
     anim.push(t=>{const {pos,seed,geo}=fv;const u=zu();for(let i=0;i<seed.length;i++){const q=seed[i];const a=q[1]+t*(1+q[3]*0.2);const r=3+q[0];pos[i*3]=st.camX+Math.cos(a)*r;pos[i*3+1]=2+Math.sin(t*2+q[3])*1.5+q[0]*0.4;pos[i*3+2]=-(u+10+Math.sin(a)*r+q[3]*3);}geo.attributes.position.needsUpdate=true;
       fv.p.visible=u>40&&u<L-30;});}
-  else if(s.sub==='yellow'){skyMesh(G.sph,skyM('#ffb050',1),110,70,-720,34,34,34);skyMesh(G.plane,skyGlow('#ff9a30',0.7),110,70,-680,260,260,1);
+  else if(s.sub==='yellow'){
+    /* Carcosa: twin suns, and the towers of the lost city hanging upside-down in the cloud bank like a reflection */
+    for(const [x,y,r,c,gc] of [[-55,120,30,'#fff4d0','#ffc060'],[90,82,19,'#ffd080','#ff8a30']]){skyMesh(G.sph,skyM(c,1),x*0.8,y*0.8,-500,r,r,r);skyMesh(G.plane,skyGlow(gc,0.9),x*0.8,y*0.8,-470,r*6,r*6,1);skyMesh(G.plane,skyGlow('#ffffff',0.8),x*0.8,y*0.8,-468,r*2.4,r*2.4,1);}
+    const twr=skyM('#3a2c18',0.92),twrR=skyM('#6a5228',0.5),cld=skyM('#d8b868',0.55);
+    const TW=[];for(let i=0;i<15;i++){const x=-260+i*37+(rnd()-.5)*16,h=40+rnd()*70+(Math.abs(i-7)<3?50:0),w=5+rnd()*7;TW.push([x,h,w]);}
+    for(const [x,h,w] of TW){skyMesh(G.cyl,twr,x,h/2-8,-560,w,h,w);skyMesh(G.cone,twr,x,h-8+w*1.2,-560,w*1.25,w*2.6,w*1.25);for(const k of [-1,1])if(rnd()<0.5)skyMesh(G.cyl,twr,x+k*w*0.9,h*0.3,-560,w*0.4,h*0.6,w*0.4);}
+    // the cloud ceiling and the mirrored city hanging from it
+    skyMesh(G.plane,cld,0,175,-560,900,70,1);
+    for(const [x,h,w] of TW){const t=skyMesh(G.cyl,twrR,x,175-h*0.45,-555,w*0.95,h*0.9,w*0.95);void t;const c=skyMesh(G.cone,twrR,x,175-h*0.9-w*1.1,-555,w*1.2,w*2.4,w*1.2);c.rotation.z=Math.PI;}
+    anim.push(t=>{twrR.opacity=0.38+0.14*Math.sin(t*0.4);});
     const sm=skyM('#ffd23a',0.9);sm.map=yellowSignTex();own.push(sm.map);skyMesh(G.plane,sm,0,150,-560,120,120,1);
     /* the King in Yellow: a painted figure standing on the lake; robe stirs in the wind, and as you pass, the pale mask turns to you */
-    const KX=-9.5,KZ=-L*0.62,KH=22;const kA=sprite('kingY',KH,0.45),kB=sprite('kingYf',KH,0.45);
+    const KX=7.5,KZ=-L*0.66,KH=20;const kA=sprite('kingY',KH,0.85),kB=sprite('kingYf',KH,0.85);
     if(kA&&kB){const king=new T.Group();king.position.set(KX,-0.3,KZ);g.add(king);
       const mats=[kA,kB].map(m=>{const mm=m.material.clone();mm.alphaTest=0.04;mm.depthWrite=false;m.material=mm;own.push(mm);king.add(m);return mm;});kB.position.z=0.02;mats[1].opacity=0;own.push(kA.userData.sprGeo,kB.userData.sprGeo);
       // reflection on the mirror-flat lake
@@ -1863,14 +1872,14 @@ function buildZone(s){
       for(let k=0;k<3;k++){const c=mesh(G.box,lavaM,g,x+(rnd()-.5)*2,r.scale.y*0.7,z+(rnd()-.5)*2,0.12,0.06,1.6+rnd()*1.5);c.rotation.y=rnd()*3;}}
     const em=pts(500,'#ffa040',0.18,[40,22]);anim.push(t=>{const {pos,seed,geo}=em;for(let i=0;i<seed.length;i++){const q=seed[i];const y=((q[1]-t*1.6*(0.5+q[3]/6))%22+22)%22;pos[i*3]=q[0]+Math.sin(t+q[3])*1.2;pos[i*3+1]=y;pos[i*3+2]=q[2];}geo.attributes.position.needsUpdate=true;});
   }else if(s.sub==='yellow'){
-    skyMesh(G.sph,skyM('#fff0a8',1),-30,40,-700,60,60,60);skyMesh(G.plane,skyGlow('#ffd060',0.9),-30,40,-650,520,360,1);
+    skyMesh(G.plane,skyGlow('#ffd060',0.45),-10,30,-650,520,300,1);
     const N=360;const lm=bend(new T.MeshBasicMaterial({color:new T.Color('#ffc458')}));own.push(lm);const lg=new T.CylinderGeometry(0.28,0.22,0.6,6);own.push(lg);
     const lan=new T.InstancedMesh(lg,lm,N);lan.frustumCulled=false;g.add(lan);const ls=[];for(let i=0;i<N;i++)ls.push([(rnd()-.5)*90,rnd()*70,-rnd()*(L+60),rnd()*6,0.4+rnd()*0.6]);
     const halo=pts(N,'#ffb040',1.5,null,i=>ls[i]);
     anim.push(t=>{for(let i=0;i<N;i++){const q=ls[i];const y=((q[1]+t*q[4]*1.2)%70);const x=q[0]+Math.sin(t*0.4+q[3])*1.5;_o.position.set(x,y+1,q[2]);_o.rotation.set(0,0,Math.sin(t+q[3])*0.1);_o.scale.setScalar(1);_o.updateMatrix();lan.setMatrixAt(i,_o.matrix);
       halo.pos[i*3]=x;halo.pos[i*3+1]=y+1;halo.pos[i*3+2]=q[2];}lan.instanceMatrix.needsUpdate=true;halo.geo.attributes.position.needsUpdate=true;});
     const domeG=new T.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI/2);own.push(domeG);
-    for(let z=-20;z>-L+20;z-=34)for(const sd of [-1,1]){if(rnd()<0.15)continue;const X=sd*(16+rnd()*14),R=4+rnd()*4;mesh(G.cyl,M.paint,g,X,R*0.7,z,R,R*1.4,R);mesh(domeG,M.gold,g,X,R*1.4,z,R,R*1.1,R);
+    for(let z=-20;z>-L+20;z-=34)for(const sd of [-1,1]){if(rnd()<0.15||(sd>0&&Math.abs(z+L*0.66)<30))continue;const X=sd*(16+rnd()*14),R=4+rnd()*4;mesh(G.cyl,M.paint,g,X,R*0.7,z,R,R*1.4,R);mesh(domeG,M.gold,g,X,R*1.4,z,R,R*1.1,R);
       mesh(G.cone,M.gold,g,X,R*2.7,z,0.5,R*0.8,0.5);for(const k of [-1,1])mesh(G.cyl,M.paint,g,X+k*R*1.4,R*1.3,z,0.7,R*2.6,0.7);}
     const koi=[];for(let i=0;i<2;i++){const k=new T.Group();mesh(G.sph,M.gold,k,0,0,0,1.6,1.2,4.2);mesh(G.sph,E('#ff6a20',0.4),k,0,0.5,1,1.2,0.9,2);
       const tl=mesh(G.fin,M.gold,k,0,0,-4.6);tl.rotation.set(Math.PI/2,0,Math.PI/2);tl.scale.set(5,5,2);for(const sd2 of [-1,1]){const f=mesh(G.fin,M.gold,k,sd2*1.4,-0.4,1.2);f.rotation.z=sd2*1.9;f.scale.set(2.5,2.5,1);}
@@ -2869,7 +2878,14 @@ function buildMega(s){
   const vines=(x0,x1,y,z,n,len)=>{for(let i=0;i<n;i++){const l=len*(0.4+rnd()*0.8);mesh(G.cyl,M.vine,g,x0+rnd()*(x1-x0),y-l/2,z+(rnd()-.5)*2,0.06,l,0.06);}};
   const L=s.len;
   if(s.sub==='colossus'){const zc=-L*0.45;
-    for(const sd of [-1,1]){const X=sd*15;
+    /* two hooded guardians taller than the mountains flank a gate of black stone */
+    const gA=sprite('guard',86,0.7),gB=sprite('guard',86,0.7);
+    if(gA&&gB){for(const [sp,sd] of [[gA,-1],[gB,1]]){const mm=sp.material.clone();mm.fog=false;mm.color=new T.Color('#c8ccc4');sp.material=mm;own.push(mm);sp.position.set(sd*30,-3,zc-6);g.add(sp);own.push(sp.userData.sprGeo);if(sd>0)sp.scale.x=-1;}
+      for(const sd of [-1,1]){B(7,96,8,8,M.carveGlyph,sd*12,44,zc);B(9,6,10,6,M.stone,sd*12,1,zc);for(let i=0;i<10;i++)moss(sd*12+(rnd()-.5)*6,8+rnd()*80,zc+4.2,1.4+rnd()*2,1.4+rnd()*2);}
+      B(36,9,10,8,M.carveFrieze,0,95,zc);B(44,4,12,6,M.stone,0,101,zc);vines(-17,17,90,zc+5.2,30,12);
+      for(const ez of [-1,1]){mesh(G.plane,M.glowCyan,g,ez*34-ez*0.0,101,zc-4,26,26,1).userData.keep=true;}
+      const hd=B(8,9,8,4,M.stone,-10.5,1.2,zc-55,0.6,0.35,0.2);void hd;}
+    else for(const sd of [-1,1]){const X=sd*15;
       B(13,9,13,8,M.carveGlyph,X,0.5,zc);for(const lx of [-2.5,2.5])B(3.4,25,3.8,4,M.stone,X+lx,17.5,zc);
       B(10.5,21,7,8,M.carveFrieze,X,40,zc);B(15,3.4,7.5,4,M.stone,X,52,zc);B(5.4,6.4,5.4,4,M.stone,X,57.5,zc);B(6.2,1.4,6.2,4,M.stone,X,61.4,zc);
       B(3.2,19,3.2,4,M.stone,X+sd*6.6,41,zc,0,sd*0.08);B(3.2,15,3.2,4,M.stone,X-sd*5.6,48,zc,0,-sd*0.55);
@@ -2878,8 +2894,8 @@ function buildMega(s){
       mesh(G.sphLo,M.lamp,g,X-sd*5.5,5.6,zc+5.5,0.35,0.5,0.35);mesh(G.plane,M.glowGold,g,X-sd*5.5,5.8,zc+5.8,5,5,1);
       for(let i=0;i<8;i++)moss(X+(rnd()-.5)*12,5.4+rnd()*0.3,zc+(rnd()-.5)*12,1.5+rnd()*2,1.5+rnd()*2);
       for(let k=0;k<4;k++){const h=14+rnd()*14;B(3,h,3,4,M.stone,sd*(9+rnd()*3),h/2-2,zc+40-k*30-rnd()*8,0,(rnd()-.5)*0.12);}}
-    B(38,5,6.5,8,M.carveFrieze,0,55,zc);vines(-16,16,52.5,zc+3.3,30,9);for(let i=0;i<10;i++)moss(-17+i*3.6,57.8,zc,1.8,2.6);
-    const hd=B(8,9,8,4,M.stone,-10.5,1.2,zc-55,0.6,0.35,0.2);void hd;mesh(G.box,M.eyeGlow,g,-7.2,2.8,zc-53,0.1,0.6,1.2).rotation.y=0.6;
+    if(!(gA&&gB)){B(38,5,6.5,8,M.carveFrieze,0,55,zc);vines(-16,16,52.5,zc+3.3,30,9);for(let i=0;i<10;i++)moss(-17+i*3.6,57.8,zc,1.8,2.6);
+    const hd=B(8,9,8,4,M.stone,-10.5,1.2,zc-55,0.6,0.35,0.2);void hd;mesh(G.box,M.eyeGlow,g,-7.2,2.8,zc-53,0.1,0.6,1.2).rotation.y=0.6;}
   }else if(s.sub==='dam'){const zc=-85,Tk=30,fz=zc+Tk/2;
     B(200,102,Tk,8,M.concrete,-(3.9+100),46,zc);B(200,102,Tk,8,M.concrete,3.9+100,46,zc);B(7.8,91.5,Tk,8,M.concrete,0,51.25,zc);
     for(const sd of [-1,1]){B(0.4,5.5,Tk,6,M.paintDark,sd*3.9,2.75,zc);}B(7.8,0.4,Tk,6,M.paintDark,0,5.5,zc);
@@ -3299,7 +3315,7 @@ const sfx={
 };
 
 /* ================= spawning ================= */
-function add(o){o.g=(o.t==='tsunami'?tsunamiMesh:builders[o.t])(o);world.add(o.g);placeObs(o);st.obs.push(o);}
+function add(o){if(o.t==='sign')st.lastSignAz=o.az;o.g=(o.t==='tsunami'?tsunamiMesh:builders[o.t])(o);world.add(o.g);placeObs(o);st.obs.push(o);}
 function removeObs(o){world.remove(o.g);disposeOwn(o.g);disposeAnim(o.g);}
 function gearLine(lane,az,n){for(let i=0;i<n;i++)add({t:'gear',lane,az:az+i*2.4});}
 function spawnTsunami(az){
@@ -3333,7 +3349,8 @@ function spawn(az){
   P('beam',2,d>320);P('whirl',2,d>320&&low);
   P('bats',2.5,d>450);P('mine',2,d>520&&low&&n>=2);
   P('tentacle',2.5,d>700&&n>=2);P('serpent',2,d>900&&low);P('sweep',2,d>950&&low&&!tun);
-  P('deepone',2.4,d>800&&low&&n>=2);P('wrench',st.hearts===1?3:2,st.hearts<MAXH&&d>150);P('sign',0.35,d>700);
+  P('deepone',2.4,d>800&&low&&n>=2);P('wrench',st.hearts===1?3:2,st.hearts<MAXH&&d>150);P('sign',st.hearts<=MAXH-2?0.9:0.25,d>700&&(st.hearts<=MAXH-2||!ch||cd>ch.len*0.45)&&az>(st.lastSignAz||0)+500);
+  st._pool=pool;
   if(st.dist>110&&az>st.nextBottle&&nextStory(false)){add({t:'bottle',lane:pick(en),az});st.nextBottle=az+200+rnd()*160;st.nextSpawn=az+16;return;}
   if(st.healDue&&st.hearts<MAXH&&rnd()<0.5){st.healDue=false;add({t:'wrench',lane:pick(en),az});st.nextSpawn=az+14;return;}
   const tot=pool.reduce((a,b)=>a+b[1],0);let r=rnd()*tot,t=pool[0][0];for(const [k,w] of pool){r-=w;if(r<=0){t=k;break;}}
@@ -3513,7 +3530,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   if(!laneOn(st.lane,st.dist+PZ+2)&&st.mode!=='play')snapLane();
   st.camX+=(st.lane*LANE-st.camX)*Math.min(1,dt*13);
   const th=trackH(st.dist+PZ);st.camH+=(th-st.camH)*Math.min(1,dt*(Math.abs(th-st.camH)>0.5?40:12));
-  const slope=(trackH(st.dist+9)-trackH(st.dist+2))/7;st.pitchAdj+=(Math.atan(slope)*0.6-st.pitchAdj)*Math.min(1,dt*5);
+  const sN=(trackH(st.dist+9)-trackH(st.dist+2))/7,sF=(trackH(st.dist+22)-trackH(st.dist+4))/18,slope=Math.abs(sF)>Math.abs(sN)?sF:sN;st.pitchAdj+=(Math.atan(slope)*0.92-st.pitchAdj)*Math.min(1,dt*4);
   if(st.jumpY>0){st.jumpV-=14*dt;st.jumpY+=st.jumpV*dt;if(st.jumpY<=0){st.jumpY=0;st.jumpV=0;st.bump=1;sfx.land();if(th<0.3&&th>-0.4)splash(st.camX,1.6,14);}}
   st.duckT-=dt;st.duck+=((st.duckT>0?1:0)-st.duck)*Math.min(1,dt*14);
   st.bump=Math.max(0,st.bump-dt*4);
@@ -3534,9 +3551,16 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   for(const o of st.obs)if(o.t==='tsunami')o.az-=o.v*dt;
   const pl=Math.round(st.camX/LANE);
   st.surge=0;
-  for(const o of st.obs){if(!o.chase)continue;o.chase.t+=dt;const c=o.chase;if(c.t<c.dur){o.az=st.dist-4.2-Math.max(0,c.t-1.6)*3-Math.sin(c.t*5)*0.3;}else if(c.t>c.dur+2)o.kill=1;}
+  for(const o of st.obs){if(!o.chase)continue;o.chase.t+=dt;const c=o.chase;
+    /* the chaser follows your lane for a moment, locks on (warning), then lunges: switching lanes in time dodges it */
+    if(c.t<c.dur){if(c.t<1.3)o.lane+=(pl-o.lane)*Math.min(1,dt*6);
+      if(c.t>=1.3&&!c.lock){c.lock=1;c.L=Math.round(o.lane);o.lane=c.L;toast('牠要撲上來了——快換軌！','warn',1100);st.shake=Math.max(st.shake,0.25);if(AC&&!playS('roar',0.5,1.5))tone(AC.currentTime,'sawtooth',120,60,0.2,0.4);}
+      const lunge=c.lock?ss((c.t-1.3)/0.9):0;o.az=st.dist-4.2+lunge*3.6-Math.sin(c.t*5)*0.3*(1-lunge);
+      if(c.lock&&!c.bit&&c.t>=2.2){c.bit=1;if(pl===c.L&&st.inv<=0&&playing){sfx.snap();hit(o,o.t==='shark'?'被追上來的鯊魚咬到':o.t==='croc'?'被追上來的鱷魚咬到':o.t==='serpent'?'被追上來的海蛇咬到':'被深潛者抓下車',false);}
+        else{sfx.splash(true);toast('閃過了！','good',900);c.fall=1;}}}
+    else if(c.t>c.dur+(c.fall?0.6:2))o.kill=1;}
   if(playing&&(st.time-(st.lastChase||-99))>18&&!narrBusy&&!isSet(st.dist,30)){for(const o of st.obs){const z=o.az-st.dist;
-    if(o.done&&!o.wasHit&&!o.chaseTried&&z<-0.4&&(o.t==='deepone'||o.t==='croc'||o.t==='serpent')){o.chaseTried=1;if(rnd()<0.75){o.chase={t:0,dur:2.7};o.lane=pl;st.lastChase=st.time;st.lookBack=1;
+    if(o.done&&!o.wasHit&&!o.chaseTried&&z<-0.4&&(o.t==='deepone'||o.t==='croc'||o.t==='serpent'||o.t==='shark')){o.chaseTried=1;if(rnd()<0.75){o.chase={t:0,dur:2.9};o.lane=pl;st.lastChase=st.time;st.lookBack=1;
       for(const q of st.obs){const zz=q.az-st.dist;if(zz>0&&zz<55&&!CALM_KEEP[q.t])q.kill=1;}st.nextSpawn=Math.max(st.nextSpawn,st.dist+55);
       if(o.t==='croc'||o.t==='deepone')sfx.snap();if(AC&&!playS('bigsplash',0.5,0.8))noiseHit(AC.currentTime,'lowpass',300,0.5,0.8);toast(o.t==='deepone'?'牠追上來了！':o.t==='croc'?'鱷魚在後面追！':'海蛇追過來了！','warn',1500);break;}}}}
   for(const o of st.obs){const z=o.az-st.dist;
@@ -3843,7 +3867,7 @@ async function loadHQ(){
     fetch('assets/models_pack.json').then(r=>{if(!r.ok)throw new Error('models');return r.json();}).then(j=>{const raw=atob(j.data),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);return [j.index,u8.buffer];})]).then(([t,m])=>[t,m[0],m[1]]);
   names.forEach((n,i)=>HQ[n]={c:tex[i*2],n:tex[i*2+1]});
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
-  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','vill','villL','idol'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
+  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','vill','villL','idol','guard'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
     g.setAttribute('position',new T.BufferAttribute(new Float32Array(bin,offset,count*3),3));g.setAttribute('normal',new T.BufferAttribute(new Float32Array(bin,offset+count*12,count*3),3));
     g.setAttribute('uv',new T.BufferAttribute(new Float32Array(bin,offset+count*24,count*2),2));g.computeBoundingSphere();HQ.geo[k]=g;}
