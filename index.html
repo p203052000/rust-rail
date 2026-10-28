@@ -290,7 +290,7 @@ html,body{overscroll-behavior:none}
       <dt>跳過去</dt><dd><i>油桶</i>、<i>斷軌</i>、<i>鱷魚</i>、<i>漩渦</i>、<i>橫掃觸手</i>、<i>海蛇</i></dd>
       <dt>蹲下閃</dt><dd><i>倒塌桅杆</i>、<i>蝙蝠群</i></dd>
       <dt>海嘯</dt><dd>巨浪會留一個<i>發光浪管</i>，對準那條軌道穿過去</dd>
-      <dt>撿起來</dt><dd><i>黃銅齒輪</i> 25 分，<i>扳手</i>修好一格車身</dd>
+      <dt>撿起來</dt><dd><i>黃銅齒輪</i> 25 分，<i>扳手</i>修好一格車身，發光的星形<i>舊印</i>：血量全滿＋8 秒無敵（右上角會倒數）</dd>
     </dl>
       <p class="lede" style="font-size:12px">遊戲中隨時按右上角的暫停鍵，就能再看一次操作說明，也能開關手機用的螢幕按鈕。</p></div></details>
       <div class="best cv-best" id="bestTitle"></div>
@@ -3101,6 +3101,35 @@ function introTick(dt){
 }
 /* ===== story props: whatever a chapter line describes appears on the track ahead while you read it ===== */
 const PROPS=[];
+/* the derelict ocean liner of chapter one: 140 m of rusting black hull listing in the rain, four leaning funnels, every porthole still lit, nobody aboard */
+function ghostLiner(g,X){const sh=new T.Group();sh.position.set(X,-0.6,0);sh.rotation.set(0,-0.08,0.07);g.add(sh);
+  const Lh=140,W=18,HH=14;
+  const pr=new T.Shape();pr.moveTo(-Lh/2,2);pr.quadraticCurveTo(-Lh/2-4,HH*0.55,-Lh/2-3,HH);pr.lineTo(Lh/2+8,HH+0.6);pr.quadraticCurveTo(Lh/2+3,HH*0.4,Lh/2-6,-1.5);pr.lineTo(-Lh/2+8,-1.5);pr.quadraticCurveTo(-Lh/2,-1,-Lh/2,2);
+  const hg=new T.ExtrudeGeometry(pr,{depth:W,bevelEnabled:true,bevelThickness:2.2,bevelSize:2.2,bevelSegments:3,curveSegments:10});hg.translate(0,0,-W/2);hg.rotateY(Math.PI/2);
+  const hullM=std2({map:TX.rust.map,bumpMap:TX.rust.bump,bumpScale:0.04,color:new T.Color('#3a2c26'),roughness:0.82,metalness:0.35});
+  sh.add(new T.Mesh(hg,hullM));
+  const red=std2({color:new T.Color('#5a1810'),roughness:0.9});mesh(G.box,red,sh,0,0.6,0,W+4.6,1.6,Lh+2);
+  const stM=std2({color:new T.Color('#6a3a1c'),roughness:1,transparent:true,opacity:0.55});for(let i=0;i<26;i++){const z=-Lh/2+6+rnd()*(Lh-10);const st0=mesh(G.plane,stM,sh,-W/2-2.25,HH-3-rnd()*4,z,0.6+rnd()*0.8,4+rnd()*6,1);st0.rotation.y=-Math.PI/2;}
+  const white=std2({map:TX.paint.map,color:new T.Color('#b8b2a2'),roughness:0.85,metalness:0.1});
+  const decks=[[0,HH+2.6,96,W+1],[2,HH+6.2,82,W-1],[6,HH+9.6,60,W-3],[-8,HH+12.6,26,W-6]];
+  for(const [zc,y,len,w] of decks){mesh(G.box,white,sh,0,y,zc,w,3.4,len);mesh(G.box,M.dark,sh,0,y+1.75,zc,w+0.6,0.25,len+0.6);}
+  const pos=[];for(let r=0;r<3;r++)for(let z=-Lh/2+6;z<Lh/2+2;z+=2.1)pos.push([-W/2-2.3,HH-2.2-r*2.4,z,0.5,0.5]);
+  for(const [zc,y,len,w] of decks)for(let z=zc-len/2+1.5;z<zc+len/2-1;z+=1.8)pos.push([-w/2-0.06,y,z,1.1,1.2]);
+  const lightM=bend(new T.MeshBasicMaterial({color:new T.Color('#ffffff')}));const im=new T.InstancedMesh(G.box,lightM,pos.length);const o=new T.Object3D();const col=new T.Color();
+  pos.forEach((p,i)=>{o.position.set(p[0],p[1],p[2]);o.scale.set(0.08,p[3],p[4]);o.updateMatrix();im.setMatrixAt(i,o.matrix);const dark=rnd()<0.22;col.set(dark?'#1a1410':rnd()<0.15?'#a8ffd0':'#ffd58a');im.setColorAt(i,col);});im.frustumCulled=false;sh.add(im);
+  const fun=std2({map:TX.rust.map,color:new T.Color('#2a1c18'),roughness:0.8,metalness:0.3});const band=std2({color:new T.Color('#1a0c0a'),roughness:0.7});
+  for(let k=0;k<4;k++){const z=-30+k*20;const f=new T.Mesh(cylW(3,3.6,22,14),fun);f.position.set(0,HH+22,z);f.rotation.x=-0.12;sh.add(f);const b2=new T.Mesh(cylW(3.05,3.05,3,14),band);b2.position.set(0,HH+31.5,z-1.1);b2.rotation.x=-0.12;sh.add(b2);}
+  for(const z of [-62,58])mesh(G.cyl,M.iron,sh,0,HH+18,z,0.35,40,0.35);
+  const rig=[];for(let k=0;k<4;k++){const z=-30+k*20;rig.push(0,HH+38,-62, 0,HH+30,z, 0,HH+30,z, 0,HH+38,58);}for(const sd of [-1,1])rig.push(0,HH+38,-62,sd*W/2,HH+1,-50, 0,HH+38,58,sd*W/2,HH+1,46);
+  const rg=new T.BufferGeometry();rg.setAttribute('position',new T.Float32BufferAttribute(rig,3));sh.add(new T.LineSegments(rg,bend(new T.LineBasicMaterial({color:'#2a2622'}))));
+  for(let z=-40;z<40;z+=9){const lb=mesh(G.sph,white,sh,-W/2-0.2,HH+7.4,z,1.1,0.9,3.2);lb.rotation.z=0.25;}
+  const flick=[];for(let i=0;i<14;i++){const m=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(rnd()<0.3?'#80ffc0':'#ffcf80'),opacity:0.5})),sh,-W/2-3,HH+2+rnd()*10,-50+rnd()*100,10,6,1);m.rotation.y=-Math.PI/2;m.userData.keep=true;flick.push({m,a:3+rnd()*8,p:rnd()*6,o:0.4+rnd()*0.3});}
+  const beam=new T.Group();beam.position.set(-2,HH+14.5,-10);sh.add(beam);const bm=bend(new T.MeshBasicMaterial({color:new T.Color('#fff2d0'),transparent:true,opacity:0.07,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));
+  const cone=new T.Mesh(new T.ConeGeometry(9,70,20,1,true),bm);cone.rotation.z=Math.PI/2+0.25;cone.position.set(-35,-8,0);beam.add(cone);mesh(G.sphLo,M.lamp,beam,0,0,0,0.8,0.8,0.8);
+  const SN=90,sg=new T.BufferGeometry(),sp=new Float32Array(SN*3);sg.setAttribute('position',new T.BufferAttribute(sp,3));const seed=[];for(let i=0;i<SN;i++){const k=i%4;seed.push([(rnd()-.5)*3,HH+33,-30+k*20+(rnd()-.5)*3,rnd(),-6-rnd()*8]);}
+  const smM=bend(new T.PointsMaterial({size:9,map:TX.glow,color:new T.Color('#4a4a4e'),transparent:true,opacity:0.5,depthWrite:false}));const smP=new T.Points(sg,smM);smP.frustumCulled=false;sh.add(smP);
+  for(let i=0;i<6;i++){const f=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,color:new T.Color('#9aa4ac'),opacity:0.35})),sh,-W/2-6,2.5,-60+i*24,40,9,1);f.rotation.y=-Math.PI/2;}
+  return {sh,flick,beam,smoke:{seed,pos:sp,geo:sg}};}
 function propGroup(az,anim){const g=new T.Group();g.position.z=-az;world.add(g);PROPS.push({g,az,anim});return g;}
 function updateProps(t){for(let i=PROPS.length-1;i>=0;i--){const p=PROPS[i];if(p.anim)p.anim(t,p);if(p.az<st.dist-40){world.remove(p.g);PROPS.splice(i,1);}}}
 function clearProps(){for(const p of PROPS)world.remove(p.g);PROPS.length=0;}
@@ -3116,11 +3145,10 @@ function pageCard(lines){const c=document.createElement('canvas');c.width=640;c.
   for(let i=0;i<2200;i++){g.fillStyle=`rgba(90,60,30,${Math.random()*0.06})`;g.fillRect(Math.random()*640,Math.random()*360,2,2);}g.fillStyle='#3a2414';g.font='italic 700 30px "Noto Serif TC",serif';lines.forEach((t,i)=>g.fillText(t,40,64+i*58));return c;}
 function tomorrowStr(){const d=new Date(Date.now()+864e5);return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');}
 const BEAT_FX=[
- [ (az)=>{const g=propGroup(az+70);const X=15;const sh=new T.Group();sh.position.set(X,0,0);sh.rotation.set(0,0.12,0.06);g.add(sh);
-      bx(sh,8,6,46,M.paintDark,0,1.2,0);bx(sh,7,5,32,M.paint,0.3,6.5,0);bx(sh,6,3.4,18,M.paint,0.6,10.6,0);mesh(G.cyl,M.rust,sh,0.6,15,-3,1.3,6,1.3);mesh(G.cyl,M.rust,sh,0.6,15,4,1.3,6,1.3);
-      const win=bend(new T.MeshBasicMaterial({color:new T.Color('#ffd890')}));for(let k=0;k<13;k++){for(const y of [5.6,7.4]){const m=mesh(G.box,win,sh,-3.2,y,-14+k*2.3,0.08,0.8,1.2);m.userData.keep=true;}}
-      for(let k=0;k<6;k++){const m=mesh(G.box,win,sh,-2.4,10.6,-6+k*2.4,0.08,0.8,1.2);m.userData.keep=true;}
-      const gl=mesh(G.plane,M.glowGold,sh,-4.5,7,0,30,10,1);gl.rotation.y=-Math.PI/2*0.4;gl.userData.keep=true;},
+ [ (az)=>{const g=propGroup(az+120,(t,p)=>{const L=p.lin;if(!L)return;L.sh.position.y=-0.6+Math.sin(t*0.35)*0.35;L.sh.rotation.z=0.07+Math.sin(t*0.27)*0.015;
+        for(const f of L.flick)f.m.material.opacity=Math.sin(t*f.a+f.p)+Math.sin(t*f.a*2.3)>-1.3?f.o:0.05;L.beam.rotation.y=Math.sin(t*0.4)*0.9-0.6;
+        const P=L.smoke;for(let i=0;i<P.seed.length;i++){const q=P.seed[i];const k=((t*0.06+q[3])%1);P.pos[i*3]=q[0]+k*q[4];P.pos[i*3+1]=q[1]+k*26;P.pos[i*3+2]=q[2]-k*14;}P.geo.attributes.position.needsUpdate=true;});
+      PROPS[PROPS.length-1].lin=ghostLiner(g,40);},
    (az)=>{const g=propGroup(az+30);const tex=signRune('#ffffff');const m=bend(new T.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));const gm=bend(new T.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#fff2c0')}));
       for(let k=0;k<6;k++){const L=[0,-1,1,0,1,-1][k];for(const mm of [m,gm]){const p=mesh(G.plane,mm,g,L*LANE,trackH(az+30+k*9)+0.22,-k*9,mm===gm?2.6:2.1,mm===gm?2.6:2.1,1);p.rotation.x=-Math.PI/2;p.userData.keep=true;}}},
    null,null],
@@ -3168,7 +3196,7 @@ const BEAT_FX=[
       var bm=bend(new T.MeshBasicMaterial({color:new T.Color('#fff0c0'),transparent:true,opacity:0.5,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));const cone=new T.Mesh(new T.ConeGeometry(4,26,16,1,true),bm);cone.rotation.x=Math.PI/2*1.08;cone.position.set(X+1.5,h+3.4,13);cone.userData.keep=true;g.add(cone);}]
 ];
 /* where the camera turns to while each chapter line is read: [x, y, metres ahead of the cart, far] */
-const BEAT_FOCUS=[[[15,7,70],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[-8.4,6,65]],[[14,16,70],null,[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
+const BEAT_FOCUS=[[[36,16,105],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[-8.4,6,65]],[[14,16,70],null,[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
 const BEAT_CV=[[null,null,()=>phoneCard('不管發生什麼事，都不要讓礦車停下來。','明天 23:58'),null],[null,null,null,null],[null,null,null,null],[null,null,null,null],
   [null,null,()=>pageCard(['孩子，對不起，包裹是我寄的。','我開了六十年，真的太累了。','只要礦車不停，祂就不會醒。','現在，換你了。']),null]];
 
@@ -3537,7 +3565,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
         case 'gear':if(pl===o.lane&&st.duck<0.8){st.gears++;o.got=true;sfx.gear();}break;
         case 'wrench':if(pl===o.lane){o.got=true;if(st.hearts<MAXH){st.hearts++;renderPips();toast('車身修好一格','good');}else st.bonus+=50;sfx.heal();}break;
         case 'bottle':if(pl===o.lane&&st.duck<0.8){o.got=true;sfx.gear();st.bonus+=40;showStory(nextStory(false));}break;
-        case 'sign':if(pl===o.lane&&st.duck<0.8){o.got=true;st.hearts=MAXH;renderPips();st.shield=8;sfx.heal();sfx.roar();toast('舊印守護著你','good',1600);}break;
+        case 'sign':if(pl===o.lane&&st.duck<0.8){o.got=true;st.hearts=MAXH;renderPips();st.shield=8;sfx.heal();if(AC){const t=AC.currentTime;[660,880,1320].forEach((f,i)=>tone(t+0.1+i*0.09,'sine',f,f*1.01,0.1,0.6));}toast(st.signTold?'✶ 舊印：血量補滿・8 秒無敵':'✶ 撿到舊印！血量全滿，接下來 8 秒什麼都傷不了你','good',st.signTold?1600:2600);st.signTold=1;}break;
       }}
     for(const e of laneEnds()){const z=e.az-st.dist;if(z<=PZ&&z+dz>PZ&&pl===e.L){sfx.clunk();st.shake=Math.max(st.shake,0.5);st.slow=0.6;st.red=0.4;toast('差點衝出軌道！','warn');snapLane();}}
     if(!laneOn(st.lane,st.dist+PZ+0.5))snapLane();
