@@ -475,9 +475,13 @@ function hush(){VO.want=false;VO.speaking=false;VO.q=[];VO.utts=[];try{if(VO.au)
 function speak(text,onEnd,queue){if(queue&&VO.speaking){(VO.q=VO.q||[]).push([text,onEnd]);return true;}hush();if(!ttsOn||muted){return false;}
   const h=vhash(voText(text));VO.speaking=true;VO.t0=performance.now();VO.maxT=(voDur(text)||text.length*0.5)+20;
   const done=()=>{if(!VO.speaking)return;VO.speaking=false;VO.want=false;onEnd&&onEnd();const rest=(VO.q||[]).slice(),nx=rest.shift();if(nx){speak(nx[0],nx[1],false);VO.q=rest;}};VO.done=done;
-  if(VO.idx&&VO.idx[h]){try{if(!VO.au)VO.au=new Audio();VO.partIdx=null;VO.au.src='assets/vo/'+h+'.mp3';VO.au.volume=1;VO.au.preservesPitch=true;VO.au.webkitPreservesPitch=true;VO.au.playbackRate=VO.rate;VO.au.defaultPlaybackRate=VO.rate;VO.au.onended=done;VO.au.onerror=done;VO.want=true;VO.au.play().catch(()=>{});return true;}catch(e){}}
+  if(VO.idx&&VO.idx[h]){try{if(!VO.au)VO.au=new Audio();VO.partIdx=null;VO.au.src='assets/vo/'+h+'.mp3';VO.au.volume=1;VO.au.preservesPitch=true;VO.au.webkitPreservesPitch=true;VO.au.playbackRate=VO.rate;VO.au.defaultPlaybackRate=VO.rate;VO.au.onended=done;VO.au.onerror=()=>{if(VO.done===done)ttsFallback(text,done);};VO.want=true;VO.au.play().catch(()=>{setTimeout(()=>{if(VO.done!==done||!VO.want)return;VO.au.play().catch(()=>{if(VO.done===done)ttsFallback(text,done);});},300);});return true;}catch(e){}}
   try{if(!window.speechSynthesis){VO.speaking=false;return false;}const parts=splitParts(text);const v=pickVoice();VO.utts=[];VO.partIdx=0;
     parts.forEach((pt,i)=>{const u=new SpeechSynthesisUtterance(pt);u.onstart=()=>{VO.partIdx=i;};u.lang='zh-TW';u.rate=1.2;u.pitch=0.72;if(v)u.voice=v;if(i===parts.length-1){u.onend=done;u.onerror=done;}VO.utts.push(u);speechSynthesis.speak(u);});return true;}catch(e){VO.speaking=false;return false;}}
+/* if the recorded clip can't play, read the line with the device voice instead of going silent */
+function ttsFallback(text,done){try{if(!window.speechSynthesis){done();return;}speechSynthesis.cancel();const parts=splitParts(text);const v=pickVoice();parts.forEach((pt,i)=>{const u=new SpeechSynthesisUtterance(pt);u.lang='zh-TW';u.rate=1.2;u.pitch=0.72;if(v)u.voice=v;if(i===parts.length-1){u.onend=done;u.onerror=done;}speechSynthesis.speak(u);});}catch(e){done();}}
+/* watchdog: if the browser pauses the narration on its own (media keys, another tab, audio focus), pick it back up */
+setInterval(()=>{try{if(VO.au&&VO.want&&VO.speaking&&VO.au.paused&&!VO.au.ended&&!(typeof st!=='undefined'&&st.paused))VO.au.play().catch(()=>{});}catch(e){}},1000);
 function voBusy(){if(!VO.speaking)return false;if((performance.now()-VO.t0)/1000>VO.maxT){VO.done&&VO.done();return false;}return true;}
 /* every story line goes through here: queued, shown on a big card, read aloud, and a calm stretch of track so the player can read */
 const NQ=[];let narrBusy=false;
@@ -530,25 +534,25 @@ const CHAPTERS=[
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一個沉睡在海底的古老神明，祂作的夢會漏進我們的世界。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在等祂醒來。他們會想盡辦法，讓礦車停下來。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「礦車一停，祂就會醒。牠們想把你拉下車，就是要讓礦車停下來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
-  pool:[['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
+  pool:[['fork',1],['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
   zones:[['green',0.22],['maw',0.45],['loop',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
  {n:'第三章',t:'考察隊的營地',len:2450,speed:[13,25],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
   beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，時間才會停在午夜前兩分鐘，祂就不會醒。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
   outro:'大壩的另一邊，一座城市正從海底慢慢升起來。\n我終於懂了：外公不是失蹤。他是為了不讓祂醒來，留在夢裡開著這台礦車，一開就是六十年。',
-  pool:[['camp',2.4],['crystal',1.6],['coaster',1.5],['mega',1.2],['waterfall',1.2],['lighthouse',1],['leap',1.3],['normal',1.4],['bridge',1]],megas:['cranes'],
+  pool:[['fork',1],['camp',2.4],['crystal',1.6],['coaster',1.5],['mega',1.2],['waterfall',1.2],['lighthouse',1],['leap',1.3],['normal',1.4],['bridge',1]],megas:['cranes'],
   zones:[['madness',0.07],['cliff',0.36]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:100,shark:200,mine:300,tentacle:600,sweep:900,deepone:400},finale:[{type:'mega',sub:'dam'}]},
  {n:'第四章',t:'沉沒之城',len:2300,speed:[14,26],
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
-  pool:[['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
+  pool:[['spiral',1],['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['twin',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
  {n:'第五章',t:'拉萊耶',len:1800,speed:[15,27],
   intro:'【上一章】城裡每一扇窗都映著不同年紀的我，旁邊軌道上還開過一個老了六十歲的我。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
   beats:[[300,'神殿的牆上刻著一長排礦車，每一台車上的人都戴著皮手套。最前面那個人是外公，最後面那個人，是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱下面放著外公的礦工帽，頭燈還亮著。帽子裡夾著一封信，信封上寫著我的名字。'],[1000,'信上寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，手錶就會停在 23:58，祂就不會醒。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，他在終點等我。']],
   outro:'外公終於可以下車了。我戴上那雙皮手套，握緊把手。\n從現在起，我就是新的駕駛。',
-  pool:[['mega',2.6],['crystal',1],['coaster',1.2],['leap',1.2],['whalebone',1],['canopy',1],['weave',1],['normal',1]],megas:['rlyeh','ruins','colossus'],
+  pool:[['spiral',1.3],['mega',2.6],['crystal',1],['coaster',1.2],['leap',1.2],['whalebone',1],['canopy',1],['weave',1],['normal',1]],megas:['rlyeh','ruins','colossus'],
   zones:[['godback',0.12],['skyisles',0.6]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150,waves:true}]},
 ];
 const CH=()=>st.chapter>=0?CHAPTERS[st.chapter]:null;
@@ -571,7 +575,7 @@ function beatClaim(seg){const k=beatQ();if(k<0)return;const ch=CH(),w=BEAT_WHERE
 CHAPTERS.forEach((c,i)=>c.beats.forEach((b,k)=>STORIES.push({id:'c'+i+'_'+k,set:'chap',text:c.n+'・'+b[1]})));
 STORIES.sort((a,b)=>Object.keys(SETS).indexOf(a.set)-Object.keys(SETS).indexOf(b.set));
 let chCleared=0;try{chCleared=+localStorage.getItem('rustrail-ch')||0;}catch(e){}
-const ENDLESS_POOL=az0=>[['normal',1.4],['narrow',1.4],['single',0.9],['bridge',1.3],['hills',1.1],['tunnel',1.1],['coaster',az0>350?1.2:0],['mega',1.8],['slalom',1.1],['washboard',0.9],['leap',az0>300?1.1:0],['crystal',1],['weave',0.9],['floating',1],['canopy',1],
+const ENDLESS_POOL=az0=>[['spiral',az0>500?0.8:0],['fork',az0>200?0.9:0],['normal',1.4],['narrow',1.4],['single',0.9],['bridge',1.3],['hills',1.1],['tunnel',1.1],['coaster',az0>350?1.2:0],['mega',1.8],['slalom',1.1],['washboard',0.9],['leap',az0>300?1.1:0],['crystal',1],['weave',0.9],['floating',1],['canopy',1],
   ['harbor',1],['camp',0.9],['waterfall',1],['whalebone',1],['lighthouse',0.9],['graveyard',1],['zone',2],['cliff',az0>400?0.8:0],['seatube',0.5],['atlantis',az0>500?0.5:0],['factory',az0>300?0.8:0],['shipcross',az0>350?0.8:0],['skyisles',az0>500?0.7:0],['madness',0.5],['crater',az0>300?0.8:0],['maw',0.8],['clock',az0>400?0.7:0],['loop',az0>600?0.6:0],['twin',az0>300?0.7:0],['godback',az0>500?0.7:0]];
 function genSeg(){
   const az0=segEnd,ch=CH();
@@ -618,6 +622,8 @@ function makeSeg(type,o){let s;
     s.base=u=>5.2*ss((u-6)/70)*ss((L-u-6)/70)+3.2*Math.exp(-Math.pow((u-(L-150))/60,2));s.env=u=>ss((u-40)/50)*ss((L-60-u)/60)*(u>L-260?0.45:1);}
   else if(type==='skyisles'){s={type,lanes:[1,1,1],len:1060,pal:'sky',SH:62,CS:[[250,450],[700,860]]};}
   else if(type==='madness'){s={type,lanes:[1,1,1],len:1150,pal:'antarctic'};}
+  else if(type==='spiral'){s={type,lanes:[1,1,1],len:380};}
+  else if(type==='fork'){s={type,lanes:[1,0,1],len:230};}
   else if(type==='crater'){s={type,lanes:[1,1,1],len:720,pal:'crater'};}
   else if(type==='maw'){s={type,lanes:[1,1,1],len:430,pal:'abyss'};}
   else if(type==='zone'){const sub=o.sub||pick(ZONES.filter(z=>z!==lastZone));lastZone=sub;s={type,sub,len:300,lanes:[1,1,1],pal:sub};}
@@ -636,7 +642,7 @@ function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',
   if(ready&&SETS2[s.type])SETS2[s.type](s);
   if(ready&&s.type==='zone')buildZone(s);
 }
-const TERR_NAME={clock:'巨鐘內部・23:58',loop:'無限迴廊',twin:'另一台礦車',godback:'沉睡巨神的背上',crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
+const TERR_NAME={spiral:'扭曲的重力螺旋',fork:'岔路・礦坑或海崖',clock:'巨鐘內部・23:58',loop:'無限迴廊',twin:'另一台礦車',godback:'沉睡巨神的背上',crystal:'巨晶洞窟',shipcross:'幽靈巨艦',falls:'瀑布衝出：夢的花園',factory:'廢棄的夢工廠・2086',skyisles:'浮空神殿',madness:'瘋狂山脈：古老者之城',crater:'飛越火山口',maw:'血盆大口',cliff:'斷崖：霧中高屋',seatube:'海底隧道：神殿',harbor:'印斯茅斯漁港',camp:'考察隊營地',waterfall:'瀑布峽谷',whalebone:'巨獸骨骸',lighthouse:'燈塔岬',graveyard:'船隻墳場',slalom:'急彎蛇行',washboard:'搓衣板路段',leap:'前方：飛越大漩渦',crystal:'水晶洞窟',weave:'鐵軌迷宮：看準開著的軌道',floating:'浮筒軌道',canopy:'巨木長廊'};
 const MEGA=['colossus','dam','cranes','ruins','city','rlyeh','rlyeh'];let lastMega='';
 const MEGA_NAME={colossus:'大袞巨像之門',dam:'大壩水門',cranes:'龍門吊船塢',ruins:'沉沒神殿',city:'淹沒的城市',rlyeh:'拉萊耶神殿'};
 function segAt(az){for(let i=0;i<segs.length;i++){const s=segs[i];if(az>=s.az0&&az<s.az1)return s;}return null;}
@@ -670,7 +676,7 @@ function trackH(az){const s=segAt(az);if(!s)return 0;const u=az-s.az0,L=s.len;
   return 0;}
 function laneOn(L,az){if(az<0)return L===0;const s=segAt(az);return s?!!s.lanes[L+1]:true;}
 function laneEnds(){const out=[];for(let i=1;i<segs.length;i++){const p=segs[i-1],s=segs[i];for(let k=0;k<3;k++)if(p.lanes[k]&&!s.lanes[k])out.push({az:s.az0,L:k-1,key:s.az0.toFixed(2)+'_'+k});}return out;}
-function isSet(az,pad){for(const s of segs)if((s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross'||s.type==='clock'||s.type==='loop'||s.type==='twin'||s.type==='godback')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
+function isSet(az,pad){for(const s of segs)if((s.type==='spiral'||s.type==='madness'||s.type==='crater'||s.type==='maw'||s.type==='cliff'||s.type==='seatube'||s.type==='falls'||s.type==='skyisles'||s.type==='shipcross'||s.type==='clock'||s.type==='loop'||s.type==='twin'||s.type==='godback')&&az>=s.az0-pad&&az<=s.az1+pad)return s;return null;}
 function isVoid(az){for(const s of segs){if(s.voidR&&az>=s.voidR[0]&&az<=s.voidR[1])return true;if(s.voidRs)for(const r of s.voidRs)if(az>=r[0]&&az<=r[1])return true;}return false;}
 function inTunnel(az){for(const s of segs){if(s.type==='tunnel'&&az>=s.az0-1&&az<=s.az1+1)return s;if(s.darkR&&az>=s.darkR[0]&&az<=s.darkR[1])return s;if(s.darkRs)for(const r of s.darkRs)if(az>=r[0]&&az<=r[1])return {dim:r[2]};}return null;}
 /* open water where a sea giant could believably surface */
@@ -2062,6 +2068,42 @@ function buildAbyss(s,g,own,anim,B){const D=s.D,V0=s.V0,V1=s.V1,A1=s.A1,L=s.len,
     if(!s.flags.vt&&u>V0+10){s.flags.vt=1;toast('被漩渦吸進去了！','warn',1800);st.shake=Math.max(st.shake,0.5);}});
 }
 const SETS2={
+  /* gravity-flip spiral: the rails corkscrew through a tunnel of glowing rings; for a while you ride upside down and left/right swap */
+  spiral(s){const g=segGroup(s),own=[],anim=[],L=s.len;s.flags={};
+    const gm=(c,o)=>{const m=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:o}));own.push(m);return m;};
+    const ringG=new T.TorusGeometry(7.5,0.32,8,40);own.push(ringG);const rm1=std2({color:new T.Color('#2a2440'),emissive:new T.Color('#7a40ff'),emissiveIntensity:1.2,roughness:0.4,metalness:0.6});const rm2=std2({color:new T.Color('#1a3438'),emissive:new T.Color('#30ffd0'),emissiveIntensity:1.1,roughness:0.4,metalness:0.6});own.push(rm1,rm2);
+    const rings=[];for(let u=30,i=0;u<L-20;u+=11,i++){const r=new T.Mesh(ringG,i%2?rm1:rm2);r.position.set(0,2.2,-u);r.userData={keep:true,ph:i*0.5};g.add(r);rings.push(r);
+      for(let k=0;k<6;k++){const a=k/6*Math.PI*2+i*0.3;const st0=mesh(G.box,M.blackstone,g,Math.cos(a)*7.5,2.2+Math.sin(a)*7.5,-u,0.5,0.5,1.2);st0.rotation.z=a;}}
+    const dust=[];for(let i=0;i<70;i++){const m=mesh(rockG(),M.rock,g,(rnd()<.5?-1:1)*(10+rnd()*30),-10+rnd()*30,-rnd()*L,0.6+rnd()*2.4,0.6+rnd()*2.4,0.6+rnd()*2.4);m.userData={keep:true,sp:(rnd()-.5)*0.6,ph:rnd()*6,y0:m.position.y};dust.push(m);}
+    const halo=mesh(G.plane,gm('#9a60ff',0.35),g,0,2.2,-L*0.5,60,60,1);halo.userData.keep=true;
+    const R0=55,R1=135,R2=245,R3=325;
+    s.roll=u=>u<R0?0:u<R1?Math.PI*ss((u-R0)/(R1-R0)):u<R2?Math.PI:u<R3?Math.PI+Math.PI*ss((u-R2)/(R3-R2)):Math.PI*2;
+    anim.push(t=>{const u=st.dist+PZ-s.az0;for(const r of rings){r.rotation.z=t*0.6+r.userData.ph;}for(const d of dust){d.rotation.x+=d.userData.sp*0.02;d.rotation.y+=d.userData.sp*0.03;d.position.y=d.userData.y0+Math.sin(t*0.5+d.userData.ph)*1.2;}
+      if(st.mode!=='play')return;
+      if(!s.flags.w&&u>R0-40){s.flags.w=1;toast('前方軌道扭轉——抓緊！','warn',1800);}
+      if(!s.flags.f&&u>R1-10){s.flags.f=1;toast('上下顛倒了！左右也跟著反過來！','warn',2200);st.shake=Math.max(st.shake,0.3);}
+      if(!s.flags.b&&u>R3-5){s.flags.b=1;toast('翻回來了','good',1400);}});
+    gearLine(1,s.az0+R1+10,6);gearLine(-1,s.az0+R1+60,6);gearLine(0,s.az0+R2-40,5);
+    finishSet(s,g,own,anim);},
+  /* a fork in the line: the middle rail ends; left dives into an old mine gallery, right hugs a sea cliff in the storm */
+  fork(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};
+    for(let u=6;u<L-6;u+=7){const h=Math.min(1,u/30,(L-u)/30)*(7+rnd()*5);if(h<0.6)continue;const m=mesh(rockG(),M.rock,g,(rnd()-.5)*0.4,-0.6,-u,1.15,h,3.6);m.rotation.y=rnd()*6;}
+    // signpost at the split
+    const sp=new T.Mesh(G.plane,std2({map:plate([['← 舊礦坑',44,60],['海崖 →',44,120]],380,170,'#2a1e14','#e8dcc0'),side:T.DoubleSide,roughness:0.9}));sp.scale.set(2.6,1.15,1);sp.position.set(0,3.4,4);sp.userData.keep=true;g.add(sp);mesh(G.cyl,M.wood,g,0,1.4,4.2,0.08,2.8,0.08);
+    // left: a timbered mine gallery, low roof, swinging lanterns
+    for(let u=16;u<L-14;u+=6){B(0.35,4.2,0.35,2,M.wood,-3.1,2.1,-u);B(0.35,4.2,0.35,2,M.wood,-0.55,2.1,-u);B(3.3,0.35,0.5,2,M.wood,-1.82,4.3,-u);}
+    B(3.6,0.2,L-30,6,M.dark,-1.82,4.55,-L/2);const lamps=[];for(let u=22;u<L-14;u+=18){const l=new T.Group();l.position.set(-1.82,4.1,-u);g.add(l);const b=mesh(G.sphLo,M.lamp,l,0,-0.6,0,0.12,0.15,0.12);b.userData.keep=true;const gg=mesh(G.plane,M.glowGold,l,0,-0.6,0.1,2.2,2.2,1);gg.userData.keep=true;l.userData.ph=rnd()*6;lamps.push(l);}
+    // right: open cliff edge over the sea with spray
+    for(let u=10;u<L-10;u+=9){const m=mesh(rockG(),M.rock,g,6+rnd()*5,-3-rnd()*2,-u,4+rnd()*3,3+rnd()*2,5);m.rotation.y=rnd()*6;}
+    const spray=[];for(let i=0;i<5;i++){const m=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,color:new T.Color('#e8f4ff'),opacity:0})),g,5.5,1.5,-(30+i*(L-60)/5),9,7,1);m.userData={keep:true,ph:i*1.3};own.push(m.material);spray.push(m);}
+    anim.push(t=>{for(const l of lamps)l.rotation.z=Math.sin(t*1.8+l.userData.ph)*0.25;
+      for(const m of spray){const k=(t*0.5+m.userData.ph)%2.4;m.material.opacity=k<0.6?Math.sin(k/0.6*Math.PI)*0.7:0;m.scale.y=7+k*6;}
+      const u=st.dist+PZ-s.az0;if(st.mode!=='play')return;
+      if(!s.flags.w&&u>-70){s.flags.w=1;toast('岔路！往左進礦坑，往右走海崖','warn',2400);}
+      if(!s.flags.c&&u>20){s.flags.c=1;toast(st.lane<0?'礦坑裡比較安全……但很暗':'海崖上風浪很大，金齒輪也比較多','good',2000);}});
+    gearLine(-1,s.az0+40,6);gearLine(1,s.az0+35,8);gearLine(1,s.az0+110,8);add({t:'wrench',lane:-1,az:s.az0+L-40});
+    for(const u of [70,150])add({t:'barrel',lane:1,az:s.az0+u});
+    finishSet(s,g,own,anim);},
   /* a colossal ghost liner ploughs across the line: it misses the cart by metres and wrecks the rails behind it */
   shipcross(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len,UX=s.UX;s.flags={};
     const sh=new T.Group();sh.position.set(600,0,-UX);sh.rotation.y=1.137;g.add(sh);const HL=240,HB=28;
@@ -2361,7 +2403,7 @@ const SETS2={
       const weT=canvasTex(128,64,(c)=>{c.clearRect(0,0,128,64);c.fillStyle='#ffd070';c.beginPath();c.ellipse(64,32,60,24,0,0,7);c.fill();c.fillStyle='#7a1004';c.beginPath();c.arc(64,32,18,0,7);c.fill();c.fillStyle='#000';c.beginPath();c.ellipse(64,32,4,16,0,0,7);c.fill();});
       const weM=bend(new T.MeshBasicMaterial({map:weT,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));own.push(weT,weM);
       const animEyes=[];for(let i=0;i<40;i++){const a=rnd()*6.28;if(Math.abs(Math.sin(a))<0.2)continue;const y=F+4+rnd()*(WT*0.6);
-        const ae=i%2===0&&(animSprite('flesheye',6.5,0.4,10)||animSprite('godeye',6.5,0.45,5));if(ae){ae.position.set(Math.sin(a)*(R-1.9),y-3.25,-bm+Math.cos(a)*(R-1.9));ae.rotation.y=a+Math.PI;if(ae.userData.anim.meta!==ANIMS.flesheye)ae.userData.anim.mat.color.set('#ffb8a8');g.add(ae);own.push(ae.userData.sprGeo);ae.userData.ph=rnd();animEyes.push(ae);continue;}
+        const ae=i%2===0&&(animSprite('flesheye',6.5,0.4,10)||animSprite('godeye',6.5,0.45,5));if(ae){ae.position.set(Math.sin(a)*(R-1.9),y-3.25,-bm+Math.cos(a)*(R-1.9));ae.rotation.y=a+Math.PI;ae.userData.noBB=1;if(ae.userData.anim.meta!==ANIMS.flesheye)ae.userData.anim.mat.color.set('#ffb8a8');g.add(ae);own.push(ae.userData.sprGeo);ae.userData.ph=rnd();animEyes.push(ae);continue;}
         const e=mesh(G.plane,weM,g,Math.sin(a)*(R-1.9),y,-bm+Math.cos(a)*(R-1.9),7,3.5,1);e.rotation.y=a+Math.PI;e.userData.keep=true;e.userData.ph=rnd()*6;wallEyes.push(e);}
       fx.push(t=>{for(const e of animEyes)playAnimAt(e,(t*(e.userData.anim.meta===ANIMS.flesheye?0.2:0.09)+e.userData.ph)%1);});
       // the hanging eye: a raw flesh ball with a real eye opening on its face
@@ -2448,21 +2490,44 @@ const SETS2={
     const liveEye=std2({color:new T.Color('#401010'),emissive:new T.Color('#ff2a10'),emissiveIntensity:0.05});own.push(liveEye);
     const CU=G1-28,ex=elder(liveEye);ex.scale.setScalar(1.4);ex.position.set(3.35,0.55,-CU);ex.rotation.set(Math.PI/2,0.4,0.3);g.add(ex);
     const rgM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ff3018'),opacity:0}));own.push(rgM);const rgl=mesh(G.plane,rgM,g,3,2.6,-CU+0.6,6,6,1);rgl.userData.keep=true;
-    const fall=[];for(let k=0;k<9;k++){const r=mesh(rockG(),M.blackstone,g,2.4+rnd()*1.8,40,-CU+(rnd()-.5)*2.6,1+rnd()*0.8,0.8+rnd()*0.7,1+rnd()*0.8);r.userData={delay:rnd()*0.35,tx:2.2+rnd()*1.8,ty:0.3+rnd()*0.9};fall.push(r);}
-    const DN=160,dgp=new T.BufferGeometry(),dpp=new Float32Array(DN*3);dgp.setAttribute('position',new T.BufferAttribute(dpp,3));own.push(dgp);
-    const dmm=bend(new T.PointsMaterial({size:1.6,map:TX.glow,color:new T.Color('#a8a49a'),transparent:true,opacity:0.55,depthWrite:false}));own.push(dmm);const dpts=new T.Points(dgp,dmm);dpts.frustumCulled=false;g.add(dpts);
-    const dsd=[...Array(DN)].map(()=>[(rnd()-.5)*5,rnd()*3,(rnd()-.5)*5,rnd()]);for(let i=0;i<DN;i++)dpp[i*3+1]=-50;
+    /* a living shoggoth bursts out of a side passage and is buried under the collapsing gallery roof */
+    const shg=pupSet('shoggoth',8.6,0.7);const SZ=-CU-5;if(shg){ex.visible=false;shg.position.set(8,0,SZ);shg.visible=false;g.add(shg);}
+    const hole=new T.Group();g.add(hole);B(0.2,7.6,7,4,M.dark,4.92,3.8,SZ);// dark side opening it pours out of
+    const fall=[];for(let k=0;k<11;k++){const big=k<6;const sc=big?1.7+rnd()*1.3:0.7+rnd()*0.6;const r=mesh(rockG(),M.blackstone,g,3.2+rnd()*1.4,40,SZ+(rnd()-.5)*5,sc,sc*0.85,sc);r.visible=false;r.userData={delay:(big?0:0.25)+rnd()*0.45,tx:3.3+rnd()*1.3+(big?0.3:0),ty:sc*0.32+rnd()*(big?1.4:0.6),sp:(rnd()-.5)*0.2};fall.push(r);}
+    const slab=[];for(let k=0;k<3;k++){const m=B(3.2,1,4.5,4,M.blackstone,3.6,9.4,SZ-3+k*3);m.userData={keep:true,y0:9.4,delay:0.05+k*0.12,ty:1.1+k*0.9,rz:0.4+rnd()*0.4};slab.push(m);}
+    const ichM=std2({color:new T.Color('#05070a'),roughness:0.08,metalness:0.5,emissive:new T.Color('#0a1a10'),emissiveIntensity:0.4});own.push(ichM);
+    const ich=[];for(let k=0;k<9;k++){const m=mesh(G.blob,ichM,g,3.4+(rnd()-.5)*2,0.08,SZ+(rnd()-.5)*6,0.2,0.1,0.2);m.userData={r:1+rnd()*1.8,dx:(rnd()-.5)*2.5};m.visible=false;ich.push(m);}
+    const eyeDie=[];for(let k=0;k<7;k++){const e=mesh(G.sphLo,M.eyeGreen,g,2.2+rnd()*1.6,0.4+rnd()*0.6,SZ+(rnd()-.5)*4,0.22,0.22,0.22);e.visible=false;e.userData.ph=rnd()*6;eyeDie.push(e);}
+    const DN=260,dgp=new T.BufferGeometry(),dpp=new Float32Array(DN*3);dgp.setAttribute('position',new T.BufferAttribute(dpp,3));own.push(dgp);
+    const dmm=bend(new T.PointsMaterial({size:2.2,map:TX.glow,color:new T.Color('#a8a49a'),transparent:true,opacity:0.6,depthWrite:false}));own.push(dmm);const dpts=new T.Points(dgp,dmm);dpts.frustumCulled=false;g.add(dpts);
+    const dsd=[...Array(DN)].map(()=>[(rnd()-.5)*7,rnd()*4,(rnd()-.5)*7,rnd()]);for(let i=0;i<DN;i++)dpp[i*3+1]=-50;
     s.cut={on:false,t:0,done:false};
     anim.push(t=>{const u=st.dist-s.az0;const C=s.cut;if(st.mode!=='play')return;
-      if(!C.on&&!C.done&&u>CU-13){C.on=true;C.t0=t;st.focus={x:3.2,y:1.4,az:s.az0+CU};$('lbox').hidden=false;}
+      if(!C.on&&!C.done&&u>CU-16){C.on=true;C.t0=t;st.focus={x:3.4,y:3.2,az:s.az0-SZ};$('lbox').hidden=false;}
       if(!C.on)return;const k=t-C.t0;
-      liveEye.emissiveIntensity=C.hit?0.05:Math.min(2.2,k*2);rgM.opacity=C.hit?Math.max(0,rgM.opacity-0.02):Math.min(0.7,k*0.6);
-      if(k<1.6){const r=ss(k/1.6);ex.rotation.set(Math.PI/2*(1-r),0.4-0.4*r,0.3*(1-r));ex.position.y=0.55-0.55*r;ex.userData.wings.forEach((w,i)=>w.rotation.z=(i?1:-1)*(1.2-1.1*r));if(!C.r1&&k>0.3){C.r1=1;toast('牠還活著！','warn',1400);if(AC){const a=AC.currentTime;for(let i=0;i<4;i++)tone(a+i*0.16,'square',i%2?1700:1300,i%2?1300:1700,0.08,0.15);}}}
-      else if(k<2.7){const r=ss((k-1.6)/0.7);ex.position.x=3.35-1.1*r;ex.position.y=r*0.5;ex.rotation.x=-0.5*r;ex.userData.head.rotation.x=-0.6*r;ex.userData.wings.forEach((w,i)=>w.rotation.z=(i?1:-1)*(0.1-0.4*r));if(!C.r2&&k>1.7){C.r2=1;sfx.snap();st.shake=Math.max(st.shake,0.3);}}
-      if(k>2.3){for(const r of fall){const kk=k-2.3-r.userData.delay;if(kk<0)continue;const y=Math.max(r.userData.ty,9-0.5*9.8*kk*kk*1.6);r.position.set(r.userData.tx,y,r.position.z);r.rotation.x+=0.05;}}
-      if(k>2.75&&!C.hit){C.hit=1;sfx.boom();st.shake=Math.max(st.shake,1.1);st.flash=0.35;toast('落石！','warn',1200);ex.scale.set(1.2,0.3,1.2);ex.position.set(2.6,0.1,ex.position.z);}
-      if(C.hit){const kd=k-2.75;for(let i=0;i<DN;i++){const d=dsd[i];dpp[i*3]=2.8+d[0]*(0.4+kd);dpp[i*3+1]=d[1]*(0.5+kd*0.8);dpp[i*3+2]=-CU+d[2]*(0.4+kd);}dgp.attributes.position.needsUpdate=true;dmm.opacity=0.55*Math.max(0,1-kd/3);}
-      if(k>4.6){C.on=false;C.done=true;st.focus=null;$('lbox').hidden=true;}});
+      if(shg){
+        // 0-1.6s: it oozes out of the side passage, eyes opening; 1.6-2.6s: it rears and lunges at the rails
+        if(!C.hit){shg.visible=true;const r1=ss(k/1.6),r2=ss((k-1.6)/1.0);pose(shg,'shoggoth',t*1.6);
+          shg.position.set(8-4.2*r1-1.4*r2,0,SZ+r2*1.5);shg.scale.set(0.5+0.5*r1+0.15*r2,0.35+0.65*r1+0.25*r2,1);shg.rotation.z=-0.12*r2;
+          if(!C.r1&&k>0.2){C.r1=1;toast('Tekeli-li！牠還活著！','warn',1600);if(AC){const a=AC.currentTime;for(let i=0;i<6;i++)tone(a+i*0.17,'square',i%2?1900:1500,i%2?1500:1900,0.08,0.16);playS('roar',0.7,1.25);}}
+          if(!C.r2&&k>1.7){C.r2=1;sfx.snap();st.shake=Math.max(st.shake,0.45);}}
+        else{const kd=k-2.95;const q=ss(kd/0.35);shg.scale.set(1.15+0.9*q,Math.max(0.06,0.85*(1-q)+0.06),1);shg.position.y=0;shg.rotation.z=0;
+          if(kd>1.2)shg.visible=false;}}
+      else{ // fallback: the procedural elder thing
+        liveEye.emissiveIntensity=C.hit?0.05:Math.min(2.2,k*2);rgM.opacity=C.hit?Math.max(0,rgM.opacity-0.02):Math.min(0.7,k*0.6);
+        if(k<1.6){const r=ss(k/1.6);ex.rotation.set(Math.PI/2*(1-r),0.4-0.4*r,0.3*(1-r));ex.position.y=0.55-0.55*r;}
+        else if(!C.hit){const r=ss((k-1.6)/0.7);ex.position.x=3.35-1.1*r;ex.position.y=r*0.5;ex.rotation.x=-0.5*r;}
+        else{ex.scale.set(1.2,0.3,1.2);ex.position.set(2.6,0.1,ex.position.z);}}
+      // 2.3s: the roof cracks; slabs and boulders come down on it
+      if(k>2.1&&!C.crk){C.crk=1;st.shake=Math.max(st.shake,0.5);if(AC){playS('thunder',0.7,1.4);noiseHit(AC.currentTime,'bandpass',900,0.5,0.6,2);}toast('頭頂的岩石裂開了——','warn',1200);}
+      if(k>2.45){for(const sl of slab){const kk=k-2.45-sl.userData.delay;if(kk<0)continue;sl.position.y=Math.max(sl.userData.ty,sl.userData.y0-0.5*9.8*kk*kk*1.7);sl.rotation.z=Math.min(1,kk*1.5)*sl.userData.rz;}
+        for(const r of fall){const kk=k-2.45-r.userData.delay;if(kk<0)continue;r.visible=true;const y=Math.max(r.userData.ty,10-0.5*9.8*kk*kk*1.7);r.position.set(r.userData.tx,y,r.position.z);if(y>r.userData.ty){r.rotation.x+=0.06;r.rotation.z+=r.userData.sp;}}}
+      if(k>2.95&&!C.hit){C.hit=1;sfx.boom();playS('boom',1,0.8,0.15);playS('bigsplash',0.9,0.6,0.05);st.shake=Math.max(st.shake,1.4);st.flash=0.45;st.red=Math.max(st.red,0.25);lensDrops(10);toast('牠被落石活埋了！','warn',1800);
+        ich.forEach(m=>m.visible=true);eyeDie.forEach(e=>e.visible=true);}
+      if(C.hit){const kd=k-2.95;const q=ss(kd/0.8);ich.forEach(m=>{const R=m.userData.r*q;m.scale.set(0.2+R,0.08+0.05*q,0.2+R*1.3);m.position.x=3.4+m.userData.dx*q*0.6;});
+        eyeDie.forEach(e=>{e.visible=kd<2.4&&Math.sin(t*9+e.userData.ph)>-0.2+kd*0.4;e.scale.setScalar(0.22*(1-Math.min(1,kd/2.4)*0.6));});
+        for(let i=0;i<DN;i++){const d=dsd[i];dpp[i*3]=3.3+d[0]*(0.4+kd*0.9);dpp[i*3+1]=d[1]*(0.6+kd*0.9);dpp[i*3+2]=SZ+d[2]*(0.4+kd*0.9);}dgp.attributes.position.needsUpdate=true;dmm.opacity=0.65*Math.max(0,1-kd/3.6);}
+      if(k>6.2){C.on=false;C.done=true;st.focus=null;$('lbox').hidden=true;}});
     const XC=G1+60;
     anim.push(t=>{const u=st.dist-s.az0;
       for(let i=0;i<SN;i++){const q=ss2[i];sp[i*3]=q[0]+Math.sin(t*0.6+q[3])*2-((t*6)%60);sp[i*3+1]=((q[1]-t*2.2)%30+30)%30;sp[i*3+2]=-(u+q[2]);}sg2.attributes.position.needsUpdate=true;
@@ -2756,7 +2821,7 @@ const SETS2={
     const eye=new T.Group();eye.position.set(-40,6,-(L-110));g.add(eye);mesh(G.blob,skin,eye,0,0,0,11,7,10);
     const irisM=glowM('#ff8020',0);const ir=mesh(G.plane,irisM,eye,6,0,4,12,5,1);ir.rotation.y=0.9;ir.userData.keep=true;
     const lid=mesh(G.box,fleshM,eye,9.5,0,3,0.6,0.5,12);lid.rotation.y=0.9;
-    const ea=animSprite('godeye',14,0.6,5);if(ea){eye.visible=false;ea.position.set(-10.5,s.base(L-110)-1.2,-(L-110));ea.rotation.set(-0.2,0.5,0);g.add(ea);own.push(ea.userData.sprGeo);}
+    const ea=animSprite('godeye',14,0.6,5);if(ea){eye.visible=false;ea.position.set(-10.5,s.base(L-110)-1.2,-(L-110));ea.rotation.set(-0.2,0.5,0);ea.userData.noBB=1;g.add(ea);own.push(ea.userData.sprGeo);}
     const heave=(u,t)=>s.env(u)*1.4*Math.sin(t*s.W-u*0.05);
     anim.push(t=>{for(const sl of slices)sl.position.y=heave(sl.userData.u,t);for(let i=0;i<hp.count;i++)hp.setY(i,bY[i]+heave(hu[i],t));hp.needsUpdate=true;
       for(const sp of spikes){const d=sp.userData;sp.position.y=s.base(d.u)+heave(d.u,t)-0.1;}
@@ -3314,7 +3379,7 @@ function placeObs(o){
 }
 
 /* ================= actions / flow ================= */
-function moveLane(dir){if(st.mode!=='play'||st.paused)return;const nl=Math.max(-1,Math.min(1,st.lane+dir));
+function moveLane(dir){if(st.mode!=='play'||st.paused)return;if(Math.cos(st.spinRoll||0)<0)dir=-dir;const nl=Math.max(-1,Math.min(1,st.lane+dir));
   if(nl===st.lane)return;if(!laneOn(nl,st.dist+PZ)){sfx.clunk();st.shake=Math.max(st.shake,0.2);return;}st.lane=nl;}
 function jump(){if(st.mode!=='play'||st.paused)return;if(st.jumpY<=0.01){st.jumpV=6.3;st.jumpY=0.001;st.duckT=0;sfx.jump();}}
 function duck(){if(st.mode!=='play'||st.paused)return;st.duckT=0.75;if(st.jumpY>0)st.jumpV=Math.min(st.jumpV,-6);}
@@ -3366,7 +3431,7 @@ $('bestTitle').textContent=best?('最佳紀錄 '+best+' 分'):'';
 
 /* ================= update ================= */
 let wreckTimer=0,krakens=[],fins=[];
-function update(dt){if(AC&&AC.state==='suspended'&&!st.paused&&st.mode==='play'&&(st.time%2)<dt)AC.resume().catch(()=>{});
+function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused&&(st.time%2)<dt)AC.resume().catch(()=>{});
   if(st.mode==='intro'){introTick(dt);return;}st.glanceT=0;st.lookT=0;
   st.time+=dt;
   for(const [l,gl,ph] of flick){const on=Math.sin(st.time*23+ph)+Math.sin(st.time*7.3+ph*2)>-1.2;l.visible=gl.visible=on;}
@@ -3539,6 +3604,7 @@ function render(){
   st.lookV=(st.lookV||0)+((st.lookT||0)-(st.lookV||0))*0.05;camera.rotation.x-=st.lookV;
   {const lw=st.ledgeW||0,pk=Math.min(1,st.peek||0),gu=st.gust||0;camera.rotation.x-=(0.16+0.34*pk+0.12*gu)*lw;camera.rotation.y-=(0.3+0.12*pk)*lw;camera.rotation.z+=lw*(Math.sin(st.time*1.3)*0.028+Math.sin(st.time*3.7)*0.012)-gu*lw*(0.1+0.05*Math.sin(st.time*9));camera.position.x+=gu*lw*0.22;
    const vr=st.vroll||0;camera.rotation.z-=vr*(0.16+0.05*Math.sin(st.time*1.4));
+   {const sp=nearType(st.dist+PZ,'spiral',0);st.spinRoll=sp&&sp.roll?sp.roll(st.dist+PZ-sp.az0):0;camera.rotation.z+=st.spinRoll;}
    {const fw=st.focusW||0,F=st.focus||st.focusLast;if(st.focus)st.focusLast=st.focus;if(fw>0.01&&F){const side=Math.abs(F.x)>2&&Math.abs(F.x)<7?Math.sign(F.x):0;camera.position.x-=side*2.2*fw;
       const dzw=st.dist-F.az;const d=Math.max(0,-dzw);const tx=F.x+bendU.value*d*d;const dx=tx-camera.position.x,dy=F.y-camera.position.y;
       let yaw=Math.atan2(-dx,-dzw);yaw=Math.max(-1.5,Math.min(1.5,yaw));const pit=Math.atan2(dy,Math.hypot(dx,dzw));
@@ -3578,7 +3644,7 @@ function render(){
   const dt=1/60;for(let i=0;i<RN;i++){const r=rData[i];r.y-=r.v*dt;r.x-=r.v*dt*0.2;r.z+=st.speed*dt*0.3;if(r.y<0||r.z>2){r.y=10+rnd()*6;r.x=(rnd()*2-1)*16;r.z=-rnd()*45;}
     const x=camera.position.x+r.x,y=st.camH+r.y;rPos[i*6]=x;rPos[i*6+1]=y;rPos[i*6+2]=r.z;rPos[i*6+3]=x+0.12;rPos[i*6+4]=y+0.6;rPos[i*6+5]=r.z-0.12;}
   rainL.geometry.attributes.position.needsUpdate=true;rainL.material.opacity=0.3*(1-dk*0.9)*ATM.rain*(1-(st.uw||0));if(rainG)rainG.gain.value=0.045*(1-(st.uw||0)*0.9);
-  renderer.render(scene,camera);
+  billboards();renderer.render(scene,camera);
   // 2D lens effects
   fctx.clearRect(0,0,W,H);
   for(const d of lens){const x=d.x*W,y=d.y*H,r=d.r*Math.min(1,d.life);const a=Math.min(1,d.life);
@@ -3763,13 +3829,18 @@ const ANIMS={shark:{cols:5,rows:8,frames:40,aspect:1.7778},miner:{cols:8,rows:6,
 function animSprite(n,height,emi,fps){const A=HQ.anim&&HQ.anim[n];if(!A)return null;const m0=A.meta;const tex=A.tex.clone();tex.needsUpdate=true;tex.repeat.set(1/m0.cols,1/m0.rows);
   const geo=new T.PlaneGeometry(height*m0.aspect,height).translate(0,height/2,0);
   const mat=bend(new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:new T.Color('#ffffff'),emissiveIntensity:emi==null?0.5:emi,roughness:1,metalness:0,alphaTest:0.3,transparent:true,side:T.DoubleSide}));
-  const m=new T.Mesh(geo,mat);m.userData.keep=true;m.userData.sprGeo=geo;m.userData.anim={meta:m0,tex,fps:fps||12,ph:rnd()*10,mat};setFrame(m,0);return m;}
+  const m=new T.Mesh(geo,mat);m.userData.keep=true;m.userData.sprGeo=geo;m.userData.anim={meta:m0,tex,fps:fps||12,ph:rnd()*10,mat};setFrame(m,0);BBS.push(m);return m;}
 function setFrame(m,f){const a=m.userData.anim;if(!a)return;const M0=a.meta;f=((f|0)%M0.frames+M0.frames)%M0.frames;const c=f%M0.cols,r=(f/M0.cols)|0;a.tex.offset.set(c/M0.cols,1-(r+1)/M0.rows);}
 function playAnimAt(m,u){const a=m.userData.anim;if(!a)return;setFrame(m,Math.floor(u*a.meta.frames));}
 function playAnim(m,t,once){const a=m.userData.anim;if(!a)return;let f=Math.floor((t+(once?0:a.ph))*a.fps);if(once)f=Math.min(f,a.meta.frames-1);setFrame(m,f);}
 function disposeAnim(g){g.traverse(o=>{if(o.userData&&o.userData.anim){o.userData.anim.tex.dispose();o.userData.anim.mat.dispose();}if(o.userData&&o.userData.pup){o.userData.pup.mat.dispose();o.userData.pup.geo.dispose();}});}
+/* painted cut-outs always turn to face the camera (yaw only), so looking at a monster from the side never shows a paper-thin edge */
+const BBS=[],_bw=new T.Vector3(),_bc=new T.Vector3(),_bq=new T.Quaternion(),_be=new T.Euler();
+function billboards(){camera.getWorldPosition(_bc);for(let i=BBS.length-1;i>=0;i--){const m=BBS[i];let r=m;while(r.parent)r=r.parent;
+    if(r!==scene){if(m.userData.inS)BBS.splice(i,1);continue;}m.userData.inS=1;if(m.userData.noBB||!m.visible)continue;
+    m.parent.getWorldQuaternion(_bq);_be.setFromQuaternion(_bq,'YXZ');m.getWorldPosition(_bw);m.rotation.y=Math.atan2(_bc.x-_bw.x,_bc.z-_bw.z)-_be.y;}}
 function sprite(n,height,emi){const t=HQ.spr&&HQ.spr[n];if(!t)return null;const asp=t.image.width/t.image.height;const geo=new T.PlaneGeometry(height*asp,height).translate(0,height/2,0);
-  const m=new T.Mesh(geo,sprMat(n,emi));m.userData.keep=true;m.userData.sprGeo=geo;return m;}
+  const m=new T.Mesh(geo,sprMat(n,emi));m.userData.keep=true;m.userData.sprGeo=geo;BBS.push(m);return m;}
 /* Puppet rigs: the painted creature is cut into a fine mesh and bent by a small 2D skeleton
    (jaw, eyelids, head, arms, wings, tentacle joints) so expressions and limbs really move.
    Bones are listed child-first; each has a soft region (ellipse r + ramp d), a pivot pv,
@@ -3887,7 +3958,7 @@ function puppet(n,height,emi){const t=HQ.spr&&HQ.spr[n];const rig=RIGS[n];if(!t)
     #endif
     transformed=pupWarp(uv,position,iid);}`);};
   mat.customProgramCacheKey=()=>'pup';bend(mat);
-  const m=new T.Mesh(geo,mat);m.userData.keep=true;m.userData.sprGeo=geo;m.userData.pup={U,idx,mat,geo,base:emi==null?0.5:emi,blinkAt:1+rnd()*3,emo:0};return m;}
+  const m=new T.Mesh(geo,mat);m.userData.keep=true;m.userData.sprGeo=geo;m.userData.pup={U,idx,mat,geo,base:emi==null?0.5:emi,blinkAt:1+rnd()*3,emo:0};BBS.push(m);return m;}
 /* set a bone: angle (rad), translation (in sprite heights), vertical scale */
 function bone(m,n,a,tx,ty,sc){const P=m&&m.userData.pup;if(!P)return;const i=P.idx[n];if(i==null)return;P.U.uK.value[i].set(a||0,tx||0,ty||0,sc==null?1:sc);}
 function wave(m,n,amp,ph){const P=m&&m.userData.pup;if(!P)return;const i=P.idx[n];if(i==null)return;P.U.uPv.value[i].z=amp;P.U.uO.value[i].z=ph;}
