@@ -260,7 +260,7 @@ html,body{overscroll-behavior:none}
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="khint off" id="khint" hidden><span><kbd>←</kbd><kbd>→</kbd>換軌</span><span><kbd>↑</kbd>／<kbd>空白</kbd>跳</span><span><kbd>↓</kbd>蹲</span><span><kbd>Enter</kbd>關閉旁白</span><span><kbd>M</kbd>靜音</span><span><kbd>F</kbd>全螢幕</span><span><kbd>Esc</kbd>暫停</span></div>
+<div class="khint off" id="khint" hidden><span><kbd>←</kbd><kbd>→</kbd>換軌</span><span><kbd>↑</kbd>／<kbd>空白</kbd>跳</span><span><kbd>↓</kbd>蹲</span><span><kbd>Enter</kbd>關閉字卡</span><span><kbd>M</kbd>靜音</span><span><kbd>F</kbd>全螢幕</span><span><kbd>Esc</kbd>暫停</span></div>
 
 <div class="overlay cover" id="titleScreen">
   <div class="cv" id="cv">
@@ -3177,13 +3177,13 @@ function showBeat(ch,text){const k=st.beat-1,c=st.chapter;try{const f=BEAT_FX[c]
   const focus=fc?{x:fc[0],y:fc[1]+(fc[3]?trackH(st.dist+fc[2]):0),az:st.dist+fc[2],far:!!fc[3]}:null;narrate(ch.n+'・'+ch.t,text,'c'+c+'_'+k,cv,focus);}
 function showChapterCard(i){st.chapter=i;const c=CHAPTERS[i];$('chN').textContent=c.n;$('chT').textContent=c.t;$('chI').textContent=c.intro;
   for(const id of ['titleScreen','overScreen','clearScreen','selScreen'])$(id).hidden=true;$('chapScreen').hidden=false;$('chGo').focus();clearNarr();speak(c.intro);}
-function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNarr();if(i<4)speak(c.outro);chCleared=Math.max(chCleared,i+1);try{localStorage.setItem('rustrail-ch',chCleared)}catch(e){}
+function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNarr(true);if(i<4)speak(c.outro,null,true);chCleared=Math.max(chCleared,i+1);try{localStorage.setItem('rustrail-ch',chCleared)}catch(e){}
   syncPad();$('story').hidden=true;
   $('clN').textContent=c.n+'　完成';$('clT').textContent=i===4?'完':c.t;$('clO').textContent=c.outro;
   $('clD').textContent=Math.floor(st.dist-st.chStart)+'m';$('clG').textContent=st.gears;$('clP').textContent=journal.size+'/'+STORIES.length;
   $('clNext').textContent=i<4?'前往'+CHAPTERS[i+1].n:'進入無盡模式';
   const showClear=()=>{$('clearScreen').hidden=false;$('hud').hidden=true;$('clNext').focus();};
-  if(i===4){hush();$('hud').hidden=true;setTimeout(()=>playEnding(showClear),900);}else setTimeout(showClear,1300);
+  if(i===4){$('hud').hidden=true;const t0=performance.now();const go=()=>{if(voBusy()&&performance.now()-t0<20000){setTimeout(go,250);return;}hush();playEnding(showClear);};setTimeout(go,900);}else setTimeout(showClear,1300);
   if(AC){const t=AC.currentTime;[392,523,659,784].forEach((f,k)=>tone(t+k*0.12,'triangle',f,f,0.12,0.5));}}
 function refreshTitle(){const nx=Math.min(chCleared,4);$('startBtn').textContent=chCleared>=5?'重玩第五章':(chCleared?'繼續・':'')+CHAPTERS[nx].n+'　'+CHAPTERS[nx].t;
   $('bestTitle').textContent=best?('無盡模式最佳 '+best+' 分'):'';}
@@ -3708,7 +3708,7 @@ window.addEventListener('keydown',e=>{const k=e.key;
   else if(k==='ArrowDown'||k==='s'||k==='S'){duck();e.preventDefault();}});
 $('jBtnPause').onclick=()=>openJournal('pauseScreen');$('jBtnTitle').onclick=()=>openJournal('titleScreen');
 $('jClose').onclick=()=>{$('journalScreen').hidden=true;$(journalFrom||'titleScreen').hidden=false;};
-$('story').onclick=()=>{hush();storyTimer=0;nextNarr();};
+$('story').onclick=()=>{$('story').hidden=true;if(!voBusy()){storyTimer=0;nextNarr();}};// closing the card never cuts the voice mid-sentence
 $('ttsToggle').checked=ttsOn;$('ttsToggle').onchange=e=>{ttsOn=e.target.checked;try{localStorage.setItem('rustrail-tts',ttsOn?'1':'0')}catch(err){}if(!ttsOn)hush();};
 updateJournalCount();
 $('lowToggle').checked=lowQ;$('lowToggle').onchange=e=>{lowQ=e.target.checked;try{localStorage.setItem('rustrail-low',lowQ?'1':'0')}catch(err){}resize();};
