@@ -493,7 +493,7 @@ function narrate(kicker,text,jid,cv,focus){if(jid){journal.add(jid);saveJournal(
   NQ.push({kicker,text,cv,focus});if(st.mode==='play'){const est=(voDur(text)||text.length*0.23)+2;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
   if(!narrBusy&&!voBusy())nextNarr();}
 function narrateSilent(kicker,text){NQ.unshift({kicker,text,silent:true});narrBusy=false;nextNarr();}
-function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
+function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&!st.focus.far&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
   if(n.cv){try{im.src=n.cv.toDataURL('image/jpeg',0.8);im.hidden=false;}catch(e){im.hidden=true;}}else im.hidden=true;$('story').classList.toggle('has-img',!im.hidden);
   $('storyK').textContent=n.kicker;$('storyT').textContent=n.parts[0];n.pi=0;$('story').hidden=false;
   const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=(d?d+1.4:est);
@@ -3216,7 +3216,19 @@ const BEAT_FX=[
  [ (az)=>{const g=propGroup(az+70);const tex=canvasTex(256,512,(c)=>{c.fillStyle='#1a1e22';c.fillRect(0,0,256,512);for(let y=10;y<500;y+=42)for(let x=12;x<250;x+=48){c.fillStyle=Math.random()<0.7?'#e8c070':'#2a2e34';c.fillRect(x,y,34,28);
         if(Math.random()<0.5){c.fillStyle='#14100a';c.beginPath();c.arc(x+17,y+10,4,0,7);c.fill();c.fillRect(x+12,y+14,10,14);}}});const wm=bend(new T.MeshBasicMaterial({map:tex}));
       for(const sd of [-1,1])for(let k=0;k<3;k++){const h=26+k*9;const m=new T.Mesh(G.box,wm);m.scale.set(10,h,10);m.position.set(sd*15,h/2-2,-k*22);g.add(m);}},
-   null,
+    /* the second moon: a pale full moon hangs in the sky... then it opens. It is an eye. */
+    (az)=>{const sg=new T.Group();sg.position.set(-28,118,-380);skyRig.add(sg);const R=78;
+      const mc=canvasTex(512,512,(c)=>{const gr=c.createRadialGradient(230,220,40,256,256,256);gr.addColorStop(0,'#f4f0e4');gr.addColorStop(0.75,'#d8d2c2');gr.addColorStop(0.98,'#a8a294');gr.addColorStop(1,'rgba(168,162,148,0)');c.fillStyle=gr;c.beginPath();c.arc(256,256,250,0,7);c.fill();
+        for(let i=0;i<70;i++){const x=256+(Math.random()-.5)*400,y=256+(Math.random()-.5)*400,r=4+Math.random()*30;if(Math.hypot(x-256,y-256)>230-r)continue;c.fillStyle=`rgba(120,112,98,${0.12+Math.random()*0.22})`;c.beginPath();c.arc(x,y,r,0,7);c.fill();}});
+      const mm=new T.MeshBasicMaterial({map:mc,transparent:true,fog:false,depthWrite:false});const moon=new T.Mesh(G.plane,mm);moon.scale.set(R*2,R*2,1);sg.add(moon);
+      const hm=new T.MeshBasicMaterial({map:TX.glow,transparent:true,fog:false,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#e8eaf0'),opacity:0.55});const halo=new T.Mesh(G.plane,hm);halo.scale.set(R*6,R*6,1);halo.position.z=-1;sg.add(halo);
+      const eye=animSprite('godeye',R*2.1,1.0,5);if(eye){eye.material.fog=false;eye.material.depthWrite=false;eye.material.opacity=0;eye.geometry=eye.geometry.clone().translate(0,-R*1.05,0);eye.userData.noBB=true;eye.position.z=0.5;sg.add(eye);}
+      const t0=st.time;const g=propGroup(az+2000,(t)=>{const k=st.time-t0;
+        const open=ss((k-3.2)/2.2);mm.opacity=1-open*0.9;if(eye){eye.material.opacity=open;playAnimAt(eye,k<20?Math.min(0.42,ss((k-3.2)/3.5)*0.42)+(k>6.7?0.18*(0.5+0.5*Math.sin((k-6.7)*0.6-Math.PI/2)):0):Math.min(0.99,0.42+0.57*ss((k-20)/3)));}
+        hm.color.setRGB(0.9+0.1*open,0.92-0.6*open,0.94-0.7*open);hm.opacity=0.55+0.25*open*(0.8+0.2*Math.sin(k*2));
+        sg.position.y=118+Math.sin(k*0.2)*2;if(k>3.3&&!g.userData.s){g.userData.s=1;st.shake=Math.max(st.shake,0.35);if(AC){playS('roar',0.5,0.45);}toast('那不是月亮……','warn',2000);}
+        const fade=1-ss((k-24)/4);sg.visible=fade>0.01;moon.material.opacity*=fade;hm.opacity*=fade;if(eye)eye.material.opacity*=fade;
+        if(k>29){skyRig.remove(sg);g.userData.done=1;}});void g;},
    (az)=>{const g=propGroup(az+60);const arc=new T.TorusGeometry(6,0.4,8,18,Math.PI);for(let k=0;k<6;k++){const r=new T.Mesh(arc,M.bone);r.position.set(0,trackH(az+60),-k*6);r.scale.set(1,1.2,1);g.add(r);}
       mesh(G.cyl,M.iron,g,4.6,1.4,6,0.08,2.8,0.08);const pl=new T.Mesh(G.plane,textMat([['考察隊第三組',60,38],['最後的營地',112,38],['1963.3.11',165,34]],400,210,'#4a3a2c','#e8dcc0'));pl.scale.set(2,1.05,1);pl.position.set(4.6,2.8,6.06);g.add(pl);},
    (az)=>{const k={x:pick([-1,1])*38,t:0,roared:false};k.g=krakenMesh(k);world.add(k.g);krakens.push(k);}],
@@ -3242,7 +3254,7 @@ const BEAT_FX=[
       var bm=bend(new T.MeshBasicMaterial({color:new T.Color('#fff0c0'),transparent:true,opacity:0.5,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));const cone=new T.Mesh(new T.ConeGeometry(4,26,16,1,true),bm);cone.rotation.x=Math.PI/2*1.08;cone.position.set(X+1.5,h+3.4,13);cone.userData.keep=true;g.add(cone);}]
 ];
 /* where the camera turns to while each chapter line is read: [x, y, metres ahead of the cart, far] */
-const BEAT_FOCUS=[[[36,16,105],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[-8.4,6,65]],[[14,16,70],null,[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
+const BEAT_FOCUS=[[[36,16,105],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[-8.4,6,65]],[[14,16,70],[-28,118,380,1],[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
 const BEAT_CV=[[null,null,()=>phoneCard('不管發生什麼事，都不要讓礦車停下來。','明天 23:58'),null],[null,null,null,null],[null,null,null,null],[null,null,null,null],
   [null,null,()=>pageCard(['孩子，對不起，包裹是我寄的。','我開了六十年，真的太累了。','只要礦車不停，祂就不會醒。','現在，換你了。']),null]];
 
@@ -3567,7 +3579,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   st.duckT-=dt;st.duck+=((st.duckT>0?1:0)-st.duck)*Math.min(1,dt*14);
   st.bump=Math.max(0,st.bump-dt*4);
   st.curveTimer-=dt;if(st.curveTimer<0){st.curveT=(rnd()*2-1)*(st.dist>400?0.0013:0.0009);st.curveTimer=3+rnd()*4;}
-  if((nearType(st.dist+60,'seatube',160)&&!((st.vroll||0)>0.02))||nearType(st.dist+60,'cliff',30)||isSet(st.dist+60,200)){st.curveT=0;st.curveTimer=1;}
+  if((nearType(st.dist+60,'seatube',160)&&!((st.vroll||0)>0.02))||nearType(st.dist+60,'cliff',30)||nearType(st.dist+60,'factory',80)||nearType(st.dist+60,'harbor',40)||isSet(st.dist+60,200)){st.curveT=0;st.curveTimer=1;}
   {const c=nearType(st.dist+PZ,'cliff',0);let lw=0,pk=0;if(c){const u=st.dist+PZ-c.az0,P0=c.P[0],P1=c.P[1];lw=ss((u-P0+30)/34)*ss((P0+P1-u)/26);
     pk=Math.exp(-Math.pow((u-(P0+P1*0.22))/26,2))+Math.exp(-Math.pow((u-(P0+P1*0.6))/26,2));}
     st.gust=Math.max(0,(st.gust||0)-dt*0.8);st.lookBack=Math.max(0,(st.lookBack||0)-dt*0.42);
