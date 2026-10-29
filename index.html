@@ -196,7 +196,11 @@ html,body{overscroll-behavior:none}
 .cv-go:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--blood)}
 .cv-go:disabled{opacity:.6}
 .cv-go:focus-visible,.cv-b:focus-visible{outline:2px solid var(--blood);outline-offset:3px}
-.cv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cv-restart{appearance:none;cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:10px;background:#efe6d6;border:2px solid var(--blood);color:#0b0908;padding:12px 14px;text-align:left;font:900 16px/1.1 var(--f-display);letter-spacing:.12em}
+.cv-restart small{font:600 11px/1.2 var(--f-body);letter-spacing:.02em;color:#5a3a2a}
+.cv-restart:active{transform:translate(2px,2px)}
+.cv-restart:focus-visible{outline:2px solid var(--blood);outline-offset:3px}
 .cv-b{appearance:none;cursor:pointer;background:transparent;border:1.5px solid #0b0908;color:#0b0908;font:700 12px/1.2 var(--f-body);letter-spacing:.06em;padding:10px 2px}
 .cv-b:active{background:#0b0908;color:var(--bone)}
 .cv-help{background:#0b0908;color:var(--ink)}
@@ -281,8 +285,9 @@ html,body{overscroll-behavior:none}
     <div class="cv-marq" id="cvMarq"><div><span>礦車不能停 ✶ 別回頭 ✶ 祂在作夢 ✶ PH'NGLUI MGLW'NAFH CTHULHU R'LYEH WGAH'NAGL FHTAGN ✶ 換你了 ✶ </span><span>礦車不能停 ✶ 別回頭 ✶ 祂在作夢 ✶ PH'NGLUI MGLW'NAFH CTHULHU R'LYEH WGAH'NAGL FHTAGN ✶ 換你了 ✶ </span></div></div>
     <div class="cv-menu">
       <button class="cv-go" id="startBtn" disabled>載入中…</button>
+      <button class="cv-restart" id="replayBtn" hidden><span>⟲　從頭開始玩</span><small>從開場動畫、第一章重新開始</small></button>
       <button class="cv-novel" id="novelBtn"><span>小說模式</span><small>看完整故事・解謎筆記</small></button>
-      <div class="cv-grid"><button class="cv-b" id="selBtn">選擇章節</button><button class="cv-b" id="endlessBtn">無盡模式</button><button class="cv-b" id="jBtnTitle">翻開日誌</button><button class="cv-b" id="replayBtn">重看開場</button></div>
+      <div class="cv-grid"><button class="cv-b" id="selBtn">選擇章節</button><button class="cv-b" id="endlessBtn">無盡模式</button><button class="cv-b" id="jBtnTitle">翻開日誌</button></div>
       <details class="cv-help"><summary>操作說明 ／ 怪物圖鑑</summary><div class="cv-helpin">
       <p class="lede">暴雨過後，舊礦軌整段泡進河裡。你抓著一台鏽到快散架的礦車往下衝，水裡有東西在跟著你。</p>
       <div class="controls">
@@ -3438,7 +3443,7 @@ function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNa
   const showClear=()=>{$('clearScreen').hidden=false;$('hud').hidden=true;$('clNext').focus();};
   if(i===4){$('hud').hidden=true;const t0=performance.now();const go=()=>{if(voBusy()&&performance.now()-t0<20000){setTimeout(go,250);return;}hush();playEnding(showClear);};setTimeout(go,900);}else setTimeout(showClear,1300);
   if(AC){const t=AC.currentTime;[392,523,659,784].forEach((f,k)=>tone(t+k*0.12,'triangle',f,f,0.12,0.5));}}
-function refreshTitle(){const nx=Math.min(chCleared,4);$('startBtn').textContent=chCleared>=5?'重玩第五章':(chCleared?'繼續・':'')+CHAPTERS[nx].n+'　'+CHAPTERS[nx].t;
+function refreshTitle(){const nx=Math.min(chCleared,4);$('startBtn').textContent=chCleared>=5?'重玩第五章':(chCleared?'繼續・':'開始遊戲・')+CHAPTERS[nx].n+'　'+CHAPTERS[nx].t;$('replayBtn').hidden=!(chCleared>0||intro.seen);
   $('bestTitle').textContent=best?('無盡模式最佳 '+best+' 分'):'';}
 function endIntro(skipped){
   intro.seen=true;try{localStorage.setItem('rustrail-intro','1')}catch(e){}
