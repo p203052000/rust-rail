@@ -551,13 +551,13 @@ const CHAPTERS=[
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
   beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，時間才會停在午夜前兩分鐘，祂就不會醒。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
   outro:'大壩的另一邊，一座城市正從海底慢慢升起來。\n我終於懂了：外公不是失蹤。他是為了不讓祂醒來，留在夢裡開著這台礦車，一開就是六十年。',
-  pool:[['fork',0.8],['camp',2.4],['crystal',1.8],['coaster',1.5],['leap',1.3],['normal',1.8],['bridge',1.2],['hills',1.2]],megas:[],pal:'antarctic',ice:1,
+  open:'voyage',pool:[['fork',0.8],['camp',2.4],['crystal',1.8],['coaster',1.5],['leap',1.3],['normal',1.8],['bridge',1.2],['hills',1.2]],megas:[],pal:'antarctic',ice:1,
   zones:[['madness',0.07],['cliff',0.36]],mon:{barrel:0,gap:0,beam:0,mine:300,tentacle:600,sweep:900},finale:[{type:'mega',sub:'dam'}]},
  {n:'第四章',t:'沉沒之城',len:2300,speed:[14,26],
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
-  pool:[['spiral',1],['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
+  open:'damexit',pool:[['spiral',1],['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['twin',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
  {n:'第五章',t:'拉萊耶',len:1800,speed:[15,27],
   intro:'【上一章】城裡每一扇窗都映著不同年紀的我，旁邊軌道上還開過一個老了六十歲的我。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
@@ -593,6 +593,7 @@ function genSeg(){
   if(az0<1){pushSeg({type:'normal',len:100,lanes:[0,1,0]});return;}
   if(ch&&!st.finQ&&az0>=st.chStart+ch.len-60){st.finQ=1;const fs=[];for(const sp of ch.finale){const x=makeSeg(sp.type,sp);pushSeg(x);fs.push(x);}
     (BEAT_WHERE[st.chapter]||[]).forEach((w,k)=>{if(w&&w[0]==='fin'&&st.beatAz[k]==null&&fs[w[1]])st.beatAz[k]=fs[w[1]].az0+w[2];});pushSeg({type:'normal',len:90,lanes:[1,1,1],goal:true});return;}
+  if(ch&&ch.open&&!st.opened&&az0>=st.chStart-10){st.opened=1;pushSeg(makeSeg(ch.open,{}));return;}
   if(az0<200||(ch&&az0<st.chStart+70)){pushSeg({type:'normal',len:120,lanes:[1,1,1]});return;}
   if(ch){const k=beatQ();if(k>=0&&az0>=st.chStart+ch.beats[k][0]-40){const w=BEAT_WHERE[st.chapter][k];let x;
     if(w[0]==='sea')x=makeSeg('normal',{len:380});else if(w[0]==='normal')x=makeSeg('normal',{len:190});else if(w[0]==='mega')x=makeSeg('mega',{sub:w[1]});
@@ -620,9 +621,11 @@ function makeSeg(type,o){let s;
   else if(type==='crystal')s={type,len:230,lanes:[1,1,1],pal:'geode'};
   else if(type==='canopy')s={type,len:150+rnd()*40,lanes:[1,1,1],dim:0.4};
   else if(type==='floating'){const d=rnd()<.4?rnd()*3|0:-1;s={type,len:140+rnd()*50,lanes:[0,1,2].map(i=>i===d?0:1)};}
-  else if(type==='cliff'){const H=o.H||380+rnd()*40;s={type,H,Hm:H,lanes:[1,0,0],pal:'cliff',P:[1.2*H,380,1.6*H,30]};s.len=s.P.reduce((a,b)=>a+b,0)+10;}
+  else if(type==='cliff'){const H=o.H||380+rnd()*40;s={type,H,Hm:H,lanes:[0,1,0],pal:'cliff',P:[1.2*H,380,1.6*H,30]};s.len=s.P.reduce((a,b)=>a+b,0)+10;}
   else if(type==='seatube'||type==='atlantis'){const ext=type==='atlantis'||o.ext;s={type:'seatube',lanes:[1,1,1],D:15,len:720};
     if(ext){s.ext=true;s.V0=400;s.V1=s.V0+260;s.A1=s.V1+460;s.len=s.A1+260;s.DEEP=140;}}
+  else if(type==='voyage'){s={type,lanes:[1,1,1],len:640,pal:'base',palFade:1};}
+  else if(type==='damexit'){s={type,lanes:[1,1,1],len:430};}
   else if(type==='falls'){s={type,lanes:[1,1,1],len:600,pal:'valley',C0:30,C1:230,FH:48};}
   else if(type==='shipcross'){s={type,lanes:[1,1,1],len:360,UX:220};}
   else if(type==='factory'){s={type,lanes:[1,1,1],len:440,pal:'neon'};}
@@ -641,7 +644,7 @@ function makeSeg(type,o){let s;
   else if(['harbor','camp','waterfall','whalebone','lighthouse','graveyard'].includes(type))s={type,len:type==='waterfall'?120:type==='whalebone'?140:170+rnd()*40,lanes:[1,1,1]};
   else s={type:'tunnel',len:85+rnd()*45,lanes:[1,1,1]};
   return s;}
-function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',len:80,lanes:[1,0,0],msg:'前方只剩一條軌道，往左靠'});pushSeg(s);pushSeg({type:'normal',len:150,lanes:[1,1,1]});pushSeg(makeSeg('falls',{}));return;}const az0=segEnd;
+function pushSeg(s){if(s.type==='cliff'&&!s.led){s.led=1;pushSeg({type:'narrow',len:80,lanes:[0,1,0],msg:'前方只剩中間一條軌道'});pushSeg(s);pushSeg({type:'normal',len:150,lanes:[1,1,1]});pushSeg(makeSeg('falls',{}));return;}const az0=segEnd;
   const prev=segs[segs.length-1];
   if(prev&&!s.lanes.some((v,i)=>v&&prev.lanes[i])){const keep=prev.lanes.findIndex(v=>v);s.lanes[keep]=1;}
   s.az0=az0;s.az1=az0+s.len;segs.push(s);segEnd=s.az1;
@@ -1309,18 +1312,46 @@ function tsunamiMesh(o){
   o.mat=mat;o.parts={tube,gl};g.userData.own=[wall.geometry,tg,mat,tube.material];return g;}
 /* the leviathan: an impossibly long sea serpent whose body arches out of the sea and over the line, kilometres from end to end */
 function leviMesh(k){const t=HQ.spr&&HQ.spr.seahead;if(!t)return null;const g=new T.Group();
-  const SPAN=190,HT=112,dir=k.x>0?1:-1;k.lv={SPAN,HT,dir};
-  const pts=[];for(let i=0;i<=80;i++){const f=i/80;const x=-dir*(SPAN+40)+dir*(2*SPAN+80)*f;pts.push(new T.Vector3(x,HT*(1-Math.pow(x/SPAN,2))-18,0));}
-  const curve=new T.CatmullRomCurve3(pts);const TS=240,RS=14;const tg=new T.TubeGeometry(curve,TS,17,RS,false);
-  // taper the last stretch so the tail end is not a blunt pipe, and squash a little so it reads as a body not a hose
-  const P=tg.attributes.position;const ctr=new T.Vector3();for(let i=0;i<=TS;i++){curve.getPointAt(i/TS,ctr);for(let j=0;j<=RS;j++){const v=i*(RS+1)+j;const x=P.getX(v)-ctr.x,y=P.getY(v)-ctr.y,z=P.getZ(v);P.setXYZ(v,ctr.x+x,ctr.y+y*0.92,z*1.08);}}tg.computeVertexNormals();
-  const hs=HQ.godskin;const bm=std2({map:hs?hs.c.clone():null,normalMap:hs?hs.n.clone():null,normalScale:new T.Vector2(1.6,1.6),color:new T.Color('#3e4c46'),roughness:0.45,metalness:0.15});bm.fog=false;
-  if(bm.map){bm.map.repeat.set(26,2);bm.map.needsUpdate=true;bm.normalMap.repeat.set(26,2);bm.normalMap.needsUpdate=true;}
-  const body=new T.Mesh(tg,bm);body.frustumCulled=false;g.add(body);
-  // dorsal spines and torn fins riding the arch
-  const spG=new T.ConeGeometry(1,1,5);const spM=std2({color:new T.Color('#2a302c'),roughness:0.6});spM.fog=false;const NS=70;const spines=new T.InstancedMesh(spG,spM,NS);spines.frustumCulled=false;g.add(spines);
-  const head=(()=>{const asp=t.image.width/t.image.height,H=64,W=H*asp;const geo=new T.PlaneGeometry(W,H).translate(W/2-3,H/2-H*0.52,0);const m=new T.Mesh(geo,new T.MeshStandardMaterial({map:t,emissiveMap:t,emissive:new T.Color('#ffffff'),emissiveIntensity:0.55,roughness:1,alphaTest:0.3,transparent:true,side:T.DoubleSide,fog:false}));m.scale.x=dir;m.frustumCulled=false;m.renderOrder=5;return m;})();g.add(head);
-  k.parts={body,head,spines,curve,TS,RS,NS};return g;}
+  const SPAN=190,HT=112,dir=k.x>0?1:-1,EXT=500;k.lv={SPAN,HT,dir};
+  // the path: a huge arch out of the sea, continuing steeply down into the deep on both sides so the whole body can dive under
+  const pts=[];for(let i=0;i<=120;i++){const f=i/120;const x=-dir*(SPAN+EXT)+dir*(2*(SPAN+EXT))*f;const ax=Math.abs(x);
+    pts.push(new T.Vector3(x,ax<=SPAN?HT*(1-Math.pow(x/SPAN,2))-18:-18-(ax-SPAN)*1.18,0));}
+  const curve=new T.CatmullRomCurve3(pts);curve.getLengths(400);
+  /* one living body re-skinned every frame: thick neck, swelling trunk, ringed segments, tail drawn to a point — no open ends */
+  const TS=170,RS=18,NV=(TS+1)*(RS+1);const geo=new T.BufferGeometry();
+  const pos=new Float32Array(NV*3),nor=new Float32Array(NV*3),uv=new Float32Array(NV*2),col=new Float32Array(NV*3),idx=[];
+  for(let i=0;i<=TS;i++)for(let j=0;j<=RS;j++){const v=i*(RS+1)+j;uv[v*2]=i/TS*14;uv[v*2+1]=j/RS*7;
+    const a=j/RS*Math.PI*2,belly=Math.max(0,-Math.cos(a));const c0=[1,1,1],c1=[1.12,1.08,1.0];const kk=Math.pow(belly,1.6);for(let q=0;q<3;q++)col[v*3+q]=c0[q]+(c1[q]-c0[q])*kk;
+    if(i<TS&&j<RS){const a0=v,b0=v+RS+1;idx.push(a0,b0,a0+1,a0+1,b0,b0+1);}}
+  geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setAttribute('normal',new T.BufferAttribute(nor,3));geo.setAttribute('uv',new T.BufferAttribute(uv,2));geo.setAttribute('color',new T.BufferAttribute(col,3));geo.setIndex(idx);
+  const rad=sv=>{const tail=Math.pow(Math.min(1,sv/0.55),0.75),neck=1-0.18*ss((sv-0.86)/0.14);return 21*tail*neck*(1+0.07*Math.sin(sv*TS*0.62))+0.15;};
+  const ls=HQ.tx&&HQ.tx.levskin,ln=HQ.tx&&HQ.tx.levskin_n;const bm=std2({map:ls||null,normalMap:ln||null,emissiveMap:ls||null,emissive:new T.Color('#ffffff'),emissiveIntensity:0.55,normalScale:new T.Vector2(1.8,1.8),color:new T.Color('#ffffff'),vertexColors:true,roughness:0.42,metalness:0.1});bm.fog=false;
+  const body=new T.Mesh(geo,bm);body.frustumCulled=false;g.add(body);
+  // dorsal spines, a jagged crest near the head, and pairs of torn fins along the flanks
+  const spG=new T.ConeGeometry(1,1,5);const spM=std2({color:new T.Color('#3a4a42'),emissive:new T.Color('#1a2420'),roughness:0.5});spM.fog=false;const NS=96;const spines=new T.InstancedMesh(spG,spM,NS);spines.frustumCulled=false;g.add(spines);
+  const finS=new T.Shape();finS.moveTo(0,0);finS.quadraticCurveTo(0.35,0.9,1,1.2);finS.lineTo(0.8,0.75);finS.lineTo(1.05,0.55);finS.lineTo(0.7,0.3);finS.lineTo(0.9,0.05);finS.lineTo(0,0);
+  const finG=new T.ShapeGeometry(finS);const finM=std2({color:new T.Color('#4a5a50'),emissive:new T.Color('#141e1a'),roughness:0.6,side:T.DoubleSide,transparent:true,opacity:0.92});finM.fog=false;const NF=8;const fins=new T.InstancedMesh(finG,finM,NF);fins.frustumCulled=false;g.add(fins);
+  const phM=std2({color:new T.Color('#ffffff'),roughness:0.8});phM.fog=false;const NP=60;const phot=new T.InstancedMesh(new T.CylinderGeometry(0.5,0.12,1,4,1).translate(0,-0.5,0),phM,NP);phot.frustumCulled=false;g.add(phot);
+  for(let i=0;i<NP;i++)phot.setColorAt(i,new T.Color(i%4===0?'#6a2a24':i%3?'#3a4a22':'#56602a'));
+  const head=(()=>{const asp=t.image.width/t.image.height,H=64,W=H*asp;const geo2=new T.PlaneGeometry(W,H).translate(W/2-3,H/2-H*0.52,0);const m=new T.Mesh(geo2,new T.MeshStandardMaterial({map:t,emissiveMap:t,emissive:new T.Color('#ffffff'),emissiveIntensity:0.55,roughness:1,alphaTest:0.3,transparent:true,side:T.DoubleSide,fog:false}));m.scale.x=dir;m.frustumCulled=false;m.renderOrder=5;return m;})();g.add(head);
+  k.parts={body,head,spines,fins,phot,NP,curve,TS,RS,NS,NF,rad,BL:0.36};return g;}
+/* lay the body along the path with the head at path position hp */
+const _lc=new T.Vector3(),_lt=new T.Vector3();
+function leviPose(P,hp,L,t){const g=P.body.geometry,pos=g.attributes.position.array,nor=g.attributes.normal.array,TS=P.TS,RS=P.RS,tl=hp-P.BL;
+  for(let i=0;i<=TS;i++){const sv=i/TS,u=Math.max(0.0005,Math.min(0.9995,tl+(hp-tl)*sv));P.curve.getPointAt(u,_lc);P.curve.getTangentAt(u,_lt);
+    const nx=-_lt.y*L.dir,ny=_lt.x*L.dir;const r=P.rad(sv);const wob=Math.sin(t*2.2-sv*14)*1.6*sv;
+    for(let j=0;j<=RS;j++){const a=j/RS*Math.PI*2,ca=Math.cos(a),sa=Math.sin(a),v=(i*(RS+1)+j)*3;
+      const ox=nx*ca*r*0.94,oy=ny*ca*r*0.94,oz=sa*r*1.06+wob;pos[v]=_lc.x+ox;pos[v+1]=_lc.y+oy;pos[v+2]=oz;const ln=Math.hypot(nx*ca,ny*ca,sa)||1;nor[v]=nx*ca/ln;nor[v+1]=ny*ca/ln;nor[v+2]=sa/ln;}}
+  g.attributes.position.needsUpdate=true;g.attributes.normal.needsUpdate=true;g.computeBoundingSphere();
+  for(let i=0;i<P.NS;i++){const sv=0.12+0.84*(i/P.NS),u=Math.max(0.0005,Math.min(0.9995,tl+(hp-tl)*sv));P.curve.getPointAt(u,_lc);P.curve.getTangentAt(u,_lt);const nx=-_lt.y*L.dir,ny=_lt.x*L.dir;const r=P.rad(sv);
+    const crest=sv>0.82?1.7:1;_o.position.set(_lc.x+nx*(r*0.9),_lc.y+ny*(r*0.9),Math.sin(t*2.2-sv*14)*1.6*sv);_o.rotation.set(0,0,Math.atan2(ny,nx)-Math.PI/2);const hh=(7+((i*37)%7)+(i%3===0?5:0))*crest*(0.4+0.6*Math.min(1,r/14));_o.scale.set(1.8*crest,hh,1.8*crest);_o.updateMatrix();P.spines.setMatrixAt(i,_o.matrix);}
+  P.spines.instanceMatrix.needsUpdate=true;
+  for(let i=0;i<P.NF;i++){const pair=i>>1,sd=i%2?1:-1,sv=0.3+pair*0.15,u=Math.max(0.0005,Math.min(0.9995,tl+(hp-tl)*sv));P.curve.getPointAt(u,_lc);P.curve.getTangentAt(u,_lt);const r=P.rad(sv);
+    const flap=Math.sin(t*3+pair)*0.35;_o.position.set(_lc.x-(-_lt.y*L.dir)*r*0.2,_lc.y-(_lt.x*L.dir)*r*0.2,sd*r*1.02);_o.rotation.set(sd*(1.2+flap),Math.atan2(_lt.y,_lt.x)*0,Math.atan2(_lt.y,_lt.x)+Math.PI);_o.scale.set(r*1.6,r*1.4,1);_o.updateMatrix();P.fins.setMatrixAt(i,_o.matrix);}
+  P.fins.instanceMatrix.needsUpdate=true;
+  for(let i=0;i<P.NP;i++){const sd=i%2?1:-1,sv=0.1+0.85*((i>>1)/(P.NP/2)),u=Math.max(0.0005,Math.min(0.9995,tl+(hp-tl)*sv));P.curve.getPointAt(u,_lc);P.curve.getTangentAt(u,_lt);const nx=-_lt.y*L.dir,ny=_lt.x*L.dir,r=P.rad(sv);
+    const a=Math.PI+sd*(0.5+((i*13)%5)*0.12),ca=Math.cos(a),sa=Math.sin(a),len=(5+((i*29)%9))*(0.4+0.6*Math.min(1,r/14));_o.position.set(_lc.x+nx*ca*r*0.9,_lc.y+ny*ca*r*0.9,sa*r*1.0+Math.sin(t*2.2-sv*14)*1.6*sv);_o.rotation.set(Math.sin(t*1.7+i)*0.25,0,Math.sin(t*1.3+i*2)*0.3);_o.scale.set(1.6,len,1.6);_o.updateMatrix();P.phot.setMatrixAt(i,_o.matrix);}
+  P.phot.instanceMatrix.needsUpdate=true;}
 function breachMesh(k){const g=new T.Group();const N=46;const im=new T.InstancedMesh(G.sph,M.kraken,N);im.frustumCulled=false;g.add(im);
   const head=new T.Group();g.add(head);mesh(G.sph,M.kraken,head,0,0,0,6,4.5,8);const jw=mesh(G.sph,M.kraken,head,0,-3.2,2,5,1.6,7);mesh(G.sph,M.crocMouth,head,0,-2,2.4,4.6,1.4,6.6);
   for(let i=0;i<10;i++)for(const sd of [-1,1])mesh(G.cone,M.tooth,head,sd*(4-i*0.3),-1.6,7-i*1.1,0.35,1.6,0.35).rotation.x=Math.PI;
@@ -1450,19 +1481,19 @@ function getCaustic(){if(causticTex)return causticTex;const N=256,c=document.cre
     const e=Math.sqrt(d2)-Math.sqrt(d1);const v=Math.max(0,1-e/6);const i=(y*N+x)*4;id.data[i]=id.data[i+1]=id.data[i+2]=Math.pow(v,2.2)*255;id.data[i+3]=255;}
   g.putImageData(id,0,0);causticTex=new T.CanvasTexture(c);causticTex.wrapS=causticTex.wrapT=T.RepeatWrapping;return causticTex;}
 const SCENIC={
-  cliff(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),H=s.H,P=s.P;s.flags={};const a0=P[0],a1=P[0]+P[1];
+  cliff(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),H=s.H,P=s.P;s.flags={};g.position.x=LANE;/* built around the old left lane; shifted so the ledge carries the middle lane */const a0=P[0],a1=P[0]+P[1];
     const sky=new T.Group();s.skyG=sky;s.skyMats=[];sky.visible=false;skyRig.add(sky);
     const sm=(c,op,add)=>{const m=skyM(c,op,add);s.skyMats.push(m);own.push(m);return m;};
     const sg=new T.Mesh(G.plane,sm('#fff0d0',0.55,true));sg.material.map=TX.glow;sg.position.set(420,120,-560);sg.scale.set(520,360,1);sky.add(sg);
     const rays=sm('#fff4dc',0.08,true);for(let i=0;i<5;i++){const r=new T.Mesh(G.plane,rays);r.position.set(330+i*40,40,-520);r.scale.set(26,300,1);r.rotation.z=0.35+i*0.05;sky.add(r);}
     // the mountain the track clings to: a sheer wall on the left for the whole climb and ledge
-    for(let u=0;u<a1+24;u+=30)B(36,H+140,30.5,16,M.rock,-2.7-18,(H+140)/2-62,-u-15,0,0,(rnd()-.5)*0.02);
-    for(let u=a0-30;u<a1;u+=18){const sc=5+rnd()*7;const m=mesh(rockG(),M.rock,g,-2.9-sc*1.15,H+6+rnd()*30,-u-rnd()*10,sc,4+rnd()*6,sc);m.rotation.y=rnd()*3;}
+    for(let u=0;u<a1+24;u+=30)B(36,H+140,30.5,16,M.rock,-4.2-18,(H+140)/2-62,-u-15,0,0,(rnd()-.5)*0.02);
+    for(let u=a0-30;u<a1;u+=18){const sc=5+rnd()*7;const m=mesh(rockG(),M.rock,g,-4.4-sc*1.15,H+6+rnd()*30,-u-rnd()*10,sc,4+rnd()*6,sc);m.rotation.y=rnd()*3;}
     // the ledge: one rock shelf just wider than the rails; its outer face drops straight to the sea
     const gaps=[[a0+P[1]*0.38,a0+P[1]*0.38+16],[a0+P[1]*0.66,a0+P[1]*0.66+22]];s.gaps=gaps;
     for(const [g0,g1] of gaps){for(let u=g0;u<=g1;u+=3.2){const h=trackH(s.az0+u);const p=mesh(G.box,M.wood,g,-0.15,h-4.6,-u,0.16,9,0.16);p.rotation.z=0.55;const q=mesh(G.box,M.wood,g,0.05,h-0.28,-u,1.5,0.14,0.2);}
       for(let k=0;k<2;k++){const m=mesh(G.box,M.wood,g,-0.6+k*0.9,trackH(s.az0+g0)-0.5,-(g0+g1)/2,0.1,0.1,g1-g0);}}
-    for(let u=a0-14;u<a1+10;u+=6){const h=trackH(s.az0+u+3),e=-0.6+rnd()*0.12;if(gaps.some(([g0,g1])=>u+6>g0&&u<g1)){B(1.2,h+64,6.05,5,M.rock,-2.7+0.2,h-2.5-(h+64)/2,-u-3);continue;}B(e+2.7,h+64,6.05,5,M.rock,(e-2.7)/2,h-0.12-(h+64)/2,-u-3);
+    for(let u=a0-14;u<a1+10;u+=6){const h=trackH(s.az0+u+3),e=-0.6+rnd()*0.12;if(gaps.some(([g0,g1])=>u+6>g0&&u<g1)){B(1.2,h+64,6.05,5,M.rock,-4.2+0.2,h-2.5-(h+64)/2,-u-3);continue;}B(e+4.2,h+64,6.05,5,M.rock,(e-4.2)/2,h-0.12-(h+64)/2,-u-3);
       if(rnd()<0.35){const m=mesh(rockG(),M.rock,g,e+0.6+rnd()*1.6,h-34-rnd()*(h-60),-u-3,2+rnd()*3,3+rnd()*5,2+rnd()*3);m.rotation.y=rnd()*3;}}
     for(let u=a0+20;u<a1;u+=24+rnd()*22){const f=mesh(G.box,M.wood,g,-0.44,H+0.35,-u,0.09,0.9+rnd()*0.5,0.09);f.rotation.z=-0.35-rnd()*0.6;}
     const src=[];
@@ -1737,7 +1768,7 @@ function atmo(P,w){for(const f in ATM){const b=PALC.base[f],v=P[f]===undefined?b
 function atmoOver(P,w){if(w<=0)return;for(const f in ATM){const v=P[f];if(v===undefined)continue;if(typeof v==='number')ATM[f]+=(v-ATM[f])*w;else ATM[f].lerp(v,w);}}
 function updateDry(){const A=waterU.uDryA.value,B=waterU.uDryB.value;A.set(1e5,1e5,0,0);B.set(1e5,1e5,0,0);
   for(const s of segs){if(s.type!=='seatube')continue;const d=st.dist;A.set(-(s.az0+94-d),-(s.az0+6-d),-5.4,5.4);B.set(-(s.az1-6-d),-(s.az1-94-d),-5.4,5.4);break;}}
-function zoneAt(az){for(const s of segs){if(!s.pal)continue;if(az>=s.az0-45&&az<=s.az1+5){const u=az-s.az0;return {s,w:ss((u+45)/55)*ss((s.len-u+5)/55),u};}}return null;}
+function zoneAt(az){for(const s of segs){if(!s.pal)continue;if(az>=s.az0-(s.palFade?400:45)&&az<=s.az1+5){const u=az-s.az0;return {s,w:s.palFade?1-ss((u-s.len*0.25)/(s.len*0.5)):ss((u+45)/55)*ss((s.len-u+5)/55),u};}}return null;}
 function eyeMat(tex){return new T.ShaderMaterial({transparent:true,depthWrite:false,fog:false,uniforms:{map:{value:tex},uOpen:{value:0},uLook:{value:new T.Vector2()},uDil:{value:0},uOp:{value:1},uTime:{value:0}},
   vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
   fragmentShader:`uniform sampler2D map;uniform float uOpen,uDil,uOp,uTime;uniform vec2 uLook;varying vec2 vUv;
@@ -2144,6 +2175,32 @@ const SETS2={
       if(!s.flags.b&&u>R3-5){s.flags.b=1;toast('翻回來了','good',1400);}});
     gearLine(1,s.az0+R1+10,6);gearLine(-1,s.az0+R1+60,6);gearLine(0,s.az0+R2-40,5);
     finishSet(s,g,own,anim);},
+  /* chapter 3 opening — the wave carries the cart south: storm wreckage, then ice floes, a blizzard, icebergs, and a crevasse through the ice shelf */
+  voyage(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;const IL=iceLook();
+    const wood=M.wood,dark=M.dark;
+    for(let i=0;i<26;i++){const u=10+rnd()*220,x=(rnd()<.5?-1:1)*(3.2+rnd()*22);const m=mesh(G.box,wood,g,x,0.1,-u,0.4+rnd()*0.5,0.18,2+rnd()*4);m.rotation.set((rnd()-.5)*0.3,rnd()*3,(rnd()-.5)*0.3);}
+    for(let i=0;i<8;i++){const u=20+rnd()*200,x=(rnd()<.5?-1:1)*(4+rnd()*16);const b=mesh(G.cyl,M.rust,g,x,0.15,-u,0.45,1.2,0.45);b.rotation.set(Math.PI/2,0,rnd()*3);}
+    {const hull=mesh(G.sph,dark,g,-14,0.3,-120,5,1.6,11);hull.rotation.z=Math.PI*0.92;mesh(G.box,wood,g,-14,1.1,-120,0.3,0.3,14);}
+    {const hull=mesh(G.sph,dark,g,19,0.2,-205,4,1.3,9);hull.rotation.set(0,0.6,Math.PI*0.9);}
+    const fg=new T.CylinderGeometry(1,1.1,0.35,7);own.push(fg);const NFl=150;const fl=new T.InstancedMesh(fg,IL.bank,NFl);fl.frustumCulled=false;g.add(fl);
+    for(let i=0;i<NFl;i++){const u=170+Math.pow(rnd(),0.6)*(L-170),x=(rnd()<.5?-1:1)*(3.4+rnd()*40);const sc=(0.6+rnd()*2.2)*(0.5+u/L*1.6);_o.position.set(x,0.06,-u);_o.rotation.set(0,rnd()*6,0);_o.scale.set(sc,1,sc*0.8);_o.updateMatrix();fl.setMatrixAt(i,_o.matrix);}
+    for(let i=0;i<16;i++){const u=300+rnd()*(L-330),sd=rnd()<.5?-1:1,big=u>L*0.6;const sc=big?18+rnd()*30:5+rnd()*9;const m=mesh(rockG(),IL.mtn,g,sd*(16+sc*0.9+rnd()*50),sc*0.35,-u,sc,sc*(big?1.4:0.9),sc*0.9);m.rotation.y=rnd()*6;}
+    for(let i=0;i<6;i++){const u=L*0.55+i*40,sd=i%2?1:-1,w=50+rnd()*60,h=26+rnd()*30;B(w,h,30+rnd()*30,16,IL.mtn,sd*(60+w/2+rnd()*60),h/2-3,-u);}
+    // the ice shelf: a sheer white wall across the horizon, cut by one crevasse the rails run through
+    const zw=-(L-70);for(const sd of [-1,1]){B(260,44,26,16,IL.mtn,sd*(9+130),19,zw);
+      for(let u=L-70;u<L;u+=10){const k=(u-(L-70))/70,h=40*(1-k)+3;B(6,h,10.5,10,IL.mtn,sd*(8.5+rnd()*1.2),h/2-2,-u-5,0,0,sd*0.05);}}
+    finishSet(s,g,own,anim);},
+  /* chapter 4 opening — out through the dam's tunnel, and on the far side the drowned city is rising out of the sea */
+  damexit(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;
+    for(const sd of [-1,1])B(1,7,80,8,M.concrete,sd*4.4,3.5,-40);B(9.8,1,80,8,M.concrete,0,7.4,-40);
+    for(let u=6;u<80;u+=10){const l=mesh(G.sphLo,M.lamp,g,0,6.8,-u,0.15,0.15,0.15);l.userData.keep=true;const gl=mesh(G.plane,M.glowGold,g,0,6.6,-u+0.2,2.4,2.4,1);gl.userData.keep=true;}
+    B(16,12,1.2,8,M.concrete,-12.8,6,-80);B(16,12,1.2,8,M.concrete,12.8,6,-80);B(9.6,4.6,1.2,8,M.concrete,0,9.7,-80);
+    const towers=[];for(let i=0;i<28;i++){const sd=i%2?1:-1,w=10+rnd()*14,h=60+rnd()*120,x=sd*(24+rnd()*170),z=-(L*0.55+rnd()*L*0.9);
+      const tw=new T.Group();tw.position.set(x,-h*0.7,z);g.add(tw);const b=new T.Mesh(boxW(w,h,w,12),M.building);own.push(b.geometry);b.position.y=h/2;tw.add(b);
+      const f=new T.Mesh(G.plane,getFall());f.scale.set(w*0.9,h,1);f.position.set(0,h/2,w/2+0.3);f.userData.keep=true;tw.add(f);towers.push({tw,h,ph:rnd()*2});}
+    anim.push(t=>{const u=st.dist-s.az0;const k=ss((u-60)/(L-60));for(const q of towers){q.tw.position.y=-q.h*(0.7-0.55*k)+Math.sin(t*0.4+q.ph)*0.6;}
+      if(!s.flags.r&&u>90&&st.mode==='play'){s.flags.r=1;toast('大壩後面……整座城從海底升起來了','warn',2200);st.shake=Math.max(st.shake,0.35);if(AC&&!playS('boom',0.5,0.5))noiseHit(AC.currentTime,'lowpass',120,0.6,1);}});
+    s.flags={};finishSet(s,g,own,anim);},
   /* a fork in the line: the middle rail ends; left dives into an old mine gallery, right hugs a sea cliff in the storm */
   fork(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};
     for(let u=6;u<L-6;u+=4.5){const h=Math.min(1,u/30,(L-u)/30)*(0.9+rnd()*0.7);if(h<0.25)continue;const m=mesh(rockG(),M.rock,g,(rnd()-.5)*0.12,-0.25,-u,0.42,h,2.6);m.rotation.y=(rnd()-.5)*0.12;}
@@ -3054,7 +3111,7 @@ function buildMega(s){
     B(36,8,9,8,RLF,0,44,-16,0,0.05);B(10,10,1,10,M.carveEye,0,44,-11.4,0,0.05);head(0,53,-13,4.6,true);
     // processional avenue
     let k=0;for(let z=-34;z>-L+80;z-=24,k++){const lean=(k%2?1:-1)*0.05;
-      for(const sd of [-1,1]){if(rnd()<0.42)continue;const wh=12+rnd()*26,wl=(rnd()-.5)*0.5;B(3,wh,14+rnd()*8,12,RLF,sd*(12.6+rnd()*3),wh/2-4,z-11,(rnd()-.5)*0.15,wl,sd*(lean+rnd()*0.18));
+      for(const sd of [-1,1]){if(rnd()<0.42)continue;const wh=12+rnd()*26,wl=(rnd()-.5)*0.2;B(3,wh,14+rnd()*8,12,RLF,sd*(13.4+rnd()*3),wh/2-4,z-11,(rnd()-.5)*0.08,wl,-sd*(rnd()*0.14));
         mesh(G.box,M.rune,g,sd*11.07,4.2,z-11,0.06,0.3,20);mesh(G.box,M.rune,g,sd*11.07,22,z-11,0.06,0.2,20);
         B(1.2,10,1.2,4,M.carveEye,sd*11.3,10,z-11,Math.PI/4);}
       const sd=k%2?1:-1;B(4,2.4,4,4,RLG,sd*8.6,0.4,z);idolBody(sd*8.6,1.6,z,1.25);
@@ -3074,12 +3131,13 @@ function buildMega(s){
      const RSd=rsT?std2({map:rsT,emissiveMap:rsT,emissive:new T.Color('#24442e'),emissiveIntensity:0.5,color:new T.Color('#7e9484'),roughness:0.9}):RLG;if(rsT)own.push(RSd);
      const caveG=bend(new T.MeshBasicMaterial({color:new T.Color('#020604')}));own.push(caveG);
      for(let z=10;z>-L-260;z-=15){for(const sd of [-1,1]){const n=1+(rnd()<0.6?1:0);for(let i=0;i<n;i++){
-        const near=i===0&&z>-L+20,x=sd*(near?20+rnd()*14:46+rnd()*110),w=near?8+rnd()*10:12+rnd()*26,d=8+rnd()*22,h=near?60+rnd()*70:80+rnd()*170;
-        const m=B(w,h,d,18,rnd()<0.5?RS:RSd,x,h/2-10,z+(rnd()-.5)*8,(rnd()-.5)*0.4,(rnd()-.5)*0.8,sd*(0.04+rnd()*0.3)*(rnd()<0.75?1:-1));void m;
+        const near=i===0&&z>-L+20,w=near?8+rnd()*10:12+rnd()*26,d=8+rnd()*16,h=near?60+rnd()*70:80+rnd()*170,x=sd*(near?17+w/2+rnd()*12:50+rnd()*110);
+        /* near ones only lean away from the line, so nothing ever hangs into the view ahead */
+        const m=B(w,h,d,18,rnd()<0.5?RS:RSd,x,h/2-10,z+(rnd()-.5)*8,(rnd()-.5)*(near?0.12:0.4),(rnd()-.5)*(near?0.2:0.8),near?-sd*(0.03+rnd()*0.2):sd*(rnd()-.5)*0.5);void m;
         if(near&&rnd()<0.45){const cy=8+rnd()*30;mesh(G.sph,caveG,g,x-sd*(w/2+0.2),cy,z,0.8,5+rnd()*4,3.5+rnd()*3);const cg=mesh(G.plane,M.glowGreen,g,x-sd*(w/2+0.8),cy,z,9,12,1);cg.rotation.y=sd*Math.PI/2;cg.userData.keep=true;}
-        if(rnd()<0.35)B(w*0.7,h*0.35,d*0.7,18,RSd,x+(rnd()-.5)*w,h-10+h*0.12,z,(rnd()-.5)*0.6,rnd()*3,(rnd()-.5)*0.7);}}}
+        if(!near&&rnd()<0.35)B(w*0.7,h*0.35,d*0.7,18,RSd,x+(rnd()-.5)*w,h-10+h*0.12,z,(rnd()-.5)*0.6,rnd()*3,(rnd()-.5)*0.7);}}}
      // slabs that hang across the track, propped on nothing you can see
-     for(let z=-40;z>-L+60;z-=58){const y=42+rnd()*30;B(80+rnd()*40,5+rnd()*4,12+rnd()*10,18,RSd,(rnd()-.5)*20,y,z,(rnd()-.5)*0.3,(rnd()-.5)*0.4,(rnd()-.5)*0.35);}
+     for(let z=-40;z>-L+60;z-=58){const y=70+rnd()*30;B(80+rnd()*40,5+rnd()*4,12+rnd()*10,18,RSd,(rnd()-.5)*20,y,z,(rnd()-.5)*0.12,(rnd()-.5)*0.3,(rnd()-.5)*0.12);}
      // twisted spires
      const spireGeo=(H,R0)=>{const pts=[];for(let k=0;k<=24;k++){const t=k/24;pts.push(new T.Vector2(Math.max(0.3,R0*(1-t)*(1+0.25*Math.sin(t*19))),t*H));}const lg=new T.LatheGeometry(pts,7);
        const p=lg.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),a=y/H*2.6,c=Math.cos(a),sn=Math.sin(a),x=p.getX(i),zz=p.getZ(i);p.setXYZ(i,x*c-zz*sn+Math.sin(y*0.05)*H*0.04,y,x*sn+zz*c);}
@@ -3483,10 +3541,12 @@ function spawn(az){
   for(const s of segs){if(s.type!=='weave'&&Math.abs(s.az0-az)<10){st.nextSpawn=s.az0+11;return;}}
   const en=[-1,0,1].filter(L=>laneOn(L,az-4)&&laneOn(L,az+5));
   if(!en.length){st.nextSpawn=az+6;return;}
+  /* the dream maintenance hall: the mechanical Cthulhus keep coming even while a story card is up (just spaced out) */
+  {const fc=nearType(az,'factory',0);if(fc&&az>fc.az0+40&&az<fc.az1-20){const r=rnd();if(r<0.24)add({t:'mechA',lane:pick(en),az});else if(r<0.46)add({t:'mechB',lane:pick(en),az});else if(r<0.64)add({t:'mechC',az});else if(r<0.82&&en.some(L=>L))add({t:'mechD',lane:pick(en.filter(L=>L)),az});else if(r<0.9)add({t:'arm',az});else gearLine(pick(en),az,5);st.nextSpawn=az+(az<(st.calmUntil||0)?36:24)+rnd()*8;return;}}
   if(az<(st.calmUntil||0)){if(rnd()<0.5)gearLine(pick(en),az,4);st.nextSpawn=az+20;return;}
   if(nearType(az,'cliff',0)||nearType(az,'seatube',8)||isSet(az,10)){if(rnd()<0.55)gearLine(pick(en),az,6);st.nextSpawn=az+24;return;}
+  if(nearType(az,'damexit',0)&&az<nearType(az,'damexit',0).az0+100){st.nextSpawn=az+20;return;}
   if(nearType(az,'coaster',0)){if(rnd()<0.65)gearLine(pick(en),az,6);st.nextSpawn=az+20;return;}
-  {const fc=nearType(az,'factory',0);if(fc&&az>fc.az0+40&&az<fc.az1-20){const r=rnd();if(r<0.24)add({t:'mechA',lane:pick(en),az});else if(r<0.46)add({t:'mechB',lane:pick(en),az});else if(r<0.64)add({t:'mechC',az});else if(r<0.82&&en.some(L=>L))add({t:'mechD',lane:pick(en.filter(L=>L)),az});else if(r<0.9)add({t:'arm',az});else gearLine(pick(en),az,5);st.nextSpawn=az+24+rnd()*8;return;}}
   const lp=nearType(az,'leap',4);if(lp){if(!lp.geared){lp.geared=1;const L=pick([-1,0,1]);for(let i=0;i<7;i++)add({t:'gear',lane:L,az:lp.az0+62+i*4});}st.nextSpawn=lp.az1+12;return;}
   const zb=nearType(az,'zone',0);if(zb&&zb.sub==='black'&&rnd()<0.5){st.nextSpawn=az+22;return;}
   if(nearType(az,'weave',0)){if(rnd()<0.5)gearLine(pick(en),az,3);st.nextSpawn=az+16;return;}
@@ -3612,7 +3672,7 @@ function resetTrack(){segs=[];segEnd=0;lastType='normal';while(segEnd<st.dist+VI
 function reset(){
   clearWorld();
   Object.assign(st,{dist:80,speed:12,lane:0,camX:0,camH:0,jumpY:0,jumpV:0,duck:0,duckT:0,hearts:MAXH,inv:0,shake:0,gears:0,bonus:0,slow:1,
-    nextSpawn:150,red:0,bump:0,paused:false,combo:0,comboT:0,boostT:0,fovKick:0,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
+    nextSpawn:150,red:0,bump:0,paused:false,opened:0,iceK:1,whiteout:0,combo:0,comboT:0,boostT:0,fovKick:0,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
   resetTrack();spawnWreck(165,0.75);wreckTimer=150;if(cartW)cartW.visible=false;
   for(let i=0;i<TREE_N;i++)placeTree(i,105+rnd()*VIEW);
   for(const f of fins)f.az=120+rnd()*100;
@@ -3797,11 +3857,10 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
       if(rel<80&&rel>-10)st.glanceT=-0.3;if(rel<-90)k.t=99;continue;}
     if(k.br&&k.lv){const P=k.parts,L=k.lv,dur=11,f=k.t/dur;if(k.Z==null)k.Z=st.dist+270;
       // the head runs along the arch; the body follows it out of the sea and back in
-      const hp=Math.min(1,f*1.25),tp=Math.max(0,f*1.25-0.62);const i0=Math.floor(tp*P.TS),i1=Math.ceil(hp*P.TS);P.body.geometry.setDrawRange(i0*P.RS*6,Math.max(0,i1-i0)*P.RS*6);
-      const hpt=P.curve.getPointAt(Math.min(0.999,hp)),tan=P.curve.getTangentAt(Math.min(0.999,hp));P.head.position.copy(hpt);P.head.rotation.set(0,0,Math.atan2(tan.y,tan.x*L.dir)*L.dir);P.head.visible=hp<0.995;
-      for(let i=0;i<P.NS;i++){const u=tp+(hp-tp)*(i/P.NS);if(u<=0.002||u>=0.998){_o.scale.setScalar(0.001);}else{const q=P.curve.getPointAt(u),tt=P.curve.getTangentAt(u);const nx=-tt.y,ny=tt.x,sg=ny<0?-1:1;_o.position.set(q.x+nx*sg*19,q.y+ny*sg*19,q.z);_o.rotation.set(0,0,Math.atan2(ny*sg,nx*sg)-Math.PI/2);_o.scale.set(2.6,9+((i*37)%6),2.6);}_o.updateMatrix();P.spines.setMatrixAt(i,_o.matrix);}P.spines.instanceMatrix.needsUpdate=true;
+      const hp=0.335+0.665*Math.min(1,f*1.12);leviPose(P,hp,L,st.time);
+      const hpt=P.curve.getPointAt(Math.min(0.9995,hp)),tan=P.curve.getTangentAt(Math.min(0.9995,hp));P.head.position.copy(hpt);P.head.rotation.set(0,0,Math.atan2(tan.y,tan.x*L.dir)*L.dir);P.head.visible=hpt.y>-40;
       if(!k.roared&&k.t>0.4){k.roared=true;sfx.roar();playS('roar',0.9,0.6,0.5);sfx.boom();toast('海裡有東西……大得看不到盡頭','warn',2400);splash(-L.dir*L.SPAN*0.95,270,120,0.3,6);st.shake=Math.max(st.shake,0.7);}
-      if(!k.sp2&&f>0.55){k.sp2=1;splash(L.dir*L.SPAN*0.95,270,120,0.3,6);sfx.splash(true);playS('boom',0.6,0.6);st.shake=Math.max(st.shake,0.5);}
+      if(!k.sp2&&f>0.4){k.sp2=1;splash(L.dir*L.SPAN*0.95,270,120,0.3,6);sfx.splash(true);playS('boom',0.6,0.6);st.shake=Math.max(st.shake,0.5);}
       if(k.t>0.4&&k.t<9.5){st.glanceT=Math.max(-0.3,Math.min(0.3,-(P.head.position.x)/700));st.lookT=-0.32*ss(k.t/1.5)*(1-ss((k.t-8)/1.5));}else if(k.t>=9.5)st.lookT=0;
       k.g.position.set(0,0,-k.Z);continue;}
     if(k.br){const P=k.parts,dur=6.5,ph=k.t/dur,hx0=-95*k.x,hx=hx0+k.x*190*ph,Z=-(st.dist+120);const arc=x=>44*(1-Math.pow(x/88,2))-4;
@@ -3828,6 +3887,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   if(playing){$('dist').textContent=Math.floor(st.dist);$('gears').textContent=st.gears;}
   const hadS=st.shield>0;st.shield=Math.max(0,st.shield-dt);st.green=Math.max(0,st.green-dt*2);
   if(st.shield>0){$('shieldHud').hidden=false;$('shieldT').textContent=Math.ceil(st.shield);}else if(hadS){$('shieldHud').hidden=true;toast('舊印的光熄滅了','',1200);}
+  {const vy=CH()&&CH().open==='voyage'?segs.find(x=>x.type==='voyage'):null;if(vy){const u=st.dist-vy.az0;st.iceK=u<0?0:ss((u-vy.len*0.42)/(vy.len*0.16));st.whiteout=Math.exp(-Math.pow((u-vy.len*0.5)/(vy.len*0.09),2));}else if(CH()&&CH().open==='voyage'&&st.dist<st.chStart+50)st.iceK=0;else{st.iceK=1;st.whiteout=0;}}
   const ms=nearType(st.dist+PZ,'mega',0);const moodT=ms&&ms.sub==='rlyeh'?1:0;st.mood+=(moodT-st.mood)*Math.min(1,dt*1.2);
 }
 
@@ -3850,9 +3910,9 @@ function render(){
       const zf=Math.max(Math.abs(F.x)>2?4:9,-dzw);let yaw=Math.atan2(-dx,zf);yaw=Math.max(-1.5,Math.min(1.5,yaw));const pit=Math.atan2(dy,Math.hypot(dx,zf));
       camera.rotation.y+=(yaw-camera.rotation.y)*fw;camera.rotation.x+=(pit-camera.rotation.x)*fw*0.85;camera.rotation.z*=1-fw*0.8;}}
    const lb=st.lookBack||0;if(lb>0){const k=Math.sin(Math.min(1,(1-lb)/0.25)*Math.PI/2)*ss(lb/0.3);camera.rotation.y+=3.08*k;camera.rotation.x+=0.1*k;}}
-  mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30)||nearType(st.dist+40,'clock',40)||nearType(st.dist+40,'loop',40)||nearType(st.dist+40,'godback',40));const ice=!!(CH()&&CH().ice);for(const b of banks){b.ml.visible=b.mr.visible=!alien;const bm=ice?iceLook().bank:M.terrain;if(b.ml.material!==bm)b.ml.material=b.mr.material=bm;}trees.trunk.visible=trees.crown.visible=!alien&&!ice;
+  mineG.visible=st.dist<170;{const alien=!!(nearType(st.dist+40,'madness',60)||nearType(st.dist+40,'crater',30)||nearType(st.dist+40,'clock',40)||nearType(st.dist+40,'loop',40)||nearType(st.dist+40,'godback',40));const ice=!!(CH()&&CH().ice)&&st.iceK>0.5;for(const b of banks){b.ml.visible=b.mr.visible=!alien;const bm=ice?iceLook().bank:M.terrain;if(b.ml.material!==bm)b.ml.material=b.mr.material=bm;}trees.trunk.visible=trees.crown.visible=!alien&&!ice;
     for(const m of mountains){m.visible=!alien;const sy=ice?2.8:1;if(m.scale.y!==sy){m.scale.y=sy;if(!m.userData.m0)m.userData.m0=m.material;m.material=ice?iceLook().mtn:m.userData.m0;}}
-    {const IL=ice?iceLook():ICEL;if(IL){IL.floes.visible=ice&&!alien;IL.range.visible=ice;if(ice){const P=IL.floeP;for(let i=0;i<P.length;i++){const q=P[i];if(q.az<st.dist-10){q.az+=260;q.x=(rnd()<.5?-1:1)*(4+rnd()*40);}_o.position.set(q.x,0.05,-(q.az));_o.rotation.set(0,q.r,0);_o.scale.set(q.s,1,q.s*0.8);_o.updateMatrix();IL.floes.setMatrixAt(i,_o.matrix);}IL.floes.instanceMatrix.needsUpdate=true;}}}
+    {const IL=ice?iceLook():ICEL;if(IL){IL.floes.visible=ice&&!alien;IL.floes.count=Math.round(90*Math.min(1,Math.max(0,(st.iceK-0.5)*2)));IL.range.visible=ice;if(ice){const P=IL.floeP;for(let i=0;i<P.length;i++){const q=P[i];if(q.az<st.dist-10){q.az+=260;q.x=(rnd()<.5?-1:1)*(4+rnd()*40);}_o.position.set(q.x,0.05,-(q.az));_o.rotation.set(0,q.r,0);_o.scale.set(q.s,1,q.s*0.8);_o.updateMatrix();IL.floes.setMatrixAt(i,_o.matrix);}IL.floes.instanceMatrix.needsUpdate=true;}}}
     for(const f of fins)f.g.visible=f.g.visible&&!ice;}
   if(st.mode==='intro'){const t=intro.t;const fp=t>=27;cart.visible=fp;flashL.intensity=(t>=13&&!fp)?3.2:(fp?1.2:0);
     if(!fp){const walk=t<20;camera.position.set(Math.sin(t*0.6)*0.2+(rnd()-.5)*st.shake*0.05,(walk?1.66+Math.abs(Math.sin(t*3.6))*0.04:1.5)+(rnd()-.5)*st.shake*0.05,0);
@@ -3873,7 +3933,7 @@ function render(){
   skyU.uZen.value.copy(ATM.zen);skyU.uHor.value.copy(ATM.hor);skyU.uDark.value.copy(ATM.cd);skyU.uLight.value.copy(ATM.cl);skyU.uStars.value=ATM.stars;
   waterU.uZen.value.copy(ATM.zen);waterU.uHor.value.copy(ATM.hor);waterU.uMurk.value.copy(ATM.murk);waterU.uDeep.value.copy(ATM.deep);
   if(M.carveGlyph){const pulse=0.55+0.45*Math.sin(st.time*1.7);M.carveGlyph.emissiveIntensity=(0.35+0.9*pulse)*(0.6+st.mood*0.8);M.rune.color.setRGB(0.15,1,0.6).multiplyScalar(0.4+pulse*0.9);M.carveEye.emissiveIntensity=0.6+0.6*pulse;}
-  const fd=FOGD*ATM.fogk*(1-0.62*ss(st.camH/70))*(1-0.55*(st.mood||0));scene.fog.density=fd;waterU.uFogD.value=fd;
+  const fd=FOGD*ATM.fogk*(1-0.62*ss(st.camH/70))*(1-0.55*(st.mood||0))*(1+3.2*(st.whiteout||0));scene.fog.density=fd;waterU.uFogD.value=fd;
   for(const m of M.envMats)m.envMapIntensity=(1-dk*0.85);
   skyU.uTime.value=st.time;skyU.uFlash.value=fl;fallU.uTime.value=st.time;
   waterU.uTime.value=st.time;waterU.uDist.value=st.dist;waterU.uFlash.value=fl;waterU.uCam.value.copy(camera.position);waterU.uDark.value=dk*0.6;
@@ -4073,7 +4133,7 @@ async function loadHQ(){
     fetch('assets/models_pack.json').then(r=>{if(!r.ok)throw new Error('models');return r.json();}).then(j=>{const raw=atob(j.data),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);return [j.index,u8.buffer];})]).then(([t,m])=>[t,m[0],m[1]]);
   names.forEach((n,i)=>HQ[n]={c:tex[i*2],n:tex[i*2+1]});
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
-  HQ.tx={};await Promise.all(['alienwall','rlstone'].map(n=>load('assets/t_'+n+'.jpg',true).then(t=>{HQ.tx[n]=t;}).catch(()=>{})));
+  HQ.tx={};await Promise.all(['alienwall','rlstone','levskin','levskin_n'].map(n=>load('assets/t_'+n+'.jpg',!n.endsWith('_n')).then(t=>{HQ.tx[n]=t;}).catch(()=>{})));
   HQ.mur=[];await Promise.all([1,2,3,4,5,6].map(i=>load('assets/mural'+i+'.jpg',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.mur[i-1]=t;}).catch(()=>{})));
   HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead','mech0','mech1','mech2','mech3','rlsky'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
