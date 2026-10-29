@@ -107,6 +107,11 @@ h2{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1.05;
 .story-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden;margin:4px 0 6px}
 .story-bar i{display:block;height:100%;width:100%;background:#7fd8b0}
 .story-h{font-size:11px;color:var(--muted)}
+.story-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.story-skip{flex:none;font:600 11px/1 var(--f-ui,inherit);color:#0c120f;background:#7fd8b0;border:0;border-radius:999px;padding:4px 10px;cursor:pointer;pointer-events:auto}
+.story-skip:active{transform:scale(.96)}
+.toggle.chq{margin:6px auto 10px;justify-content:center}
+body.quick #storyHelp{display:none}
 .shield{display:inline-flex;align-items:center;gap:4px;color:#7fffc0;font-weight:700}
 .cine{position:fixed;inset:0;z-index:8;pointer-events:none}
 .lbox{position:fixed;inset:0;z-index:6;pointer-events:none}.lbox::before,.lbox::after{content:'';position:absolute;left:0;right:0;height:11vh;background:#000}.lbox::before{top:0}.lbox::after{bottom:0}
@@ -260,7 +265,7 @@ html,body{overscroll-behavior:none}
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="khint off" id="khint" hidden><span><kbd>←</kbd><kbd>→</kbd>換軌</span><span><kbd>↑</kbd>／<kbd>空白</kbd>跳</span><span><kbd>↓</kbd>蹲</span><span><kbd>Enter</kbd>關閉字卡</span><span><kbd>M</kbd>靜音</span><span><kbd>F</kbd>全螢幕</span><span><kbd>Esc</kbd>暫停</span></div>
+<div class="khint off" id="khint" hidden><span><kbd>←</kbd><kbd>→</kbd>換軌</span><span><kbd>↑</kbd>／<kbd>空白</kbd>跳</span><span><kbd>↓</kbd>蹲</span><span><kbd>Enter</kbd>關閉字卡</span><span><kbd>Q</kbd>略過旁白</span><span><kbd>M</kbd>靜音</span><span><kbd>F</kbd>全螢幕</span><span><kbd>Esc</kbd>暫停</span></div>
 
 <div class="overlay cover" id="titleScreen">
   <div class="cv" id="cv">
@@ -303,6 +308,7 @@ html,body{overscroll-behavior:none}
     <div class="eyebrow" id="chN">第一章</div>
     <h2 id="chT">被塗掉的鐵軌</h2>
     <p class="lede chi" id="chI"></p>
+    <label class="toggle chq"><input type="checkbox" id="quickToggle2"><span class="sw" aria-hidden="true"></span><span>快速模式（略過旁白朗讀）</span></label>
     <button class="go" id="chGo">出發</button>
     <button class="ghost" id="chBack">返回</button>
   </div>
@@ -351,11 +357,11 @@ html,body{overscroll-behavior:none}
 <div class="tcard" id="tcard" hidden><div class="tc-t">鏽軌逃生</div><div class="tc-s">這條河，不在任何地圖上。</div></div>
 
 <div class="story" id="story" hidden role="status" aria-live="polite">
-  <div class="story-k" id="storyK"></div>
+  <div class="story-top"><div class="story-k" id="storyK"></div><button class="story-skip" id="storySkip" type="button">略過旁白 ⏭</button></div>
   <p id="storyT"></p>
   <img id="storyImg" class="story-img" alt="" hidden>
   <div class="story-bar"><i id="storyBar"></i></div>
-  <div class="story-h">前方暫時沒有障礙，慢慢讀・已收進日誌・<span id="closeHint">點一下關閉</span></div>
+  <div class="story-h"><span id="storyHelp">前方暫時沒有障礙，慢慢讀・已收進日誌・</span><span id="closeHint">點一下關閉</span></div>
 </div>
 
 <div class="overlay" id="overScreen" hidden>
@@ -391,6 +397,7 @@ html,body{overscroll-behavior:none}
       <dt>高架</dt><dd>上坡時鏈條會慢慢拉上去，過了頂點就會一路衝到底</dd>
     </dl>
     <button class="ghost" id="jBtnPause">翻開日誌</button>
+    <label class="toggle"><input type="checkbox" id="quickToggle"><span class="sw" aria-hidden="true"></span><span>快速模式（旁白只顯示字卡、不念、不減速）</span></label>
     <label class="toggle"><input type="checkbox" id="ttsToggle"><span class="sw" aria-hidden="true"></span><span>劇情語音朗讀</span></label>
     <label class="toggle"><input type="checkbox" id="padToggle"><span class="sw" aria-hidden="true"></span><span>顯示螢幕按鈕（適合手機單手操作）</span></label>
     <label class="toggle"><input type="checkbox" id="lowToggle"><span class="sw" aria-hidden="true"></span><span>省電模式（降低解析度，手機較順）</span></label>
@@ -462,6 +469,8 @@ const storyText=s=>s.id==='mural_wrap'?'我的領悟：'+MURAL_WRAP:s.set==='mur
 function pageNo(s){return STORIES.filter(x=>x.set===s.set).indexOf(s)+1;}
 let storyTimer=0,storyMax=1;
 let ttsOn=true;try{ttsOn=localStorage.getItem('rustrail-tts')!=='0';}catch(e){}
+/* quick mode: story lines show as short text cards only — no voice, no slowed calm stretch */
+let quickOn=false;try{quickOn=localStorage.getItem('rustrail-quick')==='1';}catch(e){}
 function pickVoice(){try{const vs=speechSynthesis.getVoices();const zh=vs.filter(v=>/^zh/i.test(v.lang));return zh.find(v=>/男|male|Zhiwei|Yunjhe|Yunxi|Yunyang|Kangkang|Yunjian/i.test(v.name))||vs.find(v=>/zh[-_]TW/i.test(v.lang))||vs.find(v=>/zh[-_](HK|Hant)/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null;}catch(e){return null;}}
 /* narration voice: pre-recorded clips (assets/vo/<hash>.mp3) played one after another; never cut off mid-line */
 const VO={idx:null,au:null,want:false};
@@ -490,15 +499,15 @@ function splitParts(text){const out=[];for(const p of text.replace(/[「」『�
   for(let i=0;i<out.length-1;i++){if(out[i].length<9){out[i+1]=out[i]+out[i+1];out.splice(i,1);i--;}}return out.length?out:[text];}
 let curN=null;
 function narrate(kicker,text,jid,cv,focus){if(jid){journal.add(jid);saveJournal();updateJournalCount();}
-  NQ.push({kicker,text,cv,focus});if(st.mode==='play'){const est=(voDur(text)||text.length*0.23)+2;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
+  NQ.push({kicker,text,cv,focus});if(st.mode==='play'&&!quickOn){const est=(voDur(text)||text.length*0.23)+2;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
   if(!narrBusy&&!voBusy())nextNarr();}
 function narrateSilent(kicker,text){NQ.unshift({kicker,text,silent:true});narrBusy=false;nextNarr();}
 function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&!st.focus.far&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
   if(n.cv){try{im.src=n.cv.toDataURL('image/jpeg',0.8);im.hidden=false;}catch(e){im.hidden=true;}}else im.hidden=true;$('story').classList.toggle('has-img',!im.hidden);
   $('storyK').textContent=n.kicker;$('storyT').textContent=n.parts[0];n.pi=0;$('story').hidden=false;
-  const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=(d?d+1.4:est);
-  if(!n.silent)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
-  if(st.mode==='play'){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
+  const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(6,Math.max(3.2,n.text.length*0.05)):(d?d+1.4:est);
+  if(!n.silent&&!quickOn)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
+  if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
     for(const o of st.obs){const z=o.az-st.dist;if(z>42&&!CALM_KEEP[o.t])o.kill=1;}}}
 /* unlock audio playback on the first tap (mobile browsers) */
 addEventListener('pointerdown',function unl(){try{if(!VO.au)VO.au=new Audio();VO.au.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';VO.au.play().catch(()=>{});}catch(e){}removeEventListener('pointerdown',unl);},{once:true});
@@ -1773,19 +1782,25 @@ function mythDecor(s,g,sky,own,anim,SM,skyMesh,E,zu,pts){const L=s.len;
     anim.push(t=>{twrR.opacity=0.38+0.14*Math.sin(t*0.4);});
     const sm=skyM('#ffd23a',0.9);sm.map=yellowSignTex();own.push(sm.map);skyMesh(G.plane,sm,0,150,-560,120,120,1);
     /* the King in Yellow: a painted figure standing on the lake; robe stirs in the wind, and as you pass, the pale mask turns to you */
-    const KX=7.5,KZ=-L*0.66,KH=20;const kA=sprite('kingY',KH,0.85),kB=sprite('kingYf',KH,0.85);
+    const KX=7.5,KZ=-L*0.66,KH=20;const kA=sprite('kingY',KH,0.85),kB=sprite('kingYf',KH,0.85),kC=sprite('kingYb',KH*0.66,0.85);
     if(kA&&kB){const king=new T.Group();king.position.set(KX,-0.3,KZ);g.add(king);
-      const mats=[kA,kB].map(m=>{const mm=m.material.clone();mm.alphaTest=0.04;mm.depthWrite=false;m.material=mm;own.push(mm);king.add(m);return mm;});kB.position.z=0.02;mats[1].opacity=0;own.push(kA.userData.sprGeo,kB.userData.sprGeo);
+      const KS=[kA,kB];if(kC){kC.position.set(-2.3,0,0.04);KS.push(kC);}
+      const mats=KS.map(m=>{const mm=m.material.clone();mm.alphaTest=0.04;mm.depthWrite=false;m.material=mm;own.push(mm);king.add(m);if(m.userData.sprGeo)own.push(m.userData.sprGeo);return mm;});kB.position.z=0.02;mats[1].opacity=0;if(kC)mats[2].opacity=0;
       // reflection on the mirror-flat lake
-      const rf=[kA,kB].map((m,i)=>{const r=new T.Mesh(m.geometry,m.material.clone());own.push(r.material);r.material.opacity=i?0:0.28;r.scale.y=-1;r.position.y=-0.05;king.add(r);return r;});
+      const rf=KS.map((m,i)=>{const r=new T.Mesh(m.geometry,m.material.clone());own.push(r.material);r.material.opacity=i?0:0.28;r.scale.y=-1;r.position.copy(m.position);r.position.y=-0.05;king.add(r);return r;});
       const mist=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffcf70'),opacity:0.35})),king,0,3,0.5,26,8,1);mist.userData.keep=true;
-      let turnT=-1;
+      let turnT=-1,bendT=-1;
       anim.push(t=>{const u=zu();king.visible=u>L*0.2;if(!king.visible)return;
         king.rotation.y=Math.atan2(st.camX-KX,(-u)-KZ);
         const sw=Math.sin(t*0.9)*0.012+Math.sin(t*2.3+1)*0.006;[kA,kB].forEach(m=>{m.rotation.z=sw;m.scale.x=1+Math.sin(t*1.7)*0.015;});
-        if(turnT<0&&u>L*0.47)turnT=t;const k=turnT<0?0:ss((t-turnT)/1.6);
-        mats[0].opacity=1-k;mats[1].opacity=k;rf[0].material.opacity=0.28*(1-k);rf[1].material.opacity=0.28*k;
-        if(k>0.5&&!s.flags.kt&&st.mode==='play'){s.flags.kt=1;st.shake=Math.max(st.shake,0.2);toast('面具……轉過來看著我了','warn',1800);}});}
+        if(turnT<0&&u>L*0.43)turnT=t;const k=turnT<0?0:ss((t-turnT)/1.6);
+        /* then, as the cart draws level, the body snaps sideways at the waist — a dead 90-degree fold — and the mask hangs over the track, still staring */
+        if(kC&&bendT<0&&u>L*0.5)bendT=t;const kb=bendT<0?0:Math.min(1,(t-bendT)/0.14);
+        if(kC&&bendT>=0){const e=t-bendT;kC.scale.set(1+Math.max(0,0.07-e*0.25)*Math.sin(e*60),1,1);kC.rotation.z=Math.sin(t*23)*0.006*Math.max(0,1-e*0.4)+Math.sin(t*0.7)*0.008;}
+        mats[0].opacity=(1-k)*(1-kb);mats[1].opacity=k*(1-kb);rf[0].material.opacity=0.28*(1-k)*(1-kb);rf[1].material.opacity=0.28*k*(1-kb);
+        if(kC){mats[2].opacity=kb;rf[2].material.opacity=0.28*kb;}
+        if(k>0.5&&!s.flags.kt&&st.mode==='play'){s.flags.kt=1;st.shake=Math.max(st.shake,0.2);toast('面具……轉過來看著我了','warn',1800);}
+        if(kb>0&&!s.flags.kb&&st.mode==='play'){s.flags.kb=1;st.shake=Math.max(st.shake,0.45);playS('snap',0.9,0.55);playS('hit',0.35,0.5,0.05);toast('祂的腰……折成了直角，頭垂在軌道上方盯著我','warn',2400);}});}
     else{const king=new T.Group();king.position.set(-24,0,-L*0.5);const robe=std2({color:new T.Color('#c8a028'),roughness:0.85,side:T.DoubleSide});own.push(robe);
     mesh(G.cone,robe,king,0,8,0,4,16,4);mesh(G.cone,robe,king,0,17.5,0,1.6,4,1.6);
     const mask=mesh(G.sph,std2({color:new T.Color('#f0ece0'),roughness:0.3}),king,0,16.6,1.1,0.9,1.1,0.3);void mask;
@@ -3276,8 +3291,8 @@ function showBeat(ch,text){const k=st.beat-1,c=st.chapter;try{const f=BEAT_FX[c]
   let cv=null;try{const f=BEAT_CV[c]&&BEAT_CV[c][k];if(f)cv=f();}catch(e){}const fc=BEAT_FOCUS[c]&&BEAT_FOCUS[c][k];
   const focus=fc?{x:fc[0],y:fc[1]+(fc[3]?trackH(st.dist+fc[2]):0),az:st.dist+fc[2],far:!!fc[3]}:null;narrate(ch.n+'・'+ch.t,text,'c'+c+'_'+k,cv,focus);}
 function showChapterCard(i){st.chapter=i;const c=CHAPTERS[i];$('chN').textContent=c.n;$('chT').textContent=c.t;$('chI').textContent=c.intro;
-  for(const id of ['titleScreen','overScreen','clearScreen','selScreen'])$(id).hidden=true;$('chapScreen').hidden=false;$('chGo').focus();clearNarr();speak(c.intro);}
-function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNarr(true);if(i<4)speak(c.outro,null,true);chCleared=Math.max(chCleared,i+1);try{localStorage.setItem('rustrail-ch',chCleared)}catch(e){}
+  for(const id of ['titleScreen','overScreen','clearScreen','selScreen'])$(id).hidden=true;$('chapScreen').hidden=false;$('chGo').focus();clearNarr();if(!quickOn)speak(c.intro);}
+function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNarr(true);if(i<4&&!quickOn)speak(c.outro,null,true);chCleared=Math.max(chCleared,i+1);try{localStorage.setItem('rustrail-ch',chCleared)}catch(e){}
   syncPad();$('story').hidden=true;
   $('clN').textContent=c.n+'　完成';$('clT').textContent=i===4?'完':c.t;$('clO').textContent=c.outro;
   $('clD').textContent=Math.floor(st.dist-st.chStart)+'m';$('clG').textContent=st.gears;$('clP').textContent=journal.size+'/'+STORIES.length;
@@ -3824,6 +3839,7 @@ window.addEventListener('keydown',e=>{const k=e.key;
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
   if(k==='m'||k==='M'){$('muteBtn').click();return;}
   if((k==='f'||k==='F')&&fsOK){toggleFS();return;}
+  if(st.mode==='play'&&!st.paused&&(k==='q'||k==='Q')&&(curN||voBusy())){skipNarr();e.preventDefault();return;}
   if(st.mode==='play'&&!st.paused&&k==='Enter'&&!$('story').hidden){$('story').click();e.preventDefault();return;}
   if(st.mode==='play'&&(k==='Escape'||k==='p'||k==='P')){setPause(!st.paused);return;}
   if(k==='ArrowLeft'||k==='a'||k==='A'){moveLane(-1);e.preventDefault();}
@@ -3832,7 +3848,12 @@ window.addEventListener('keydown',e=>{const k=e.key;
   else if(k==='ArrowDown'||k==='s'||k==='S'){duck();e.preventDefault();}});
 $('jBtnPause').onclick=()=>openJournal('pauseScreen');$('jBtnTitle').onclick=()=>openJournal('titleScreen');
 $('jClose').onclick=()=>{$('journalScreen').hidden=true;$(journalFrom||'titleScreen').hidden=false;};
+/* skip: cut this line's voice and move straight to the next card */
+function skipNarr(){hush();storyTimer=0;nextNarr();}
+$('storySkip').onclick=e=>{e.stopPropagation();skipNarr();};
 $('story').onclick=()=>{$('story').hidden=true;if(!voBusy()){storyTimer=0;nextNarr();}};// closing the card never cuts the voice mid-sentence
+function setQuick(v){quickOn=v;try{localStorage.setItem('rustrail-quick',v?'1':'0')}catch(err){}$('quickToggle').checked=$('quickToggle2').checked=v;document.body.classList.toggle('quick',v);if(v){hush();if(curN)storyTimer=Math.min(storyTimer,3);st.calmUntil=Math.min(st.calmUntil||0,st.dist);}}
+setQuick(quickOn);$('quickToggle').onchange=e=>setQuick(e.target.checked);$('quickToggle2').onchange=e=>setQuick(e.target.checked);
 $('ttsToggle').checked=ttsOn;$('ttsToggle').onchange=e=>{ttsOn=e.target.checked;try{localStorage.setItem('rustrail-tts',ttsOn?'1':'0')}catch(err){}if(!ttsOn)hush();};
 updateJournalCount();
 $('lowToggle').checked=lowQ;$('lowToggle').onchange=e=>{lowQ=e.target.checked;try{localStorage.setItem('rustrail-low',lowQ?'1':'0')}catch(err){}resize();};
@@ -3940,7 +3961,7 @@ async function loadHQ(){
   names.forEach((n,i)=>HQ[n]={c:tex[i*2],n:tex[i*2+1]});
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
   HQ.mur=[];await Promise.all([1,2,3,4,5,6].map(i=>load('assets/mural'+i+'.jpg',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.mur[i-1]=t;}).catch(()=>{})));
-  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','vill','villL','idol','guard','villJ','villF','elder','peng','seahead'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
+  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
     g.setAttribute('position',new T.BufferAttribute(new Float32Array(bin,offset,count*3),3));g.setAttribute('normal',new T.BufferAttribute(new Float32Array(bin,offset+count*12,count*3),3));
     g.setAttribute('uv',new T.BufferAttribute(new Float32Array(bin,offset+count*24,count*2),2));g.computeBoundingSphere();HQ.geo[k]=g;}
