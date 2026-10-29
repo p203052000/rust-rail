@@ -395,6 +395,8 @@ html,body{overscroll-behavior:none}
       <dt>蹲下閃</dt><dd><i>倒塌桅杆</i>、<i>蝙蝠群</i></dd>
       <dt>海嘯</dt><dd>對準<i>發光浪管</i>那條軌道穿過去</dd>
       <dt>高架</dt><dd>上坡時鏈條會慢慢拉上去，過了頂點就會一路衝到底</dd>
+      <dt>驚險閃過</dt><dd>障礙衝到眼前的最後一刻才換軌、跳或蹲，會有連擊分數；連續閃過 3 次進入<i>狂飆</i>，速度暴增</dd>
+      <dt>機械克蘇魯</dt><dd>夢境維修中心裡：<i>無人機</i>換軌或蹲、<i>爬行者</i>跳、<i>魚雷</i>蹲、<i>巨像</i>換軌</dd>
     </dl>
     <button class="ghost" id="jBtnPause">翻開日誌</button>
     <label class="toggle"><input type="checkbox" id="quickToggle"><span class="sw" aria-hidden="true"></span><span>快速模式（旁白只顯示字卡、不念、不減速）</span></label>
@@ -499,7 +501,7 @@ function splitParts(text){const out=[];for(const p of text.replace(/[「」『�
   for(let i=0;i<out.length-1;i++){if(out[i].length<9){out[i+1]=out[i]+out[i+1];out.splice(i,1);i--;}}return out.length?out:[text];}
 let curN=null;
 function narrate(kicker,text,jid,cv,focus){if(jid){journal.add(jid);saveJournal();updateJournalCount();}
-  NQ.push({kicker,text,cv,focus});if(st.mode==='play'&&!quickOn){const est=(voDur(text)||text.length*0.23)+2;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
+  NQ.push({kicker,text,cv,focus});if(st.mode==='play'&&!quickOn){const est=(voDur(text)||text.length*0.23)*0.5+1;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
   if(!narrBusy&&!voBusy())nextNarr();}
 function narrateSilent(kicker,text){NQ.unshift({kicker,text,silent:true});narrBusy=false;nextNarr();}
 function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&!st.focus.far&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
@@ -507,7 +509,7 @@ function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.a
   $('storyK').textContent=n.kicker;$('storyT').textContent=quickOn?n.text:n.parts[0];n.pi=0;$('story').hidden=false;
   const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(9,Math.max(3.5,n.text.length*0.11)):(d?d+1.4:est);
   if(!n.silent&&!quickOn)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
-  if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
+  if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(80,st.speed*storyTimer*0.45));
     for(const o of st.obs){const z=o.az-st.dist;if(z>42&&!CALM_KEEP[o.t])o.kill=1;}}}
 /* unlock audio playback on the first tap (mobile browsers) */
 addEventListener('pointerdown',function unl(){try{if(!VO.au)VO.au=new Audio();VO.au.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';VO.au.play().catch(()=>{});}catch(e){}removeEventListener('pointerdown',unl);},{once:true});
@@ -533,33 +535,33 @@ let best=0; try{best=+localStorage.getItem('rustrail-best')||0}catch(e){}
 let segs=[], segEnd=0, lastType='normal';
 /* ================= chapters ================= */
 const CHAPTERS=[
- {n:'第一章',t:'被塗掉的鐵軌',len:1350,speed:[11,22],
+ {n:'第一章',t:'被塗掉的鐵軌',len:1350,speed:[13,25],
   intro:'【故事開始】颱風夜，我收到失蹤六十年的外公寄來的包裹：一本日記、一張地圖，還有一雙舊皮手套。我照著地圖找到一座舊礦坑，結果被大水沖上一台刻著外公名字的礦車。\n\n礦車衝出山洞，外面是一個奇怪的世界：天空一直是黃昏，手錶停在 23:58 不會動。日記第一頁寫著：「沿著鐵軌一直走，盡頭有一道門，我在那裡等你。」',
   beats:[[150,'河上漂著一艘客輪，船裡的燈還亮著，卻一個人也沒有。外公的日記寫著：「這個世界的時間，是停住的。」'],[450,'枕木上用白漆畫著一個記號：圓圈裡有三條線。日記說這是外公畫的，意思是「這裡安全，繼續走」。原來六十年前，他也坐過這台礦車。'],[800,'手機突然收到一則簡訊。寄件人竟然是我自己，時間顯示「明天」。內容只有一句：「不管發生什麼事，都不要讓礦車停下來。」'],[1750,'前面出現兩尊比山還高的石像，中間是一道巨大的門。日記寫著：「穿過這道門，就進入祂的夢裡了。」']],
   outro:'穿過石像之門時，背後有人喊我的名字，是外公的聲音。可是日記用紅筆寫著：「聽到有人叫你，千萬不要回頭。回頭的人，會被留在這裡。」\n我咬著牙，沒有回頭。',
   pool:[['normal',2],['narrow',1.4],['hills',1.4],['bridge',1.3],['washboard',1],['floating',1.2],['tunnel',1],['graveyard',1.4],['slalom',1]],megas:[],
   zones:[['yellow',0.18],['clock',0.36],['crater',0.62]],mon:{barrel:0,gap:0,croc:250,whirl:500,shark:650,beam:800},finale:[{type:'mega',sub:'colossus'}]},
- {n:'第二章',t:'印斯茅斯水道',len:1450,speed:[12,23],
+ {n:'第二章',t:'印斯茅斯水道',len:1450,speed:[14,26],
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一個沉睡在海底的古老神明，祂作的夢會漏進我們的世界。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在等祂醒來。他們會想盡辦法，讓礦車停下來。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「礦車一停，祂就會醒。牠們想把你拉下車，就是要讓礦車停下來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
   pool:[['fork',1],['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
   zones:[['green',0.22],['maw',0.45],['loop',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
- {n:'第三章',t:'考察隊的營地',len:2450,speed:[13,25],
+ {n:'第三章',t:'考察隊的營地',len:2450,speed:[15,28],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
   beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，時間才會停在午夜前兩分鐘，祂就不會醒。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
   outro:'大壩的另一邊，一座城市正從海底慢慢升起來。\n我終於懂了：外公不是失蹤。他是為了不讓祂醒來，留在夢裡開著這台礦車，一開就是六十年。',
   pool:[['fork',0.8],['camp',2.4],['crystal',1.8],['coaster',1.5],['leap',1.3],['normal',1.8],['bridge',1.2],['hills',1.2]],megas:[],pal:'antarctic',ice:1,
   zones:[['madness',0.07],['cliff',0.36]],mon:{barrel:0,gap:0,beam:0,mine:300,tentacle:600,sweep:900},finale:[{type:'mega',sub:'dam'}]},
- {n:'第四章',t:'沉沒之城',len:2300,speed:[14,26],
+ {n:'第四章',t:'沉沒之城',len:2300,speed:[16,29],
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
   pool:[['spiral',1],['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['twin',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
- {n:'第五章',t:'拉萊耶',len:1800,speed:[15,27],
+ {n:'第五章',t:'拉萊耶',len:1800,speed:[17,30],
   intro:'【上一章】城裡每一扇窗都映著不同年紀的我，旁邊軌道上還開過一個老了六十歲的我。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
-  beats:[[300,'神殿的牆上刻著一長排礦車，每一台車上的人都戴著皮手套。最前面那個人是外公，最後面那個人，是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱下面放著外公的礦工帽，頭燈還亮著。帽子裡夾著一封信，信封上寫著我的名字。'],[1000,'信上寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，手錶就會停在 23:58，祂就不會醒。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，他在終點等我。']],
+  beats:[[300,'神殿的牆上刻著一長排礦車，每一台車上的人都戴著皮手套。最前面那個人是外公，最後面那個人，是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱上面放著外公的礦工帽，頭燈還亮著。帽子裡夾著一封信，信封上寫著我的名字。'],[1000,'信上寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，手錶就會停在 23:58，祂就不會醒。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，他在終點等我。']],
   outro:'外公終於可以下車了。我戴上那雙皮手套，握緊把手。\n從現在起，我就是新的駕駛。',
   pool:[['spiral',1.3],['mega',2.6],['crystal',1],['coaster',1.2],['leap',1.2],['whalebone',1],['canopy',1],['weave',1],['normal',1]],megas:['rlyeh','ruins','colossus'],
   zones:[['godback',0.12],['skyisles',0.6]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:0,sweep:0,deepone:0,serpent:0},finale:[{type:'mega',sub:'rlyeh'},{type:'coaster',Hm:150,waves:true}]},
@@ -1170,6 +1172,7 @@ function sharkBody(){
     const c=[back[0]+(belly[0]-back[0])*(1-t),back[1]+(belly[1]-back[1])*(1-t),back[2]+(belly[2]-back[2])*(1-t)];const sp=z>0.3&&y<0.1?1:1;col[i*3]=c[0]*sp;col[i*3+1]=c[1]*sp;col[i*3+2]=c[2]*sp;}
   geo.setAttribute('color',new T.BufferAttribute(col,3));return geo;}
 let sharkGeo=null;
+const MECHGLOW=(c)=>{c=c||'#3ae8ff';const k='mg'+c;return M[k]||(M[k]=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:0.7})));};
 const builders={
   barrel(o){const g=new T.Group();const b=new T.Group();g.add(b);
     mesh(G.cyl,M.rustRed,b,0,0.47,0,0.33,0.94,0.33);mesh(G.cyl,M.rust,b,0,0.945,0,0.31,0.01,0.31);
@@ -1194,6 +1197,14 @@ const builders={
     const bar=mesh(G.box,yel,piv,-sd*4.3,1.45,0,8.6,0.42,0.42);void bar;for(let i=0;i<6;i++)mesh(G.box,M.dark,piv,-sd*(0.8+i*1.4),1.45,0.22,0.5,0.44,0.02);
     const cl=new T.Group();cl.position.set(-sd*8.6,1.45,0);piv.add(cl);for(const k of [-1,1]){const f=mesh(G.box,M.iron,cl,0,k*0.35,0,0.9,0.12,0.3);f.rotation.z=k*0.5;}
     mesh(G.sphLo,M.lamp,piv,-sd*0.2,1.9,0.3,0.12,0.12,0.12).userData.keep=true;o.parts={piv};return g;},
+  /* mechanical Cthulhu variants of the dream maintenance center — each one is dodged differently */
+  mechA(o){const g=new T.Group(),b=new T.Group();g.add(b);const sp=sprite('mech0',2.6,0.6);if(sp)b.add(sp);else{mesh(G.sph,M.iron,b,0,1.2,0,0.9,0.8,0.9);}
+    const gl=mesh(G.plane,MECHGLOW(),b,0,1.85,0.3,2,2,1);gl.userData.keep=true;o.parts={b};return g;},
+  mechB(o){const g=new T.Group(),b=new T.Group();g.add(b);const sp=sprite('mech1',1.8,0.5);if(sp)b.add(sp);else mesh(G.sph,M.iron,b,0,0.6,0,1,0.6,0.9);o.parts={b};return g;},
+  mechC(o){const g=new T.Group(),b=new T.Group();g.add(b);o.sd=hsh(o.az*5.1)<0.5?-1:1;const sp=sprite('mech2',2.8,0.65);if(sp){sp.scale.x=o.sd>0?-1:1;b.add(sp);}else{const m=mesh(G.cyl,M.iron,b,0,1,0,0.4,3,0.4);m.rotation.z=Math.PI/2;}
+    const gl=mesh(G.plane,MECHGLOW('#ff3ac8'),b,o.sd>0?-1.6:1.6,1.05,0.3,2.4,2.4,1);gl.userData.keep=true;o.parts={b,sp};return g;},
+  mechD(o){const g=new T.Group(),b=new T.Group();g.add(b);const sp=sprite('mech3',7.2,0.5);if(sp)b.add(sp);else mesh(G.box,M.iron,b,0,3.6,0,1.8,7.2,1);
+    for(const sd of [-1,1]){const e=mesh(G.plane,MECHGLOW('#e8ffff'),b,sd*0.2,6.47,0.3,1,1,1);e.userData.keep=true;}o.parts={b};return g;},
   beam(o){const g=new T.Group();
     const m=mesh(G.cyl,M.paint,g,0,1.43,0,0.21,8.8,0.21);m.rotation.z=Math.PI/2;
     for(const sd of [-1,1]){mesh(G.box,M.rust,g,sd*3.6,0.9,0,0.45,2.6,0.45);mesh(G.box,M.rust,g,sd*3.6,2.25,0,0.6,0.15,0.6).rotation.y=0.4;}
@@ -1584,9 +1595,9 @@ const SCENIC={
       anim.push(t=>{const on=Math.sin(t*2.5)>0.3;rl.visible=rg.visible=on;});
       const fire=mesh(G.plane,M.glowGold,g,sd*12.5,1.2,-L*0.6,3,3,1);fire.userData.keep=true;anim.push(t=>{fire.scale.setScalar(2.6+Math.sin(t*13)*0.4+Math.sin(t*7)*0.3);});
       mesh(G.sphLo,std2({color:new T.Color('#ff8a30'),emissive:new T.Color('#ff6010'),emissiveIntensity:2}),g,sd*12.5,0.9,-L*0.6,0.4,0.5,0.4).userData.keep=true;}
-    const flag=new T.Mesh(G.plane,std2({map:plate([['MISKATONIC U.',40,52],['EXPEDITION · III',26,104]],360,150,'#3a2e22','#e2d6b8'),side:T.DoubleSide,roughness:0.9}));
-    flag.scale.set(3.2,1.35,1);flag.position.set(-9.5,4.6,-L*0.3);flag.rotation.y=0.4;flag.userData.keep=true;g.add(flag);mesh(G.cyl,M.iron,g,-11,3,-L*0.3-0.6,0.06,6,0.06);
-    anim.push(t=>{flag.rotation.y=0.4+Math.sin(t*2.2)*0.18;});
+    const flag=readBoard([['米斯卡托尼克大學考察隊',0.32,0.24],['第三組營地　1963',0.72,0.24,'#2a1a10']],5,1.8);
+    flag.position.set(-7.6,4.4,-L*0.3);flag.rotation.y=0.55;g.add(flag);mesh(G.cyl,M.iron,g,-10.1,2.8,-L*0.3-0.6,0.07,5.6,0.07);
+    anim.push(t=>{flag.rotation.y=0.55+Math.sin(t*2.2)*0.05;});readZone(s.az0+L*0.3,-7.6,4.4);
     finishSet(s,g,own,anim);},
   waterfall(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;const fm=getFall();
     for(const sd of [-1,1]){for(let z=-5;z>-L+5;z-=12){B(6,30+rnd()*14,12.5,6,M.rock,sd*(11+rnd()*2),14,z,0,0,sd*0.05);}
@@ -2226,21 +2237,46 @@ const SETS2={
 
   /* a drowned factory from the year 2086: pipes, neon, robot arms and steam */
   factory(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};
-    for(const sd of [-1,1]){B(1.2,26,L,10,M.concrete,sd*16,11,-L/2);for(let k=0;k<5;k++){const p=new T.Mesh(cylW(0.35+k*0.08,0.35+k*0.08,L,8),k%2?M.iron:M.rust);own.push(p.geometry);p.rotation.x=Math.PI/2;p.position.set(sd*(14.6-k*0.5),2+k*2.6,-L/2);g.add(p);}}
-    for(let u=10;u<L;u+=18){const p=new T.Mesh(cylW(0.45,0.45,32,8),u%36?M.iron:M.rust);own.push(p.geometry);p.rotation.z=Math.PI/2;p.position.set(0,9+((u/18)%3)*2.2,-u);g.add(p);
-      for(const sd of [-1,1]){const v=new T.Mesh(cylW(0.3,0.3,24,8),M.iron);own.push(v.geometry);v.position.set(sd*(13.2-((u/18)%2)),11,-u-6);g.add(v);mesh(G.torus,M.rust,g,sd*13,5,-u-6,0.8,0.8,4).rotation.y=Math.PI/2;}
-      B(34,0.5,1,4,M.iron,0,22,-u);for(const sd of [-1,1])B(0.4,0.4,1,4,M.iron,sd*8,19,-u,0,0,sd*0.6);}
-    for(let u=30;u<L-20;u+=55){const sd=(u/55)%2<1?1:-1;const tk=new T.Mesh(cylW(4,4,14,14),M.paint);own.push(tk.geometry);tk.position.set(sd*10.5,7,-u);g.add(tk);mesh(G.sph,M.paint,g,sd*10.5,14,-u,4,1.6,4);}
+    /* 夢境維修中心 — not a human factory: a biomechanical alien hall, ribbed like the inside of something alive */
+    const awT=HQ.tx&&HQ.tx.alienwall;const awM=awT?(()=>{const t=awT.clone();t.needsUpdate=true;t.repeat.set(L/22,1.6);own.push(t);const e=awT.clone();e.needsUpdate=true;e.repeat.copy(t.repeat);own.push(e);
+        return std2({map:t,emissiveMap:e,emissive:new T.Color('#4a2a6a'),emissiveIntensity:0.55,roughness:0.35,metalness:0.6,color:new T.Color('#9aa4b0')});})():std2({color:new T.Color('#1c2028'),roughness:0.4,metalness:0.7});own.push(awM);
+    const chrome=std2({color:new T.Color('#2a2e36'),roughness:0.22,metalness:0.95});const bone=std2({color:new T.Color('#b8b4a4'),roughness:0.55,metalness:0.2});own.push(chrome,bone);
+    const vein=bend(new T.MeshBasicMaterial({color:new T.Color('#3af0ff')})),veinM=bend(new T.MeshBasicMaterial({color:new T.Color('#ff3ac8')}));own.push(vein,veinM);
+    const glowCy=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#3ae8ff'),opacity:0.55}));own.push(glowCy);
+    for(const sd of [-1,1]){const w=mesh(G.box,awM,g,sd*16,16,-L/2,1.2,36,L);void w;
+      for(let k=0;k<3;k++){const v=new T.Mesh(cylW(0.06,0.06,L,5),k%2?veinM:vein);own.push(v.geometry);v.rotation.x=Math.PI/2;v.position.set(sd*15.3,3+k*7.5,-L/2);v.userData.keep=true;g.add(v);}}
+    // the ribcage: arching biomech ribs with vertebrae along the spine overhead
+    const ribG=new T.TorusGeometry(15.6,0.7,8,30,Math.PI);own.push(ribG);const spikeG=new T.ConeGeometry(0.35,2.4,6);own.push(spikeG);
+    for(let u=8,i=0;u<L;u+=13,i++){const r=new T.Mesh(ribG,i%3?chrome:bone);r.position.set(0,0,-u);r.scale.set(1,1.32,1.4);g.add(r);
+      mesh(G.sph,bone,g,0,20.4,-u,1.5,1.1,2.2);for(let k=0;k<7;k++){const a=0.25+k*0.44;const sp=new T.Mesh(spikeG,chrome);sp.position.set(Math.cos(a)*15.2,Math.sin(a)*20,-u);sp.rotation.z=a-Math.PI/2+Math.PI;g.add(sp);}
+      if(i%2===0)for(const sd of [-1,1]){const h=mesh(G.cyl,chrome,g,sd*6,16,-u-4,0.05,8,0.05);void h;const pod=mesh(G.sphLo,i%4?vein:veinM,g,sd*6,11.6,-u-4,0.45,0.7,0.45);pod.userData.keep=true;const pg=mesh(G.plane,glowCy,g,sd*6,11.6,-u-3.6,3.4,3.4,1);pg.userData.keep=true;}}
+    // dream pods: glass capsules with sleepers inside, the people whose dreams are being "maintained"
+    const glass=bend(new T.MeshStandardMaterial({color:new T.Color('#7ff0ff'),transparent:true,opacity:0.22,roughness:0.05,metalness:0.2,emissive:new T.Color('#0a5a6a'),emissiveIntensity:0.8,depthWrite:false}));own.push(glass);
+    const sleeper=std2({color:new T.Color('#0c1418'),roughness:0.9});own.push(sleeper);
+    for(let u=30;u<L-20;u+=34){const sd=(Math.round(u/34)%2)?1:-1;const x=sd*12;
+      mesh(G.cyl,chrome,g,x,0.5,-u,1.5,1,1.5);mesh(G.cyl,chrome,g,x,7.2,-u,1.4,0.6,1.4);mesh(G.cap,sleeper,g,x,3.6,-u,0.42,1.25,0.32);mesh(G.sph,sleeper,g,x,5.1,-u,0.3,0.34,0.3);
+      const c=mesh(G.cyl,glass,g,x,3.8,-u,1.3,6.2,1.3);c.userData.keep=true;const cg=mesh(G.plane,glowCy,g,x,3.8,-u+1.4,5,8,1);cg.userData.keep=true;}
+    // halo rings hanging in the air, turning slowly against each other
+    const haloM=bend(new T.MeshBasicMaterial({color:new T.Color('#ff3ac8'),transparent:true,opacity:0.85}));own.push(haloM);const halos=[];
+    for(let u=50;u<L-30;u+=70){const h=new T.Mesh(new T.TorusGeometry(7.5,0.08,6,64),haloM);own.push(h.geometry);h.position.set(0,9.5,-u);h.userData.keep=true;g.add(h);const h2=h.clone();h2.scale.setScalar(0.8);h2.material=vein;g.add(h2);halos.push([h,h2]);}
+    anim.push(t=>{for(const [a,b] of halos){a.rotation.x=t*0.4;a.rotation.y=t*0.25;b.rotation.y=-t*0.5;b.rotation.z=t*0.3;}});
     // neon signs
-    const neon=(txt,col,w,h,font)=>canvasTex(w,h,(c)=>{c.clearRect(0,0,w,h);c.font=font;c.textAlign='center';c.textBaseline='middle';c.shadowColor=col;c.shadowBlur=26;c.fillStyle=col;c.fillText(txt,w/2,h/2);c.shadowBlur=8;c.fillStyle='#fff';c.globalAlpha=0.65;c.fillText(txt,w/2,h/2);});
-    const NE=[['2086','#ff2a8a'],['夢工廠','#2af0ff'],["R'LYEH IND.",'#ffb02a'],['換班中','#ff3a3a'],['禁止回頭','#c86aff'],['深潛者派遣','#3aff9a'],['營業中','#2af0ff'],['夢境維修','#ff2a8a']];
+    const neon=(txt,col,w,h,font)=>canvasTex(w,h,(c)=>{c.clearRect(0,0,w,h);
+      if(txt.startsWith('#G')){const n=+txt.slice(2),cw=w/(n+1);c.strokeStyle=col;c.lineCap='round';c.shadowColor=col;c.shadowBlur=22;
+        for(let pass=0;pass<2;pass++){c.lineWidth=pass?4:9;if(pass){c.strokeStyle='#fff';c.globalAlpha=0.7;c.shadowBlur=6;}let sd=7+n*13;const R=()=>{sd=(sd*9301+49297)%233280;return sd/233280;};
+          for(let i=0;i<n;i++){const cx=cw*(i+1),cy=h/2,r=h*0.3;c.beginPath();const k=Math.floor(R()*4);
+            if(k===0){c.arc(cx,cy,r*0.7,R()*3,R()*3+4);}else if(k===1){c.moveTo(cx-r*0.6,cy+r);c.lineTo(cx,cy-r);c.lineTo(cx+r*0.6,cy+r);}else if(k===2){c.moveTo(cx,cy-r);c.lineTo(cx,cy+r);c.moveTo(cx-r*0.6,cy-r*0.2);c.quadraticCurveTo(cx,cy+r*0.5,cx+r*0.6,cy-r*0.2);}else{c.ellipse(cx,cy,r*0.35,r*0.9,0,0,7);c.moveTo(cx-r*0.7,cy);c.lineTo(cx+r*0.7,cy);}
+            c.stroke();c.beginPath();c.arc(cx+(R()-.5)*r,cy+(R()<.5?-1:1)*r*1.05,4,0,7);c.stroke();}}return;}
+      c.font=font;c.textAlign='center';c.textBaseline='middle';c.shadowColor=col;c.shadowBlur=26;c.fillStyle=col;c.fillText(txt,w/2,h/2);c.shadowBlur=8;c.fillStyle='#fff';c.globalAlpha=0.65;c.fillText(txt,w/2,h/2);});
+    const glyph=n=>'#G'+n;
+    const NE=[['2086','#ff2a8a'],[glyph(5),'#2af0ff'],['夢境維修中心','#ff3ac8'],[glyph(4),'#3aff9a'],[glyph(6),'#c86aff'],['請排隊換班','#2af0ff'],[glyph(5),'#ff3ac8'],[glyph(4),'#3af0ff']];
     const signs=[];NE.forEach(([t,c],i)=>{const tex=neon(t,c,512,160,'900 96px "Noto Sans TC",sans-serif');const m=bend(new T.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(m,tex);
       const sd=i%2?1:-1,u=40+i*62;const p=new T.Mesh(G.plane,m);p.scale.set(9,2.8,1);p.position.set(sd*15.2,9+(i%3)*3,-u);p.rotation.y=-sd*Math.PI/2*0.82;p.userData.keep=true;g.add(p);
       const gl=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color(c),opacity:0.5})),g,sd*14.5,9+(i%3)*3,-u,14,7,1);gl.rotation.y=-sd*Math.PI/2*0.8;gl.userData.keep=true;own.push(gl.material);
       signs.push({m,gl:gl.material,ph:rnd()*9,bad:rnd()<0.45});});
-    const lampM=bend(new T.MeshBasicMaterial({color:new T.Color('#e8f4ff')}));own.push(lampM);const lamps=[];for(let u=20;u<L;u+=24){const l=mesh(G.box,lampM,g,0,19.6,-u,6,0.2,0.4);l.userData.keep=true;lamps.push({l,ph:rnd()*9});}
+    const lampM=bend(new T.MeshBasicMaterial({color:new T.Color('#9af4ff')}));own.push(lampM);const lamps=[];for(let u=20;u<L;u+=24){const l=mesh(G.box,lampM,g,0,19.6,-u,6,0.2,0.4);l.userData.keep=true;lamps.push({l,ph:rnd()*9});}
     // robot arms that wake as you pass
-    const yel=std2({color:new T.Color('#d8a020'),roughness:0.5,metalness:0.5});own.push(yel);const arms=[];
+    const yel=std2({color:new T.Color('#3a3f4a'),roughness:0.25,metalness:0.9,emissive:new T.Color('#5a1a5a'),emissiveIntensity:0.35});own.push(yel);const arms=[];
     for(let u=60;u<L-30;u+=48){const sd=(u/48)%2<1?-1:1;const base=new T.Group();base.position.set(sd*9.5,0,-u);g.add(base);mesh(G.cyl,M.iron,base,0,0.8,0,1.4,1.6,1.4);
       const sh=new T.Group();sh.position.y=1.6;base.add(sh);const a1=new T.Group();sh.add(a1);mesh(G.box,yel,a1,0,2.6,0,0.7,5.2,0.7);mesh(G.sph,M.iron,a1,0,0,0,0.6,0.6,0.6);
       const a2=new T.Group();a2.position.y=5.2;a1.add(a2);mesh(G.box,yel,a2,0,2.2,0,0.55,4.4,0.55);mesh(G.sph,M.iron,a2,0,0,0,0.5,0.5,0.5);
@@ -2626,9 +2662,16 @@ const SETS2={
       if(!s.flags.w&&u>310){s.flags.w=1;toast('準備飛越火山口！','warn',1600);}
       if(!s.flags.e&&u>352){s.flags.e=1;sfx.boom();st.shake=Math.max(st.shake,0.6);st.flash=0.4;}});
     // a raised bed of black cinder and basalt sleepers so the line clearly rides on the mountainside
-    const bedM=std2({map:M.rock.map,color:new T.Color('#2a2220'),roughness:1});own.push(bedM);
-    for(const [u0,u1] of [[0,204],[524,736]])for(let u=u0;u<u1;u+=3){const h0=trackH(s.az0+u),h1=trackH(s.az0+u+3);const up=u<300?u+1.5:732-(u+1.5);const gy=gnd(Math.max(0,Math.min(200,up)));
-      const top=Math.min(h0,h1)-0.45,hh=Math.max(0.6,top-gy+1.5);mesh(G.box,bedM,g,0,top-hh/2,-(u+1.5),4.2+hh*0.35,hh,3.05);const sl=mesh(G.box,bedM,g,0,(h0+h1)/2-0.42,-(u+1.5),4.4,0.5,3.2);sl.rotation.x=Math.atan2(h1-h0,3);}
+    const bedM=std2({map:M.rock.map,normalMap:M.rock.normalMap,color:new T.Color('#2a2220'),roughness:1,side:T.DoubleSide});own.push(bedM);
+    // one continuous embankment (trapezoid section swept along the line) — no stepped blocks at the edges
+    for(const [u0,u1] of [[0,204],[524,736]]){const pos=[],uvs=[],idx=[];const N=Math.ceil((u1-u0)/1.5);let row=0;
+      for(let k=0;k<=N;k++){const u=Math.min(u1,u0+k*1.5);const h=trackH(s.az0+u);const up=u<300?u:732-u;const gy=gnd(Math.max(0,Math.min(200,up)))-1.2;
+        const top=h-0.42,bot=Math.min(gy,top-0.6),hh=top-bot,hw=2.25,bw=hw+0.6+hh*0.62;
+        const sec=[[-bw,bot],[-hw-0.25,top-0.18],[-hw,top],[hw,top],[hw+0.25,top-0.18],[bw,bot]];let acc=0;
+        sec.forEach(([x,y],j)=>{if(j)acc+=Math.hypot(x-sec[j-1][0],y-sec[j-1][1]);pos.push(x,y,-u);uvs.push(u*0.25,acc*0.25);});
+        if(k){const a0=(row-1)*6,b0=row*6;for(let j=0;j<5;j++)idx.push(a0+j,b0+j,a0+j+1,a0+j+1,b0+j,b0+j+1);}row++;}
+      const cg=new T.BufferGeometry();cg.setAttribute('position',new T.Float32BufferAttribute(pos,3));cg.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));cg.setIndex(idx);cg.computeVertexNormals();own.push(cg);
+      const cm=new T.Mesh(cg,bedM);g.add(cm);}
     // the eruption: as the cart flies the gap, lava columns burst up from the lake past the rails into the sky
     const jetM=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ff4a10'),opacity:0}));own.push(jetM);
     const coreM=std2({map:M.rock.map,color:new T.Color('#a02000'),emissive:new T.Color('#ff3a08'),emissiveIntensity:1.15,roughness:0.7});own.push(coreM);
@@ -2957,6 +3000,10 @@ function buildMega(s){
     for(const sd of [-1,1]){B(0.4,5.5,Tk,6,M.paintDark,sd*3.9,2.75,zc);}B(7.8,0.4,Tk,6,M.paintDark,0,5.5,zc);
     for(let z=fz-3;z>zc-Tk/2;z-=7){mesh(G.sphLo,M.lamp,g,0,5.0,z,0.12,0.12,0.12);mesh(G.plane,M.glowGold,g,0,5.0,z+0.2,2.6,2.6,1);}
     B(10,0.8,0.8,4,M.rust,0,5.9,fz+0.4);for(const sd of [-1,1])B(0.8,6.3,0.8,4,M.rust,sd*4.6,2.9,fz+0.4);
+    /* the expedition's words, cut into the dam face right above the tunnel mouth: 「第三組到此」 — dated tomorrow, in my own handwriting */
+    {const ins=readBoard([['第三組到此',0.42,0.46,'#15130f'],[tomorrowStr(),0.86,0.15,'#7a140c']],24,8.6,{clear:1,halo:'rgba(235,232,222,.75)'});ins.position.set(0,12.2,fz+0.35);g.add(ins);
+     const sp=mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#fff0c8'),opacity:0.22,fog:false})),g,0,12.2,fz+0.5,30,12,1);sp.userData.keep=true;
+     readZone(s.az0-fz,0,9,85);}
     for(const x of [-150,-110,-75,-45,-18,18,45,75,110,150])B(7,94,12,8,M.concrete,x,42,fz+6);
     const fm=getFall();for(const x of [-30,-60,30,60,95,-95]){const f=new T.Mesh(G.plane,fm);f.scale.set(11,96,1);f.position.set(x,46,fz+0.5+(Math.abs(x)%45===0?12.6:0));g.add(f);
       mesh(G.disc,M.foam,g,x,0.05,fz+3,9,1,5);mesh(G.plane,bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,opacity:0.35,color:new T.Color('#cfdcdc')})),g,x,4,fz+4,22,10,1);}
@@ -2988,6 +3035,7 @@ function buildMega(s){
       if(pair){B(25,3.4,5.2,8,M.carveFrieze,0,48.6,z);vines(-11,11,46.9,z+2.6,14,12);for(let i=0;i<6;i++)moss(-11+i*4.4,50.5,z,2,2.6);}
       if(rnd()<0.5){const d=C(2.1,2.1,5,4,M.stone,(rnd()<.5?-1:1)*(5.5+rnd()*2),0.6,z-9,Math.PI/2,0);d.rotation.y=rnd()*3;}}
   }else if(s.sub==='rlyeh'){
+    const _rs=HQ.tx&&HQ.tx.rlstone;const RLF=_rs?std2({map:_rs,emissiveMap:_rs,emissive:new T.Color('#2e5a3c'),emissiveIntensity:0.5,color:new T.Color('#b4c8b8'),roughness:0.85}):RLF,RLG=_rs?std2({map:_rs,color:new T.Color('#9cb6a4'),roughness:0.8,emissive:new T.Color('#0a3a22'),emissiveIntensity:0.5}):RLG;if(_rs)own.push(RLF,RLG);
     const inst=[];const _m=new T.Matrix4(),_q=new T.Quaternion(),_v=new T.Vector3(),_sc=new T.Vector3();
     const tent=(ox,oy,oz,n,len,r0,dx,dz,ph)=>{for(let j=0;j<n;j++){const t=j/(n-1);const r=r0*(1-t*0.78);
       _v.set(ox+dx*t*len*0.35+Math.sin(t*4.5+ph)*0.12*len,oy-t*len+Math.pow(t,3)*len*0.25,oz+dz*t*len*0.3+Math.cos(t*3+ph)*0.05*len);_sc.set(r,r,r);inst.push(new T.Matrix4().compose(_v,_q,_sc));}};
@@ -2997,29 +3045,50 @@ function buildMega(s){
       for(let i=0;i<9;i++){const a=(i-4)/4;tent(x+a*S*0.62,y-S*0.5,z+S*(0.82-Math.abs(a)*0.25),9,S*1.9,S*0.2,a*0.5,0.6,i*1.7);}};
     const wingGeo=(()=>{const w=new T.Shape();w.moveTo(0,0);w.quadraticCurveTo(0.5,1.15,1.2,1.05);for(let k=0;k<4;k++){const x0=1.2-k*0.28;w.quadraticCurveTo(x0-0.05,0.75,x0-0.28,0.85-k*0.05);}w.lineTo(0,0.2);w.lineTo(0,0);
       const geo=new T.ExtrudeGeometry(w,{depth:0.05,bevelEnabled:false});own.push(geo);return geo;})();
-    const idolBody=(x,y,z,S)=>{B(S*2.6,S*0.6,S*2.2,4,M.carveGlyph,x,y+S*0.3,z);mesh(G.sph,M.idol,g,x,y+S*2.1,z,S*1.05,S*1.5,S*0.9);
+    const idolBody=(x,y,z,S)=>{B(S*2.6,S*0.6,S*2.2,4,RLG,x,y+S*0.3,z);mesh(G.sph,M.idol,g,x,y+S*2.1,z,S*1.05,S*1.5,S*0.9);
       for(const sd of [-1,1]){mesh(G.box,M.idol,g,x+sd*S*0.55,y+S*0.95,z+S*0.55,S*0.6,S*0.5,S*1.4);mesh(G.box,M.idol,g,x+sd*S*0.6,y+S*0.6,z+S*1.2,S*0.5,S*1.2,S*0.5);
         const wm=new T.Mesh(wingGeo,M.idol);wm.scale.set(sd*S*2.2,S*2.4,S);wm.position.set(x+sd*S*0.4,y+S*2.6,z-S*0.6);wm.rotation.y=sd*0.5;g.add(wm);}
       head(x,y+S*3.9,z+S*0.15,S*0.9,false);};
     // gate
-    for(const sd of [-1,1]){B(8,44,8,8,M.carveGlyph,sd*11,20,-16,sd*0.1,-sd*0.11);B(10,3,10,8,M.carveFrieze,sd*13.4,43,-16,sd*0.1,-sd*0.11);}
-    B(36,8,9,8,M.carveFrieze,0,44,-16,0,0.05);B(10,10,1,10,M.carveEye,0,44,-11.4,0,0.05);head(0,53,-13,4.6,true);
+    for(const sd of [-1,1]){B(8,44,8,8,RLG,sd*11,20,-16,sd*0.1,-sd*0.11);B(10,3,10,8,RLF,sd*13.4,43,-16,sd*0.1,-sd*0.11);}
+    B(36,8,9,8,RLF,0,44,-16,0,0.05);B(10,10,1,10,M.carveEye,0,44,-11.4,0,0.05);head(0,53,-13,4.6,true);
     // processional avenue
     let k=0;for(let z=-34;z>-L+80;z-=24,k++){const lean=(k%2?1:-1)*0.05;
-      for(const sd of [-1,1]){B(3,32,22,8,M.carveFrieze,sd*12.6,14,z-11,0,sd*lean);B(4.6,2.4,23,8,M.carveGlyph,sd*12.6,31,z-11,0,sd*lean);
+      for(const sd of [-1,1]){if(rnd()<0.42)continue;const wh=12+rnd()*26,wl=(rnd()-.5)*0.5;B(3,wh,14+rnd()*8,12,RLF,sd*(12.6+rnd()*3),wh/2-4,z-11,(rnd()-.5)*0.15,wl,sd*(lean+rnd()*0.18));
         mesh(G.box,M.rune,g,sd*11.07,4.2,z-11,0.06,0.3,20);mesh(G.box,M.rune,g,sd*11.07,22,z-11,0.06,0.2,20);
         B(1.2,10,1.2,4,M.carveEye,sd*11.3,10,z-11,Math.PI/4);}
-      const sd=k%2?1:-1;B(4,2.4,4,4,M.carveGlyph,sd*8.6,0.4,z);idolBody(sd*8.6,1.6,z,1.25);
-      if(k%2===0){B(28,3,3.5,8,M.carveFrieze,0,27,z-3,0,(k%4?1:-1)*0.13);for(const sd2 of [-1,1]){C(0.55,1,19,4,M.carveGlyph,sd2*7.3,8.5,z-21);mesh(G.plane,M.glowGreen,g,sd2*7.3,18.5,z-20.6,3.2,3.2,1);}}}
+      const sd=k%2?1:-1;B(4,2.4,4,4,RLG,sd*8.6,0.4,z);idolBody(sd*8.6,1.6,z,1.25);
+      if(k%2===0){B(28,3,3.5,8,RLF,0,27,z-3,0,(k%4?1:-1)*0.13);for(const sd2 of [-1,1]){C(0.55,1,19,4,RLG,sd2*7.3,8.5,z-21);mesh(G.plane,M.glowGreen,g,sd2*7.3,18.5,z-20.6,3.2,3.2,1);}}}
     // great idol straddling the track
     const zI=-L+42;
-    for(const sd of [-1,1]){B(11,9,22,8,M.carveGlyph,sd*11,1.5,zI);B(5.5,19,6,8,M.idol,sd*9.2,15,zI+5);B(6.5,5.5,18,8,M.idol,sd*8.6,26,zI-3);
+    for(const sd of [-1,1]){B(11,9,22,8,RLG,sd*11,1.5,zI);B(5.5,19,6,8,M.idol,sd*9.2,15,zI+5);B(6.5,5.5,18,8,M.idol,sd*8.6,26,zI-3);
       B(4.2,17,4.2,8,M.idol,sd*12.2,32,zI-2,0,sd*0.12);mesh(G.sph,M.idol,g,sd*9.4,25.8,zI+5.5,2.6,2.2,2.8);
       const wm=new T.Mesh(wingGeo,M.idol);wm.scale.set(sd*26,28,10);wm.position.set(sd*5,38,zI-16);wm.rotation.y=sd*0.42;g.add(wm);}
-    B(23,4.5,9,8,M.idol,0,27,zI-1);B(17,22,11,8,M.carveFrieze,0,40,zI-10);mesh(G.sph,M.idol,g,0,42,zI-8,9.5,12,6.5);
+    B(23,4.5,9,8,M.idol,0,27,zI-1);B(17,22,11,8,RLF,0,40,zI-10);mesh(G.sph,M.idol,g,0,42,zI-8,9.5,12,6.5);
     head(0,58,zI-5,6.4,true);
     for(let i=0;i<8;i++){const x=-14+i*4,y=0.6;mesh(G.sphLo,M.lamp,g,x,y+2,zI+13,0.25,0.35,0.25);mesh(G.plane,M.glowGreen,g,x,y+2.2,zI+13.3,3,3,1);}
     vines(-12,12,24.5,zI+3,18,6);
+    /* the city around the avenue — built by no human hand: colossal monoliths leaning at wrong angles, slabs hanging overhead,
+       twisted spires and glowing cave mouths that fill the whole sky, and the risen mountain-city beyond */
+    {const rsT=HQ.tx&&HQ.tx.rlstone;const RS=rsT?std2({map:rsT,emissiveMap:rsT,emissive:new T.Color('#3a6a4a'),emissiveIntensity:0.55,color:new T.Color('#c4d8c8'),roughness:0.8,metalness:0.05}):RLG;if(rsT)own.push(RS);
+     const RSd=rsT?std2({map:rsT,emissiveMap:rsT,emissive:new T.Color('#24442e'),emissiveIntensity:0.5,color:new T.Color('#7e9484'),roughness:0.9}):RLG;if(rsT)own.push(RSd);
+     const caveG=bend(new T.MeshBasicMaterial({color:new T.Color('#020604')}));own.push(caveG);
+     for(let z=10;z>-L-260;z-=15){for(const sd of [-1,1]){const n=1+(rnd()<0.6?1:0);for(let i=0;i<n;i++){
+        const near=i===0&&z>-L+20,x=sd*(near?20+rnd()*14:46+rnd()*110),w=near?8+rnd()*10:12+rnd()*26,d=8+rnd()*22,h=near?60+rnd()*70:80+rnd()*170;
+        const m=B(w,h,d,18,rnd()<0.5?RS:RSd,x,h/2-10,z+(rnd()-.5)*8,(rnd()-.5)*0.4,(rnd()-.5)*0.8,sd*(0.04+rnd()*0.3)*(rnd()<0.75?1:-1));void m;
+        if(near&&rnd()<0.45){const cy=8+rnd()*30;mesh(G.sph,caveG,g,x-sd*(w/2+0.2),cy,z,0.8,5+rnd()*4,3.5+rnd()*3);const cg=mesh(G.plane,M.glowGreen,g,x-sd*(w/2+0.8),cy,z,9,12,1);cg.rotation.y=sd*Math.PI/2;cg.userData.keep=true;}
+        if(rnd()<0.35)B(w*0.7,h*0.35,d*0.7,18,RSd,x+(rnd()-.5)*w,h-10+h*0.12,z,(rnd()-.5)*0.6,rnd()*3,(rnd()-.5)*0.7);}}}
+     // slabs that hang across the track, propped on nothing you can see
+     for(let z=-40;z>-L+60;z-=58){const y=42+rnd()*30;B(80+rnd()*40,5+rnd()*4,12+rnd()*10,18,RSd,(rnd()-.5)*20,y,z,(rnd()-.5)*0.3,(rnd()-.5)*0.4,(rnd()-.5)*0.35);}
+     // twisted spires
+     const spireGeo=(H,R0)=>{const pts=[];for(let k=0;k<=24;k++){const t=k/24;pts.push(new T.Vector2(Math.max(0.3,R0*(1-t)*(1+0.25*Math.sin(t*19))),t*H));}const lg=new T.LatheGeometry(pts,7);
+       const p=lg.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),a=y/H*2.6,c=Math.cos(a),sn=Math.sin(a),x=p.getX(i),zz=p.getZ(i);p.setXYZ(i,x*c-zz*sn+Math.sin(y*0.05)*H*0.04,y,x*sn+zz*c);}
+       lg.computeVertexNormals();const uv=lg.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*4,uv.getY(i)*H/18);own.push(lg);return lg;};
+     for(let i=0;i<14;i++){const sd=i%2?1:-1,H=110+rnd()*200;const sp=new T.Mesh(spireGeo(H,6+rnd()*10),rnd()<0.5?RS:RSd);sp.position.set(sd*(36+rnd()*150),-12,-rnd()*(L+300));sp.rotation.set((rnd()-.5)*0.3,rnd()*3,sd*(0.05+rnd()*0.25));g.add(sp);}
+     // stepped terraces too big for human feet, far off on both sides
+     for(const sd of [-1,1])for(let k=0;k<2;k++){const X=sd*(150+rnd()*80),Z=-80-k*220-rnd()*60;for(let i=0;i<6;i++){const w=110-i*16;B(w,14,w*0.8,18,RSd,X,-6+i*14,Z,0,0.3*sd,0);}}
+     // the whole risen city beyond, rising out of the sea
+     const back=sprite('rlsky',300,0.6);if(back){back.material=back.material.clone();back.material.fog=false;back.material.depthWrite=false;own.push(back.material);back.position.set(0,-40,-L-430);back.scale.setScalar(1);back.renderOrder=-1;back.userData.keep=true;g.add(back);}}
     const im=new T.InstancedMesh(G.sphLo,M.idol,inst.length);inst.forEach((m,i)=>im.setMatrixAt(i,m));im.frustumCulled=false;g.add(im);own.push(im);
   }else if(s.sub==='city'){
     for(let z=-8;z>-L;z-=22+rnd()*10){for(const sd of [-1,1]){if(rnd()<0.12)continue;const w=12+rnd()*12,d=12+rnd()*12,h=55+rnd()*110;const X=sd*(13+w/2+rnd()*8);
@@ -3204,10 +3273,21 @@ function ghostLiner(g,X){const sh=new T.Group();sh.position.set(X,-0.6,0);sh.rot
   return {sh,flick,beam,smoke:{seed,pos:sp,geo:sg}};}
 function propGroup(az,anim){const g=new T.Group();g.position.z=-az;world.add(g);PROPS.push({g,az,anim});return g;}
 function updateProps(t){for(let i=PROPS.length-1;i>=0;i--){const p=PROPS[i];if(p.anim)p.anim(t,p);if(p.az<st.dist-40){world.remove(p.g);PROPS.splice(i,1);}}}
-function clearProps(){for(const p of PROPS)world.remove(p.g);PROPS.length=0;}
+function clearProps(){for(const p of PROPS)world.remove(p.g);PROPS.length=0;READZ.length=0;}
 const bx=(g,w,h,d,mat,x,y,z,ry)=>{const m=mesh(G.box,mat,g,x,y,z,w,h,d);if(ry)m.rotation.y=ry;return m;};
 function textMat(lines,w,h,bg,fg,font){const tex=canvasTex(w,h,(c)=>{c.fillStyle=bg;c.fillRect(0,0,w,h);c.fillStyle=fg;c.textAlign='center';c.textBaseline='middle';
   lines.forEach(([t,y,sz])=>{c.font=(font||'900 ')+sz+'px "Noto Serif TC",serif';c.fillText(t,w/2,y);});});return bend(new T.MeshBasicMaterial({map:tex,transparent:bg==='rgba(0,0,0,0)'}));}
+/* expedition writing the player must be able to read: a big weathered board in dark ink, unaffected by fog,
+   angled toward the oncoming cart; READZ slows time and turns the camera to it while it goes by */
+const READZ=[];
+function readBoard(lines,W,H,o){o=o||{};const pw=o.pw||1024,ph=Math.round(pw*H/W);
+  const tex=canvasTex(pw,ph,(c)=>{if(!o.clear){c.fillStyle=o.bg||'#ebe3cf';c.fillRect(0,0,pw,ph);}
+    if(!o.clear)for(let i=0;i<60;i++){c.fillStyle='rgba(80,60,35,'+(0.02+Math.random()*0.05).toFixed(3)+')';c.fillRect(0,Math.random()*ph,pw,1+Math.random()*4);}
+    if(!o.clear)for(let i=0;i<14;i++){c.fillStyle='rgba(70,50,30,'+(0.04+Math.random()*0.06).toFixed(3)+')';c.beginPath();c.arc(Math.random()*pw,Math.random()*ph,4+Math.random()*30,0,7);c.fill();}
+    if(!o.clear){c.strokeStyle=o.edge||'rgba(55,38,22,.8)';c.lineWidth=ph*0.035;c.strokeRect(0,0,pw,ph);}c.textAlign='center';c.textBaseline='middle';
+    lines.forEach(([t,fy,fs,col])=>{const sz=Math.round(fs*ph);c.font='900 '+sz+'px "Noto Serif TC",serif';c.lineJoin='round';c.lineWidth=sz*0.16;c.strokeStyle=o.halo||'rgba(255,250,235,.85)';c.strokeText(t,pw/2,fy*ph);c.fillStyle=col||o.fg||'#6e120a';c.fillText(t,pw/2,fy*ph);});});
+  tex.anisotropy=8;const m=bend(new T.MeshBasicMaterial({map:tex,fog:false,side:T.DoubleSide,transparent:!!o.clear,depthWrite:!o.clear}));const b=new T.Mesh(G.plane,m);b.scale.set(W,H,1);b.userData.keep=true;return b;}
+function readZone(az,x,y,from){READZ.push({az,x,y,from:from||40});}
 function signRune(col){return canvasTex(256,256,(c)=>{c.clearRect(0,0,256,256);c.strokeStyle=col;c.lineWidth=16;c.lineCap='round';c.beginPath();c.arc(128,128,96,0,Math.PI*2);c.stroke();for(const x of [92,128,164]){c.beginPath();c.moveTo(x,70);c.lineTo(x,186);c.stroke();}});}
 function phoneCard(msg,when){const c=document.createElement('canvas');c.width=640;c.height=300;const g=c.getContext('2d');g.fillStyle='#0d1113';g.fillRect(0,0,640,300);
   g.fillStyle='#8a969a';g.font='700 22px "Noto Sans TC",sans-serif';g.fillText('寄件人：我自己　　'+when,30,46);g.fillStyle='#2f7cf6';const r=22;const x=30,y=80,w=580,h=160;
@@ -3237,11 +3317,11 @@ const BEAT_FX=[
    null],
  [ (az)=>{const g=propGroup(az+60);const X=-8;const tn=mesh(G.cone,M.paint,g,X,1.8,0,3.4,3.6,3.4);tn.rotation.y=Math.PI/4;
       bx(g,0.9,0.5,0.6,M.dark,X+2.6,0.5,0);mesh(G.sphLo,M.lamp,g,X+2.6,0.82,0.2,0.06,0.06,0.06).userData.keep=true;mesh(G.plane,M.glowGold,g,X+2.6,0.9,0.5,1.4,1.4,1).userData.keep=true;
-      mesh(G.cyl,M.iron,g,X+3.6,3,-2,0.05,6,0.05);const fl=new T.Mesh(G.plane,textMat([['米斯卡托尼克大學',70,40],['南極考察隊　第三組　1963',130,30]],512,180,'#e8e2d0','#6b1a12'));fl.scale.set(3.2,1.15,1);fl.position.set(X+5.2,5.2,-2);g.add(fl);},
+      mesh(G.cyl,M.iron,g,X+3.2,3.4,-2,0.07,6.8,0.07);const fl=readBoard([['米斯卡托尼克大學',0.3,0.3],['南極考察隊　第三組　1963',0.72,0.22]],5.2,1.9);fl.position.set(X+3.2+2.7,5.6,-2);fl.rotation.y=0.35;g.add(fl);readZone(az+58,X+5.9,5.6);},
    (az)=>{const g=propGroup(az+60);for(const sd of [-1,1])mesh(G.box,M.iron,g,sd*4.2,trackH(az+60)+3.5,0,0.3,7,0.3);mesh(G.box,M.iron,g,0,trackH(az+60)+6.8,0,8.8,0.3,0.3);
-      const b=new T.Mesh(G.plane,textMat([['不要往下看',95,92],['也不要往後看，你會看見你自己',190,30]],800,240,'#efeadf','#a0160e'));b.scale.set(6.4,1.9,1);b.position.set(0,trackH(az+60)+5.4,0.1);g.add(b);},
+      const b=readBoard([['不要往下看',0.36,0.42,'#a0160e'],['也不要往後看，你會看見你自己',0.8,0.2,'#3a1a10']],7.4,2.6);b.position.set(0,trackH(az+60)+5.2,0.1);g.add(b);readZone(az+60,0,trackH(az+60)+5.2,46);},
    null,
-   (az)=>{const g=propGroup(az+65);const X=-9;bx(g,1.2,14,40,M.concrete,X,5,0);const t=new T.Mesh(G.plane,textMat([['第三組到此',150,120],[tomorrowStr(),290,64]],900,380,'#8e8e86','#2a2622','900 '));t.scale.set(14,5.9,1);t.position.set(X+0.62,6,0);t.rotation.y=Math.PI/2;g.add(t);}],
+   null],
  [ (az)=>{const g=propGroup(az+70);const tex=canvasTex(256,512,(c)=>{c.fillStyle='#1a1e22';c.fillRect(0,0,256,512);for(let y=10;y<500;y+=42)for(let x=12;x<250;x+=48){c.fillStyle=Math.random()<0.7?'#e8c070':'#2a2e34';c.fillRect(x,y,34,28);
         if(Math.random()<0.5){c.fillStyle='#14100a';c.beginPath();c.arc(x+17,y+10,4,0,7);c.fill();c.fillRect(x+12,y+14,10,14);}}});const wm=bend(new T.MeshBasicMaterial({map:tex}));
       for(const sd of [-1,1])for(let k=0;k<3;k++){const h=26+k*9;const m=new T.Mesh(G.box,wm);m.scale.set(10,h,10);m.position.set(sd*15,h/2-2,-k*22);g.add(m);}},
@@ -3259,7 +3339,7 @@ const BEAT_FX=[
         const fade=1-ss((k-24)/4);sg.visible=fade>0.01;moon.material.opacity*=fade;hm.opacity*=fade;if(eye)eye.material.opacity*=fade;
         if(k>29){skyRig.remove(sg);g.userData.done=1;}});void g;},
    (az)=>{const g=propGroup(az+60);const arc=new T.TorusGeometry(6,0.4,8,18,Math.PI);for(let k=0;k<6;k++){const r=new T.Mesh(arc,M.bone);r.position.set(0,trackH(az+60),-k*6);r.scale.set(1,1.2,1);g.add(r);}
-      mesh(G.cyl,M.iron,g,4.6,1.4,6,0.08,2.8,0.08);const pl=new T.Mesh(G.plane,textMat([['考察隊第三組',60,38],['最後的營地',112,38],['1963.3.11',165,34]],400,210,'#4a3a2c','#e8dcc0'));pl.scale.set(2,1.05,1);pl.position.set(4.6,2.8,6.06);g.add(pl);},
+      mesh(G.cyl,M.iron,g,4.6,1.6,6,0.08,3.2,0.08);const pl=readBoard([['考察隊第三組',0.24,0.22],['最後的營地',0.55,0.27,'#2a1a10'],['1963.3.11',0.84,0.17]],3.8,2);pl.position.set(4.6,3.1,6.1);pl.rotation.y=-0.45;g.add(pl);readZone(az+66,4.6,3.1);},
    (az)=>{const k={x:pick([-1,1])*38,t:0,roared:false};k.g=krakenMesh(k);world.add(k.g);krakens.push(k);}],
  [ (az)=>{const g=propGroup(az+60);const tex=canvasTex(1024,512,(c)=>{c.fillStyle='#5a7a62';c.fillRect(0,0,1024,512);for(let i=0;i<4000;i++){c.fillStyle=`rgba(0,0,0,${Math.random()*0.12})`;c.fillRect(Math.random()*1024,Math.random()*512,3,3);}
         c.strokeStyle='#22301f';c.lineWidth=14;c.fillStyle='#3a5040';c.beginPath();c.moveTo(330,300);c.lineTo(700,300);c.lineTo(660,420);c.lineTo(370,420);c.closePath();c.fill();c.stroke();
@@ -3283,7 +3363,7 @@ const BEAT_FX=[
       var bm=bend(new T.MeshBasicMaterial({color:new T.Color('#fff0c0'),transparent:true,opacity:0.5,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));const cone=new T.Mesh(new T.ConeGeometry(4,26,16,1,true),bm);cone.rotation.x=Math.PI/2*1.08;cone.position.set(X+1.5,h+3.4,13);cone.userData.keep=true;g.add(cone);}]
 ];
 /* where the camera turns to while each chapter line is read: [x, y, metres ahead of the cart, far] */
-const BEAT_FOCUS=[[[36,16,105],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[-8.4,6,65]],[[14,16,70],[-28,118,380,1],[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
+const BEAT_FOCUS=[[[36,16,105],[0,0.2,34],null,null],[[5.6,2.6,65],null,[4.4,2,49],null],[[-6,4.2,60],null,null,[0,9,60]],[[14,16,70],[-28,118,380,1],[4.6,2.8,54],null],[[-8.4,5,60],[3.2,2,55],null,[-8,3.4,95,1]]];
 const BEAT_CV=[[null,null,()=>phoneCard('不管發生什麼事，都不要讓礦車停下來。','明天 23:58'),null],[null,null,null,null],[null,null,null,null],[null,null,null,null],
   [null,null,()=>pageCard(['孩子，對不起，包裹是我寄的。','我開了六十年，真的太累了。','只要礦車不停，祂就不會醒。','現在，換你了。']),null]];
 
@@ -3406,7 +3486,7 @@ function spawn(az){
   if(az<(st.calmUntil||0)){if(rnd()<0.5)gearLine(pick(en),az,4);st.nextSpawn=az+20;return;}
   if(nearType(az,'cliff',0)||nearType(az,'seatube',8)||isSet(az,10)){if(rnd()<0.55)gearLine(pick(en),az,6);st.nextSpawn=az+24;return;}
   if(nearType(az,'coaster',0)){if(rnd()<0.65)gearLine(pick(en),az,6);st.nextSpawn=az+20;return;}
-  {const fc=nearType(az,'factory',0);if(fc&&az>fc.az0+40&&az<fc.az1-20){if(rnd()<0.55)add({t:'arm',az});else if(rnd()<0.6)gearLine(pick(en),az,5);else add({t:'barrel',lane:pick(en),az});st.nextSpawn=az+26+rnd()*8;return;}}
+  {const fc=nearType(az,'factory',0);if(fc&&az>fc.az0+40&&az<fc.az1-20){const r=rnd();if(r<0.24)add({t:'mechA',lane:pick(en),az});else if(r<0.46)add({t:'mechB',lane:pick(en),az});else if(r<0.64)add({t:'mechC',az});else if(r<0.82&&en.some(L=>L))add({t:'mechD',lane:pick(en.filter(L=>L)),az});else if(r<0.9)add({t:'arm',az});else gearLine(pick(en),az,5);st.nextSpawn=az+24+rnd()*8;return;}}
   const lp=nearType(az,'leap',4);if(lp){if(!lp.geared){lp.geared=1;const L=pick([-1,0,1]);for(let i=0;i<7;i++)add({t:'gear',lane:L,az:lp.az0+62+i*4});}st.nextSpawn=lp.az1+12;return;}
   const zb=nearType(az,'zone',0);if(zb&&zb.sub==='black'&&rnd()<0.5){st.nextSpawn=az+22;return;}
   if(nearType(az,'weave',0)){if(rnd()<0.5)gearLine(pick(en),az,3);st.nextSpawn=az+16;return;}
@@ -3435,15 +3515,15 @@ function spawn(az){
   const single=['shark','mine','tentacle','barrel','croc','gap','whirl','deepone'];
   if(single.includes(t)&&n>=3&&(ch?st.chapter>=2&&cd>400:d>1000)&&rnd()<0.3){const jt=low?pick(['barrel','croc','gap']):pick(['barrel','gap']);add(jt==='gap'?{t:jt,lane:lanes[1],az,len:3.4}:{t:jt,lane:lanes[1],az});}
   if(n>=2&&rnd()<.35&&single.concat(['gears','wrench']).includes(t))gearLine(lanes[n-1],az-3,3);
-  st.nextSpawn=az+(ch?Math.max(17,33-st.chapter*2.4-cd*0.004):Math.max(18,36-d*0.003))*(0.9+rnd()*0.5);
+  st.nextSpawn=az+(ch?Math.max(14,28-st.chapter*2.2-cd*0.005):Math.max(15,31-d*0.003))*(0.85+rnd()*0.45);
 }
 
 /* ================= per-frame obstacle placement & animation ================= */
 const serpX=o=>Math.sin(st.time*1.4+o.ph)*1.7;
-const OB_NAME={beam:'倒塌的桅杆　↓ 往下滑蹲低',arm:'機械手臂　↓ 往下滑蹲低',bats:'蝙蝠群　↓ 往下滑蹲低',sweep:'橫掃觸手　↑ 往上滑跳過'};
+const OB_NAME={beam:'倒塌的桅杆　↓ 往下滑蹲低',arm:'機械手臂　↓ 往下滑蹲低',mechA:'機械章魚無人機　換軌或蹲低',mechB:'爬行機械克蘇魯　↑ 跳過',mechC:'機械魚雷橫衝過來　↓ 蹲低',mechD:'機械克蘇魯巨像　↔ 換軌',bats:'蝙蝠群　↓ 往下滑蹲低',sweep:'橫掃觸手　↑ 往上滑跳過'};
 function placeObs(o){
   const z=o.az-st.dist,g=o.g,p=o.parts||{},t=st.time;const x=o.lane!=null?o.lane*LANE:0;const th=trackH(o.az);
-  if(!o.named&&OB_NAME[o.t]&&z<40&&z>0&&st.mode==='play'){o.named=1;toast(OB_NAME[o.t],'warn',1500);}
+  if(!o.named&&OB_NAME[o.t]&&z<40&&z>0&&st.mode==='play'){o.named=1;const nt=st.namedT||(st.namedT={});if(!o.t.startsWith('mech')||!nt[o.t]){nt[o.t]=1;toast(OB_NAME[o.t],'warn',1500);}}
   if(o.t==='deepone'||o.t==='serpent'||o.t==='croc'||o.t==='tentacle'||o.t==='shark')g.visible=z>1.4||!!o.chase;
   switch(o.t){
     case 'barrel':{const raised=th>0.3;g.position.set(x,th,-o.az);p.b.position.y=raised?0:Math.sin(t*3+o.az)*0.04;p.b.rotation.z=raised?0:Math.sin(t*2+o.az)*0.06;g.children[1].visible=!raised;break;}
@@ -3453,6 +3533,12 @@ function placeObs(o){
     case 'arm':{g.position.set(0,th,-o.az);const k=ss((z-7)/16);p.piv.rotation.y=o.sd*k*1.35;p.piv.position.y=Math.sin(t*20)*0.03;if(!o.wh&&z<22){o.wh=1;if(AC)noiseHit(AC.currentTime,'bandpass',1200,0.3,0.4,4);}break;}
     case 'gear':g.position.set(x,th,-o.az);p.m.rotation.y=t*3+o.az;p.m.position.y=0.9+Math.sin(t*4+o.az)*0.08;g.visible=!o.got;break;
     case 'wrench':g.position.set(x,th,-o.az);p.m.rotation.set(0,t*2.5,0.6);g.visible=!o.got;break;
+    case 'mechA':{g.position.set(x,th,-o.az);const dv=ss((34-z)/14);p.b.position.y=1.05+(1-dv)*14+Math.sin(t*2.6+o.az)*0.16;if(!o.dv&&dv>0.05&&z>0){o.dv=1;if(AC&&!playS('jump',0.7,0.7))noiseHit(AC.currentTime,'bandpass',700,0.3,0.4);}p.b.rotation.z=Math.sin(t*1.7+o.az)*0.06;break;}
+    case 'mechB':{const sdB=o.lane>0?1:o.lane<0?-1:(hsh(o.az)<0.5?-1:1);const kin=ss((36-z)/16);g.position.set(x+sdB*(1-kin)*9+Math.sin(t*9+o.az)*0.12,th,-o.az);p.b.position.y=Math.abs(Math.sin(t*14+o.az))*0.06;p.b.rotation.z=Math.sin(t*11+o.az)*0.05;if(!o.cr&&z<18&&z>0){o.cr=1;if(AC)noiseHit(AC.currentTime,'bandpass',2400,0.25,0.35,6);}break;}
+    case 'mechC':{const k=Math.max(0,Math.min(1.4,(24-z)/(24-PZ)));g.position.set(o.sd*15*(1-k),th,-o.az);p.b.position.y=0.9+Math.sin(t*6)*0.05;p.b.rotation.z=Math.sin(t*5)*0.04;
+      if(!o.wh&&z<22&&z>0){o.wh=1;if(!playS('jump',0.8,0.55))sfx.screech();}break;}
+    case 'mechD':{g.position.set(x+(o.lane||1)*1.25,th,-o.az);const st2=Math.sin(t*5.2+o.az);p.b.position.y=Math.max(0,st2)*0.18;p.b.rotation.z=Math.sin(t*2.6+o.az)*0.035;
+      if(z<34&&z>0&&st2<-0.97&&!o.stp){o.stp=1;st.shake=Math.max(st.shake,0.25*(1-z/34));if(AC&&!playS('land',0.5*(1-z/40),0.5))noiseHit(AC.currentTime,'lowpass',160,0.4,0.6);}else if(st2>0)o.stp=0;break;}
     case 'deepone':{g.position.set(x,0,-o.az);const gr=ss((30-z)/9);p.b.position.y=-3.9+gr*3.9+Math.sin(t*3+o.az)*0.05;p.b.rotation.z=Math.sin(t*4+o.az)*0.08*(p.sp?0.3:1);if(p.sp)pose(p.sp,'deepone',t,{act:gr,near:ss((15-z)/11)});if(!o.sp&&gr>0.05){o.sp=1;splash(x,z,24);}break;}
     case 'bottle':g.position.set(x,th,-o.az);p.b.rotation.y=t*1.5;p.b.position.y=0.95+Math.sin(t*3+o.az)*0.08;g.visible=!o.got;break;
     case 'sign':g.position.set(x,th,-o.az);p.m.rotation.y=t*2;p.m.position.y=0.95+Math.sin(t*3)*0.08;g.visible=!o.got;break;
@@ -3496,15 +3582,21 @@ function placeObs(o){
 
 /* ================= actions / flow ================= */
 function moveLane(dir){if(st.mode!=='play'||st.paused)return;if(Math.cos(st.spinRoll||0)<0)dir=-dir;const nl=Math.max(-1,Math.min(1,st.lane+dir));
-  if(nl===st.lane)return;if(!laneOn(nl,st.dist+PZ)){sfx.clunk();st.shake=Math.max(st.shake,0.2);return;}st.lane=nl;}
-function jump(){if(st.mode!=='play'||st.paused)return;if(st.jumpY<=0.01){st.jumpV=6.3;st.jumpY=0.001;st.duckT=0;sfx.jump();}}
-function duck(){if(st.mode!=='play'||st.paused)return;st.duckT=0.75;if(st.jumpY>0)st.jumpV=Math.min(st.jumpV,-6);}
+  if(nl===st.lane)return;if(!laneOn(nl,st.dist+PZ)){sfx.clunk();st.shake=Math.max(st.shake,0.2);return;}st.lane=nl;st.laneT=st.time;st.laneFrom=st.lane-dir;}
+function jump(){if(st.mode!=='play'||st.paused)return;if(st.jumpY<=0.01){st.jumpV=6.3;st.jumpY=0.001;st.duckT=0;st.jumpAt=st.time;sfx.jump();}}
+function duck(){if(st.mode!=='play'||st.paused)return;st.duckT=0.75;st.duckAt=st.time;if(st.jumpY>0)st.jumpV=Math.min(st.jumpV,-6);}
 const lens=[];
 function lensDrops(n){for(let i=0;i<n;i++)lens.push({x:rnd(),y:rnd()*0.9,r:6+rnd()*22,vy:0.02+rnd()*0.08,life:1.5+rnd()*2});}
 function toast(msg,kind,ms){const t=$('toast');t.textContent=msg;t.className='toast on '+(kind||'');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),ms||900);}
 function snapLane(){const az=st.dist+PZ+2;const opts=[-1,0,1].filter(L=>laneOn(L,az));if(!opts.length||opts.includes(st.lane))return;
   opts.sort((a,b)=>Math.abs(a-st.lane)-Math.abs(b-st.lane));st.lane=opts[0];}
-function hit(o,cause,boom){if(o)o.wasHit=true;
+/* thrill: dodging something at the last instant scores a combo; three in a row kicks the cart into a short boost */
+const NEARMISS={barrel:'jump',croc:'jump',shark:'lane',tentacle:'lane',deepone:'lane',mine:'lane',beam:'duck',arm:'duck',bats:'duck',sweep:'jump',serpent:'jump',mechA:'lane',mechB:'jump',mechC:'duck',mechD:'lane'};
+function nearMiss(o){st.combo=(st.combo||0)+1;st.comboT=4;const pts=30*st.combo;st.bonus+=pts;st.fovKick=Math.max(st.fovKick||0,1);st.shake=Math.max(st.shake,0.18);
+  if(AC&&!playS('jump',0.6,1.5))noiseHit(AC.currentTime,'highpass',3000,0.2,0.3);
+  if(st.combo>=3&&!(st.boostT>0)){st.boostT=3.2;toast('狂飆！連續閃過 ×'+st.combo+'　+'+pts,'good',1500);if(AC){const t=AC.currentTime;[523,659,784,1046].forEach((f,i)=>tone(t+i*0.06,'sawtooth',f,f*1.02,0.06,0.25));}}
+  else toast((st.combo>1?'驚險閃過 ×'+st.combo:'驚險閃過！')+'　+'+pts,'good',900);}
+function hit(o,cause,boom){if(o)o.wasHit=true;st.combo=0;st.boostT=0;
   if(st.inv>0)return;
   if(st.shield>0){st.inv=0.6;st.green=1;st.shake=Math.max(st.shake,0.3);if(AC){const t=AC.currentTime;tone(t,'sine',880,440,0.15,0.3);tone(t,'triangle',1320,660,0.08,0.3);}return;}st.hearts--;st.inv=2.2;st.shake=0.7;st.slow=0.5;st.red=1;sfx.hit();if(boom)sfx.boom();
   try{navigator.vibrate&&navigator.vibrate(140)}catch(e){}
@@ -3520,7 +3612,7 @@ function resetTrack(){segs=[];segEnd=0;lastType='normal';while(segEnd<st.dist+VI
 function reset(){
   clearWorld();
   Object.assign(st,{dist:80,speed:12,lane:0,camX:0,camH:0,jumpY:0,jumpV:0,duck:0,duckT:0,hearts:MAXH,inv:0,shake:0,gears:0,bonus:0,slow:1,
-    nextSpawn:150,red:0,bump:0,paused:false,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
+    nextSpawn:150,red:0,bump:0,paused:false,combo:0,comboT:0,boostT:0,fovKick:0,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
   resetTrack();spawnWreck(165,0.75);wreckTimer=150;if(cartW)cartW.visible=false;
   for(let i=0;i<TREE_N;i++)placeTree(i,105+rnd()*VIEW);
   for(const f of fins)f.az=120+rnd()*100;
@@ -3573,10 +3665,13 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   else if(cs&&cs.type==='crater'){st.slow=1;const u=st.dist+PZ-cs.az0;const tg=(u>190&&u<530)?14:23;st.speed+=(tg-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.type==='maw'){st.slow=1;st.speed+=(15-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.spd&&playing){st.slow=1;st.speed+=(cs.spd-st.speed)*Math.min(1,dt*1.2);}
-  else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.005):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
-  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.5:1;const F=st.focus;
+  else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.0075):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);if(st.boostT>0)target*=1.28;st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
+  for(let i=READZ.length-1;i>=0;i--){const R=READZ[i],z=R.az-st.dist;if(z<-3){READZ.splice(i,1);continue;}if(playing&&z<R.from&&z>2&&!st.focus)st.focus={x:R.x,y:R.y,az:R.az,t0:st.time,read:1};}
+  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.8:1;const F=st.focus;
+   if(F&&F.read&&playing){const dzT=F.az-st.dist;if(dzT<36&&dzT>-1)tk=Math.min(tk,quickOn?0.6:0.4);}
    if(F&&slowOK){const dzT=F.az-st.dist;const near=Math.abs(F.x)>2?(dzT<(F.far?24:9)&&dzT>-1):(dzT<16&&dzT>2);tk=near?0.03:(dzT>14?1:0.45);}
    if(F&&(F.az-st.dist<-2.5||(Math.abs(F.x)<=2&&F.az-st.dist<6)))st.focus=null;
+   if(st.comboT>0){st.comboT-=dt;if(st.comboT<=0)st.combo=0;}if(st.boostT>0)st.boostT-=dt;st.fovKick=Math.max(0,(st.fovKick||0)-dt*2.2);
    st.narrK=(st.narrK||1)+(tk-(st.narrK||1))*Math.min(1,dt*1.6);st.focusW=(st.focusW||0)+(((st.focus&&playing)?1:0)-(st.focusW||0))*Math.min(1,dt*1.8);}
   const dz=st.speed*dt*(st.narrK||1);st.dist+=dz;
   if(cs!==st.lastSeg){st.lastSeg=cs;if(cs&&playing){if(cs.msg)toast(cs.msg,'warn',2000);
@@ -3645,6 +3740,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
     for(const o of st.obs){if(o.done)continue;const z=o.az-st.dist,pz=z+dz+(o.t==='tsunami'?o.v*dt:0);
       if(o.t==='gap'||o.t==='whirl'){if(z<=PZ&&z+o.len>=PZ&&pl===o.lane&&st.jumpY<0.12){o.done=true;hit(o,o.t==='gap'?'整台車卡進斷軌':'被漩渦捲進河底');}else if(z+o.len<PZ)o.done=true;continue;}
       if(!(pz>PZ&&z<=PZ))continue;o.done=true;const air=st.jumpY;
+      if(NEARMISS[o.t])o.nmCheck=1;
       switch(o.t){
         case 'barrel':if(pl===o.lane&&air<0.72)hit(o,'正面撞上漂流油桶');break;
         case 'croc':if(pl===o.lane&&air<0.55)hit(o,'被鱷魚一口咬住車輪');break;
@@ -3654,6 +3750,10 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
         case 'mine':if(pl===o.lane){burst(o.lane*LANE,0.6,2.5,60);st.flash=0.6;hit(o,'撞上漂流水雷',true);}break;
         case 'beam':if(st.duck<0.45)hit(o,'一頭撞上倒塌的桅杆');break;
         case 'arm':if(st.duck<0.45)hit(o,'被機械手臂掃了下來');break;
+        case 'mechA':if(pl===o.lane&&st.duck<0.45)hit(o,'被機械章魚的觸手捲住');break;
+        case 'mechB':if(pl===o.lane&&air<0.62)hit(o,'撞上爬行的機械克蘇魯');break;
+        case 'mechC':if(st.duck<0.45)hit(o,'被機械魚雷咬了一口');break;
+        case 'mechD':if(pl===o.lane){st.shake=Math.max(st.shake,0.8);hit(o,'被機械克蘇魯巨像一腳踩住');}break;
         case 'bats':if(st.duck<0.45)hit(o,'被蝙蝠群糊了一臉');break;
         case 'sweep':if(air<0.6)hit(o,'被橫掃的觸手絆倒');break;
         case 'serpent':if(o.lane!=null?pl===o.lane:(Math.abs(serpX(o)-st.camX)<1.15&&air<0.5))hit(o,'被海蛇纏住車軸');break;
@@ -3664,6 +3764,9 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
         case 'bottle':if(pl===o.lane&&st.duck<0.8){o.got=true;sfx.gear();st.bonus+=40;showStory(nextStory(false));}break;
         case 'sign':if(pl===o.lane&&st.duck<0.8){o.got=true;st.hearts=MAXH;renderPips();st.shield=8;sfx.heal();if(AC){const t=AC.currentTime;[660,880,1320].forEach((f,i)=>tone(t+0.1+i*0.09,'sine',f,f*1.01,0.1,0.6));}toast(st.signTold?'✶ 舊印：血量補滿・8 秒無敵':'✶ 撿到舊印！血量全滿，接下來 8 秒什麼都傷不了你','good',st.signTold?1600:2600);st.signTold=1;}break;
       }}
+    for(const o of st.obs){if(!o.nmCheck||o.nmDone)continue;o.nmDone=1;if(o.wasHit||st.inv>0.05)continue;const k=NEARMISS[o.t],tl=st.time-(st.laneT||-9),tj=st.time-(st.jumpAt||-9),td=st.time-(st.duckAt||-9);
+      let close=false;if(k==='lane')close=o.lane!=null&&tl<0.55&&o.lane===st.laneFrom;else if(k==='jump')close=(tj<0.6)||(o.lane!=null&&tl<0.5&&o.lane===st.laneFrom);else if(k==='duck')close=td<0.55||(o.lane!=null&&tl<0.5&&o.lane===st.laneFrom);
+      if(close)nearMiss(o);}
     // long single-track set pieces (the cliff ledge, the fork): steer the cart over in good time instead of slamming into the end board
     for(const e of laneEnds()){const z=e.az-st.dist;if(z>4&&z<34&&st.lane===e.L&&playing){const nx=segAt(e.az+1);if(nx&&(nx.msg||nx.type==='cliff'||nx.type==='fork')){const opts=[-1,0,1].filter(L=>laneOn(L,e.az+2));if(opts.length){opts.sort((a,b)=>Math.abs(a-st.lane)-Math.abs(b-st.lane));const tl=opts[0];if(Math.abs(tl-st.lane)>1)st.lane+=Math.sign(tl-st.lane);else st.lane=tl;if(!st.autoT||st.time-st.autoT>3){st.autoT=st.time;toast(nx.msg||'只剩一條軌道，礦車自己切了過去','warn',1600);}}}}}
     for(const e of laneEnds()){const z=e.az-st.dist;if(z<=PZ&&z+dz>PZ&&pl===e.L){sfx.clunk();st.shake=Math.max(st.shake,0.5);st.slow=0.6;st.red=0.4;toast('差點衝出軌道！','warn');snapLane();}}
@@ -3732,6 +3835,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
 const BASE_PITCH={v:0.17};
 function render(){
   world.position.z=st.dist;
+  {const sp=st.mode==='play'?Math.max(0,st.speed-16)/14:0;const fv=BASE_FOV.v*(1+Math.min(0.16,sp*0.1)+(st.boostT>0?0.07:0)+(st.fovKick||0)*0.05);if(Math.abs(camera.fov-fv)>0.05){camera.fov+=(fv-camera.fov)*0.12;camera.updateProjectionMatrix();}}
   const sh=st.shake*st.shake*0.12+st.surge*st.surge*0.03;
   const camY=1.5+st.camH+st.jumpY-st.duck*0.72;
   camera.position.set(st.camX+(rnd()-.5)*sh+Math.sin(st.time*31)*st.speed*0.0006,camY+(rnd()-.5)*sh+Math.sin(st.time*23)*st.speed*0.0008,0);
@@ -3769,7 +3873,7 @@ function render(){
   skyU.uZen.value.copy(ATM.zen);skyU.uHor.value.copy(ATM.hor);skyU.uDark.value.copy(ATM.cd);skyU.uLight.value.copy(ATM.cl);skyU.uStars.value=ATM.stars;
   waterU.uZen.value.copy(ATM.zen);waterU.uHor.value.copy(ATM.hor);waterU.uMurk.value.copy(ATM.murk);waterU.uDeep.value.copy(ATM.deep);
   if(M.carveGlyph){const pulse=0.55+0.45*Math.sin(st.time*1.7);M.carveGlyph.emissiveIntensity=(0.35+0.9*pulse)*(0.6+st.mood*0.8);M.rune.color.setRGB(0.15,1,0.6).multiplyScalar(0.4+pulse*0.9);M.carveEye.emissiveIntensity=0.6+0.6*pulse;}
-  const fd=FOGD*ATM.fogk*(1-0.62*ss(st.camH/70));scene.fog.density=fd;waterU.uFogD.value=fd;
+  const fd=FOGD*ATM.fogk*(1-0.62*ss(st.camH/70))*(1-0.55*(st.mood||0));scene.fog.density=fd;waterU.uFogD.value=fd;
   for(const m of M.envMats)m.envMapIntensity=(1-dk*0.85);
   skyU.uTime.value=st.time;skyU.uFlash.value=fl;fallU.uTime.value=st.time;
   waterU.uTime.value=st.time;waterU.uDist.value=st.dist;waterU.uFlash.value=fl;waterU.uCam.value.copy(camera.position);waterU.uDark.value=dk*0.6;
@@ -3795,10 +3899,18 @@ function render(){
   if(st.shield>0||st.green>0){const a=Math.min(1,st.shield)*(0.22+0.1*Math.sin(st.time*5))+st.green*0.4;const gg=fctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.3,W/2,H/2,Math.max(W,H)*0.72);
     gg.addColorStop(0,'rgba(60,255,170,0)');gg.addColorStop(1,`rgba(60,255,170,${a})`);fctx.fillStyle=gg;fctx.fillRect(0,0,W,H);}
   if(st.red>0){const rg=fctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.2,W/2,H/2,Math.max(W,H)*0.7);rg.addColorStop(0,'rgba(200,40,20,0)');rg.addColorStop(1,`rgba(200,40,20,${st.red*0.55})`);fctx.fillStyle=rg;fctx.fillRect(0,0,W,H);}
-  if(st.mode==='intro')drawIntro2D();else drawDanger();
+  if(st.mode==='intro')drawIntro2D();else{drawSpeed();drawDanger();}
 }
-const DANGER={shark:['↔ 換軌',2.2],tentacle:['↔ 換軌',3],mine:['↔ 換軌',0.6],deepone:['↔ 換軌',2.6],croc:['↑ 跳',0.6],serpent:['↑ 跳',1],sweep:['↑ 跳',0.6],whirl:['↑ 跳',0.2],gap:['↑ 跳',0.2],barrel:['↑ 跳',0.6],beam:['↓ 蹲',1.4],arm:['↓ 蹲',1.4],bats:['↓ 蹲',1.6]};
+const DANGER={shark:['↔ 換軌',2.2],tentacle:['↔ 換軌',3],mine:['↔ 換軌',0.6],deepone:['↔ 換軌',2.6],croc:['↑ 跳',0.6],serpent:['↑ 跳',1],sweep:['↑ 跳',0.6],whirl:['↑ 跳',0.2],gap:['↑ 跳',0.2],barrel:['↑ 跳',0.6],beam:['↓ 蹲',1.4],arm:['↓ 蹲',1.4],mechA:['↔ 或 ↓',3.9],mechB:['↑ 跳',2.1],mechC:['↓ 蹲',2.8],mechD:['↔ 換軌',7.6],bats:['↓ 蹲',1.6]};
 const _dv=new T.Vector3();
+const SPL=[...Array(46)].map(()=>[Math.random()*6.283,Math.random(),Math.random()]);
+function drawSpeed(){if(st.mode!=='play'||st.paused)return;const k=Math.min(1,Math.max(0,(st.speed-19)/10)+(st.boostT>0?0.55:0)+(st.fovKick||0)*0.4);if(k<0.04)return;
+  const cx=W/2,cy=H*0.42,R=Math.hypot(W,H)*0.55;fctx.save();fctx.lineCap='round';
+  for(const q of SPL){q[1]+=0.045+st.speed*0.0016;if(q[1]>1){q[1]=0.25+Math.random()*0.2;q[0]=Math.random()*6.283;q[2]=Math.random();}
+    const r0=R*q[1],r1=r0+R*(0.06+0.1*k);const c=Math.cos(q[0]),sn=Math.sin(q[0]);fctx.strokeStyle=st.boostT>0?'rgba(255,200,120,'+(0.22*k*q[1]).toFixed(3)+')':'rgba(235,240,255,'+(0.18*k*q[1]).toFixed(3)+')';fctx.lineWidth=1+q[2]*2.2;
+    fctx.beginPath();fctx.moveTo(cx+c*r0,cy+sn*r0*0.72);fctx.lineTo(cx+c*r1,cy+sn*r1*0.72);fctx.stroke();}
+  if(st.boostT>0){const gr=fctx.createRadialGradient(cx,cy,R*0.35,cx,cy,R);gr.addColorStop(0,'rgba(255,120,40,0)');gr.addColorStop(1,'rgba(255,90,20,'+(0.22*Math.min(1,st.boostT)).toFixed(3)+')');fctx.fillStyle=gr;fctx.fillRect(0,0,W,H);}
+  fctx.restore();}
 function drawDanger(){if(st.mode!=='play')return;const pl=Math.round(st.camX/LANE);
   for(const o of st.obs){const info=DANGER[o.t];if(!info||o.done)continue;const z=o.az-st.dist;if(z<9||z>58)continue;
     const glob=o.lane==null;const info2=(o.t==='serpent'&&!glob)?['↔ 換軌',2]:info;if(!glob&&o.lane!==pl)continue;if(o.t==='serpent'&&o.lane==null&&Math.abs(serpX(o)-st.camX)>1.6)continue;
@@ -3808,10 +3920,11 @@ function drawDanger(){if(st.mode!=='play')return;const pl=Math.round(st.camX/LAN
     fctx.lineWidth=1.5;fctx.beginPath();fctx.arc(sx,sy,r*1.35+Math.sin(st.time*12)*3,0,7);fctx.stroke();
     fctx.font='900 15px "Noto Sans TC",sans-serif';fctx.textAlign='center';fctx.lineWidth=4;fctx.strokeStyle=`rgba(0,0,0,${a*0.8})`;fctx.fillStyle=`rgba(255,220,200,${a})`;
     fctx.strokeText(info2[0],sx,sy+r+20);fctx.fillText(info2[0],sx,sy+r+20);}}
+const BASE_FOV={v:70};
 function resize(){
   W=window.innerWidth;H=window.innerHeight;DPR=Math.min(window.devicePixelRatio||1,lowQ?1:1.6);
   renderer.setPixelRatio(DPR);renderer.setSize(W,H,false);fx.width=Math.round(W*DPR);fx.height=Math.round(H*DPR);fctx.setTransform(DPR,0,0,DPR,0,0);
-  const F=Math.min(W,H*0.78)*1.12;camera.fov=2*Math.atan((H/2)/F)*180/Math.PI;camera.aspect=W/H;camera.updateProjectionMatrix();
+  const F=Math.min(W,H*0.78)*1.12;camera.fov=BASE_FOV.v=2*Math.atan((H/2)/F)*180/Math.PI;camera.aspect=W/H;camera.updateProjectionMatrix();
   BASE_PITCH.v=Math.atan((H*0.1)/F);
 }
 
@@ -3960,8 +4073,9 @@ async function loadHQ(){
     fetch('assets/models_pack.json').then(r=>{if(!r.ok)throw new Error('models');return r.json();}).then(j=>{const raw=atob(j.data),u8=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u8[i]=raw.charCodeAt(i);return [j.index,u8.buffer];})]).then(([t,m])=>[t,m[0],m[1]]);
   names.forEach((n,i)=>HQ[n]={c:tex[i*2],n:tex[i*2+1]});
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
+  HQ.tx={};await Promise.all(['alienwall','rlstone'].map(n=>load('assets/t_'+n+'.jpg',true).then(t=>{HQ.tx[n]=t;}).catch(()=>{})));
   HQ.mur=[];await Promise.all([1,2,3,4,5,6].map(i=>load('assets/mural'+i+'.jpg',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.mur[i-1]=t;}).catch(()=>{})));
-  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
+  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead','mech0','mech1','mech2','mech3','rlsky'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
     g.setAttribute('position',new T.BufferAttribute(new Float32Array(bin,offset,count*3),3));g.setAttribute('normal',new T.BufferAttribute(new Float32Array(bin,offset+count*12,count*3),3));
     g.setAttribute('uv',new T.BufferAttribute(new Float32Array(bin,offset+count*24,count*2),2));g.computeBoundingSphere();HQ.geo[k]=g;}
