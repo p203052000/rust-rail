@@ -501,7 +501,7 @@ function splitParts(text){const out=[];for(const p of text.replace(/[「」『�
   for(let i=0;i<out.length-1;i++){if(out[i].length<9){out[i+1]=out[i]+out[i+1];out.splice(i,1);i--;}}return out.length?out:[text];}
 let curN=null;
 function narrate(kicker,text,jid,cv,focus){if(jid){journal.add(jid);saveJournal();updateJournalCount();}
-  NQ.push({kicker,text,cv,focus});if(st.mode==='play'&&!quickOn){const est=(voDur(text)||text.length*0.23)*0.5+1;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
+  NQ.push({kicker,text,cv,focus});if(st.mode==='play'&&!quickOn){const est=(voDur(text)||text.length*0.23)+2;st.calmUntil=Math.max(st.calmUntil||0,st.dist+st.speed*est);}
   if(!narrBusy&&!voBusy())nextNarr();}
 function narrateSilent(kicker,text){NQ.unshift({kicker,text,silent:true});narrBusy=false;nextNarr();}
 function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&!st.focus.far&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
@@ -509,7 +509,7 @@ function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.a
   $('storyK').textContent=n.kicker;$('storyT').textContent=quickOn?n.text:n.parts[0];n.pi=0;$('story').hidden=false;
   const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(9,Math.max(3.5,n.text.length*0.11)):(d?d+1.4:est);
   if(!n.silent&&!quickOn)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
-  if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(80,st.speed*storyTimer*0.45));
+  if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
     for(const o of st.obs){const z=o.az-st.dist;if(z>42&&!CALM_KEEP[o.t])o.kill=1;}}}
 /* unlock audio playback on the first tap (mobile browsers) */
 addEventListener('pointerdown',function unl(){try{if(!VO.au)VO.au=new Audio();VO.au.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';VO.au.play().catch(()=>{});}catch(e){}removeEventListener('pointerdown',unl);},{once:true});
@@ -535,31 +535,31 @@ let best=0; try{best=+localStorage.getItem('rustrail-best')||0}catch(e){}
 let segs=[], segEnd=0, lastType='normal';
 /* ================= chapters ================= */
 const CHAPTERS=[
- {n:'第一章',t:'被塗掉的鐵軌',len:1350,speed:[13,25],
+ {n:'第一章',t:'被塗掉的鐵軌',len:1350,speed:[11,22],
   intro:'【故事開始】颱風夜，我收到失蹤六十年的外公寄來的包裹：一本日記、一張地圖，還有一雙舊皮手套。我照著地圖找到一座舊礦坑，結果被大水沖上一台刻著外公名字的礦車。\n\n礦車衝出山洞，外面是一個奇怪的世界：天空一直是黃昏，手錶停在 23:58 不會動。日記第一頁寫著：「沿著鐵軌一直走，盡頭有一道門，我在那裡等你。」',
   beats:[[150,'河上漂著一艘客輪，船裡的燈還亮著，卻一個人也沒有。外公的日記寫著：「這個世界的時間，是停住的。」'],[450,'枕木上用白漆畫著一個記號：圓圈裡有三條線。日記說這是外公畫的，意思是「這裡安全，繼續走」。原來六十年前，他也坐過這台礦車。'],[800,'手機突然收到一則簡訊。寄件人竟然是我自己，時間顯示「明天」。內容只有一句：「不管發生什麼事，都不要讓礦車停下來。」'],[1750,'前面出現兩尊比山還高的石像，中間是一道巨大的門。日記寫著：「穿過這道門，就進入祂的夢裡了。」']],
   outro:'穿過石像之門時，背後有人喊我的名字，是外公的聲音。可是日記用紅筆寫著：「聽到有人叫你，千萬不要回頭。回頭的人，會被留在這裡。」\n我咬著牙，沒有回頭。',
   pool:[['normal',2],['narrow',1.4],['hills',1.4],['bridge',1.3],['washboard',1],['floating',1.2],['tunnel',1],['graveyard',1.4],['slalom',1]],megas:[],
   zones:[['yellow',0.18],['clock',0.36],['crater',0.62]],mon:{barrel:0,gap:0,croc:250,whirl:500,shark:650,beam:800},finale:[{type:'mega',sub:'colossus'}]},
- {n:'第二章',t:'印斯茅斯水道',len:1450,speed:[14,26],
+ {n:'第二章',t:'印斯茅斯水道',len:1450,speed:[12,23],
   intro:'【上一章】我穿過巨大的石像之門。日記說，從這裡開始，就是「祂的夢」。\n\n「祂」是一個沉睡在海底的古老神明，祂作的夢會漏進我們的世界。這一章，礦車來到一個叫印斯茅斯的漁村。日記警告：「村民在等祂醒來。他們會想盡辦法，讓礦車停下來。」',
   beats:[[200,'碼頭上站著一排穿雨衣的人，全都盯著海面。礦車經過時，他們一起轉頭看我。其中一個人手上，拿著跟我一模一樣的日記。'],[520,'收音機傳出村子的廣播：「……一九六三年來的那個人，到現在還在車上……」他們說的，就是外公。'],[800,'水裡爬出半人半魚的怪物，脖子上長著鰓。日記寫著：「礦車一停，祂就會醒。牠們想把你拉下車，就是要讓礦車停下來。」'],[1880,'整片海突然往後退，像在深深吸一口氣。日記說：「村民抓不到你的時候，海會親自出手。」巨浪來了！']],
   outro:'我衝出了巨浪。打開日記，竟然多了一頁剛寫好的字，墨水還是濕的，是外公的筆跡：\n「往南走，去找考察隊。他們會告訴你，我為什麼不能下車。」',
   pool:[['fork',1],['shipcross',1.1],['harbor',2.6],['canopy',1.2],['weave',1],['floating',1.3],['narrow',1],['slalom',1.2],['waterfall',1.3],['normal',1.4],['lighthouse',1]],megas:[],
   zones:[['green',0.22],['maw',0.45],['loop',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:150,beam:200,bats:400,deepone:700,shark:300},finale:[{type:'harbor'},{type:'normal',len:150,tsunami:true}]},
- {n:'第三章',t:'考察隊的營地',len:2450,speed:[15,28],
+ {n:'第三章',t:'考察隊的營地',len:2450,speed:[13,25],
   intro:'【上一章】漁村的人想把我拉下車。日記裡多了外公剛寫的一句話：去找考察隊。\n\n巨浪把我沖到南極的冰原。雪地上插著一面旗子：「大學考察隊第三組，1963」。原來外公當年就是這支考察隊的一員，負責測量地形。',
   beats:[[130,'帳篷裡的錄音機還在轉。隊長的聲音說：「這條鐵軌不是人蓋的，是海底那個沉睡的祂，在作夢時畫出來的。只有礦車，能在祂的夢裡移動。」'],[1150,'懸崖上的鐵架掛著考察隊留下的布條：「不要往下看」。下面還有一行小字：「也不要往後看，你會看見你自己。」'],[2250,'最後一段錄音，隊長說：「祂作夢的時候，夢裡一定要有東西一直在動，時間才會停在午夜前兩分鐘，祂就不會醒。所以我們抽籤，決定誰要留下來一直開礦車。抽到的人，是測量員。」'],[3150,'大壩上刻著一行字：「第三組到此」。日期寫的是明天，而且那個字跡，跟我的一模一樣。']],
   outro:'大壩的另一邊，一座城市正從海底慢慢升起來。\n我終於懂了：外公不是失蹤。他是為了不讓祂醒來，留在夢裡開著這台礦車，一開就是六十年。',
   pool:[['fork',0.8],['camp',2.4],['crystal',1.8],['coaster',1.5],['leap',1.3],['normal',1.8],['bridge',1.2],['hills',1.2]],megas:[],pal:'antarctic',ice:1,
   zones:[['madness',0.07],['cliff',0.36]],mon:{barrel:0,gap:0,beam:0,mine:300,tentacle:600,sweep:900},finale:[{type:'mega',sub:'dam'}]},
- {n:'第四章',t:'沉沒之城',len:2300,speed:[16,29],
+ {n:'第四章',t:'沉沒之城',len:2300,speed:[14,26],
   intro:'【上一章】我知道了真相：外公為了讓祂繼續睡，在夢裡開了六十年的礦車。\n\n現在，礦車來到一座從海底升起的城市。日記寫著：「祂越接近醒來，這座城就升得越高。」而這座城，已經快要整個浮出海面了。',
   beats:[[250,'大樓的每一扇窗裡都有人影，跟著礦車一起移動。我仔細一看，每個人影都是我，只是年紀都不一樣。'],[700,'天上出現了第二個月亮。不對，那是一隻巨大的眼睛。祂在夢裡翻了個身，祂快醒了。'],[1100,'巨大的骨頭橫在河上，上面釘著一塊鐵牌：「考察隊第三組，最後的營地，1963 年 3 月 11 日」。外公的日記，也剛好停在這一天。'],[1550,'遠方有個巨大的東西浮出海面。它沒有攻擊我，只是一直盯著礦車，好像在確認：車上的人，換了沒有。']],
   outro:'離開城市時，手機又收到我自己傳來的簡訊：\n「快到了。外公在等你去換班。」',
   pool:[['spiral',1],['shipcross',1],['mega',2.2],['whalebone',1.8],['leap',1.3],['bridge',1.1],['coaster',1.2],['lighthouse',1],['graveyard',1.2],['weave',1],['normal',1.2]],megas:['city','ruins'],
   zones:[['twin',0.14],['factory',0.42],['atlantis',0.62]],mon:{barrel:0,gap:0,croc:0,whirl:0,beam:0,bats:0,shark:0,mine:0,tentacle:200,sweep:400,deepone:0,serpent:500},finale:[{type:'whalebone'},{type:'mega',sub:'city',kraken:true}]},
- {n:'第五章',t:'拉萊耶',len:1800,speed:[17,30],
+ {n:'第五章',t:'拉萊耶',len:1800,speed:[15,27],
   intro:'【上一章】城裡每一扇窗都映著不同年紀的我，旁邊軌道上還開過一個老了六十歲的我。我開始害怕：外公叫我來，是不是要我接替他？\n\n天上的星星排成了一直線。海中央升起一座綠色的巨城「拉萊耶」，那就是祂睡覺的地方。鐵軌，筆直地通往那裡。',
   beats:[[300,'神殿的牆上刻著一長排礦車，每一台車上的人都戴著皮手套。最前面那個人是外公，最後面那個人，是我。可是這面牆，比人類的歷史還要古老。'],[800,'石柱上面放著外公的礦工帽，頭燈還亮著。帽子裡夾著一封信，信封上寫著我的名字。'],[1000,'信上寫著：「孩子，對不起，包裹是我寄的。我開了六十年，真的太累了。只要礦車不停，手錶就會停在 23:58，祂就不會醒。現在，換你了。」'],[2200,'祂的眼睛睜開了一半，整座城都在搖晃。鐵軌開始往天空彎上去。前方，外公的頭燈一閃一閃，他在終點等我。']],
   outro:'外公終於可以下車了。我戴上那雙皮手套，握緊把手。\n從現在起，我就是新的駕駛。',
@@ -2146,7 +2146,7 @@ const SETS2={
     finishSet(s,g,own,anim);},
   /* a fork in the line: the middle rail ends; left dives into an old mine gallery, right hugs a sea cliff in the storm */
   fork(s){const g=segGroup(s),own=[],anim=[],B=SB(g,own),L=s.len;s.flags={};
-    for(let u=6;u<L-6;u+=7){const h=Math.min(1,u/30,(L-u)/30)*(7+rnd()*5);if(h<0.6)continue;const m=mesh(rockG(),M.rock,g,(rnd()-.5)*0.4,-0.6,-u,1.15,h,3.6);m.rotation.y=rnd()*6;}
+    for(let u=6;u<L-6;u+=4.5){const h=Math.min(1,u/30,(L-u)/30)*(0.9+rnd()*0.7);if(h<0.25)continue;const m=mesh(rockG(),M.rock,g,(rnd()-.5)*0.12,-0.25,-u,0.42,h,2.6);m.rotation.y=(rnd()-.5)*0.12;}
     // signpost at the split
     const sp=new T.Mesh(G.plane,std2({map:plate([['← 舊礦坑',44,60],['海崖 →',44,120]],380,170,'#2a1e14','#e8dcc0'),side:T.DoubleSide,roughness:0.9}));sp.scale.set(2.6,1.15,1);sp.position.set(0,3.4,4);sp.userData.keep=true;g.add(sp);mesh(G.cyl,M.wood,g,0,1.4,4.2,0.08,2.8,0.08);
     // left: a timbered mine gallery, low roof, swinging lanterns
@@ -3515,7 +3515,7 @@ function spawn(az){
   const single=['shark','mine','tentacle','barrel','croc','gap','whirl','deepone'];
   if(single.includes(t)&&n>=3&&(ch?st.chapter>=2&&cd>400:d>1000)&&rnd()<0.3){const jt=low?pick(['barrel','croc','gap']):pick(['barrel','gap']);add(jt==='gap'?{t:jt,lane:lanes[1],az,len:3.4}:{t:jt,lane:lanes[1],az});}
   if(n>=2&&rnd()<.35&&single.concat(['gears','wrench']).includes(t))gearLine(lanes[n-1],az-3,3);
-  st.nextSpawn=az+(ch?Math.max(14,28-st.chapter*2.2-cd*0.005):Math.max(15,31-d*0.003))*(0.85+rnd()*0.45);
+  st.nextSpawn=az+(ch?Math.max(17,33-st.chapter*2.4-cd*0.004):Math.max(18,36-d*0.003))*(0.9+rnd()*0.5);
 }
 
 /* ================= per-frame obstacle placement & animation ================= */
@@ -3665,9 +3665,9 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   else if(cs&&cs.type==='crater'){st.slow=1;const u=st.dist+PZ-cs.az0;const tg=(u>190&&u<530)?14:23;st.speed+=(tg-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.type==='maw'){st.slow=1;st.speed+=(15-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.spd&&playing){st.slow=1;st.speed+=(cs.spd-st.speed)*Math.min(1,dt*1.2);}
-  else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.0075):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);if(st.boostT>0)target*=1.28;st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
+  else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.005):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);if(st.boostT>0)target*=1.15;st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
   for(let i=READZ.length-1;i>=0;i--){const R=READZ[i],z=R.az-st.dist;if(z<-3){READZ.splice(i,1);continue;}if(playing&&z<R.from&&z>2&&!st.focus)st.focus={x:R.x,y:R.y,az:R.az,t0:st.time,read:1};}
-  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.8:1;const F=st.focus;
+  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.5:1;const F=st.focus;
    if(F&&F.read&&playing){const dzT=F.az-st.dist;if(dzT<36&&dzT>-1)tk=Math.min(tk,quickOn?0.6:0.4);}
    if(F&&slowOK){const dzT=F.az-st.dist;const near=Math.abs(F.x)>2?(dzT<(F.far?24:9)&&dzT>-1):(dzT<16&&dzT>2);tk=near?0.03:(dzT>14?1:0.45);}
    if(F&&(F.az-st.dist<-2.5||(Math.abs(F.x)<=2&&F.az-st.dist<6)))st.focus=null;
