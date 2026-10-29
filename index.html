@@ -504,8 +504,8 @@ function narrate(kicker,text,jid,cv,focus){if(jid){journal.add(jid);saveJournal(
 function narrateSilent(kicker,text){NQ.unshift({kicker,text,silent:true});narrBusy=false;nextNarr();}
 function nextNarr(){const n=NQ.shift();curN=n||null;st.focus=n&&n.focus?Object.assign({t0:st.time},n.focus):(st.focus&&!st.focus.far&&st.focus.az-st.dist>2?st.focus:null);if(!n){narrBusy=false;$('story').hidden=true;return;}narrBusy=true;const im=$('storyImg');n.parts=splitParts(n.text);n.pi=-1;
   if(n.cv){try{im.src=n.cv.toDataURL('image/jpeg',0.8);im.hidden=false;}catch(e){im.hidden=true;}}else im.hidden=true;$('story').classList.toggle('has-img',!im.hidden);
-  $('storyK').textContent=n.kicker;$('storyT').textContent=n.parts[0];n.pi=0;$('story').hidden=false;
-  const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(6,Math.max(3.2,n.text.length*0.05)):(d?d+1.4:est);
+  $('storyK').textContent=n.kicker;$('storyT').textContent=quickOn?n.text:n.parts[0];n.pi=0;$('story').hidden=false;
+  const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(9,Math.max(3.5,n.text.length*0.11)):(d?d+1.4:est);
   if(!n.silent&&!quickOn)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
   if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
     for(const o of st.obs){const z=o.az-st.dist;if(z>42&&!CALM_KEEP[o.t])o.kill=1;}}}
@@ -3817,7 +3817,7 @@ function resize(){
 
 /* ================= loop + input ================= */
 let last=performance.now();
-function subTick(){const n=curN;if(!n||!n.parts||n.parts.length<2||$('story').hidden)return;let i;
+function subTick(){const n=curN;if(quickOn||!n||!n.parts||n.parts.length<2||$('story').hidden)return;let i;
   if(VO.au&&VO.want&&VO.au.duration>0&&isFinite(VO.au.duration)){const f=VO.au.currentTime/VO.au.duration;const tot=n.parts.reduce((a,b)=>a+b.length,0);let acc=0;i=0;for(;i<n.parts.length-1;i++){acc+=n.parts[i].length;if(acc/tot>f)break;}}
   else if(VO.partIdx!=null&&VO.speaking)i=VO.partIdx;else{const f=1-storyTimer/Math.max(0.1,storyMax);i=Math.min(n.parts.length-1,Math.floor(f*n.parts.length));}
   if(i!==n.pi){n.pi=i;$('storyT').textContent=n.parts[i];}}
