@@ -130,6 +130,8 @@ body.quick #storyHelp{display:none}
 #chI,#clO,#storyT{white-space:pre-line}
 .chi{display:block!important;font-size:15px!important;line-height:1.85!important;color:var(--ink)!important;font-family:var(--f-display)}
 .chap-lbl{font-size:12px;letter-spacing:.12em;color:var(--brass)}
+.next-lbl{margin-top:5px;font-size:11px;letter-spacing:.06em;color:var(--bone,#efe6d6);opacity:.85;text-shadow:0 1px 2px #000}
+.next-lbl b{color:var(--brass);font-weight:700}
 .prog{width:150px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}
 .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--rust),var(--brass))}
 .sel{display:flex;flex-direction:column;gap:8px}
@@ -255,6 +257,7 @@ html,body{overscroll-behavior:none}
     <div class="dist"><span id="dist">0</span><small>公尺</small></div>
     <div class="chap-lbl" id="chapLbl"></div>
     <div class="prog" id="prog" hidden><i id="progFill"></i></div>
+    <div class="next-lbl" id="nextLbl" hidden></div>
     <div class="row">
       <div class="pips" id="pips"></div>
       <span class="shield" id="shieldHud" hidden>✶ <span id="shieldT">8</span></span>
@@ -516,7 +519,8 @@ function nextNarr(){let n=NQ.shift();/* a scene's line that waited in the queue 
   const d=voDur(n.text),est=Math.max(8,n.text.length*0.23);storyMax=storyTimer=quickOn?Math.min(9,Math.max(3.5,n.text.length*0.11)):(d?d+1.4:est);
   if(!n.silent&&!quickOn)speak(n.text,()=>{storyTimer=Math.min(storyTimer,1.2);storyMax=Math.max(storyMax,1.2);});
   if(st.mode==='play'&&!quickOn){st.calmUntil=Math.max(st.calmUntil||0,st.dist+Math.max(150,st.speed*storyTimer*0.9));
-    for(const o of st.obs){const z=o.az-st.dist;if(z>42&&!CALM_KEEP[o.t])o.kill=1;}}}
+    /* only clear the way when the camera is about to turn to look at something */
+    if(n.focus)for(const o of st.obs){const z=o.az-st.dist;if(z>30&&o.az<n.focus.az+20&&!CALM_KEEP[o.t])o.kill=1;}}}
 /* unlock audio playback on the first tap (mobile browsers) */
 addEventListener('pointerdown',function unl(){try{if(!VO.au)VO.au=new Audio();VO.au.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';VO.au.play().catch(()=>{});}catch(e){}removeEventListener('pointerdown',unl);},{once:true});
 function clearNarr(keepVoice){NQ.length=0;narrBusy=false;curN=null;st.focus=null;storyTimer=0;$('story').hidden=true;if(!keepVoice)hush();}
@@ -1225,6 +1229,7 @@ const builders={
     const bar=mesh(G.box,yel,piv,-sd*4.3,1.45,0,8.6,0.42,0.42);void bar;for(let i=0;i<6;i++)mesh(G.box,M.dark,piv,-sd*(0.8+i*1.4),1.45,0.22,0.5,0.44,0.02);
     const cl=new T.Group();cl.position.set(-sd*8.6,1.45,0);piv.add(cl);for(const k of [-1,1]){const f=mesh(G.box,M.iron,cl,0,k*0.35,0,0.9,0.12,0.3);f.rotation.z=k*0.5;}
     mesh(G.sphLo,M.lamp,piv,-sd*0.2,1.9,0.3,0.12,0.12,0.12).userData.keep=true;o.parts={piv};return g;},
+  boulder(o){const g=new T.Group(),b=new T.Group();g.add(b);const m=mesh(rockG(),M.rock,b,0,0.75,0,0.95,0.8,0.95);m.rotation.y=hsh(o.az)*6;o.parts={b};return g;},
   /* mechanical Cthulhu variants of the dream maintenance center — each one is dodged differently */
   mechA(o){const g=new T.Group(),b=new T.Group();g.add(b);const sp=sprite('mech0',2.6,0.6);if(sp)b.add(sp);else{mesh(G.sph,M.iron,b,0,1.2,0,0.9,0.8,0.9);}
     const gl=mesh(G.plane,MECHGLOW(),b,0,1.85,0.3,2,2,1);gl.userData.keep=true;o.parts={b};return g;},
@@ -3466,6 +3471,14 @@ function chapterClear(){const i=st.chapter,c=CHAPTERS[i];st.mode='clear';clearNa
   const showClear=()=>{$('clearScreen').hidden=false;$('hud').hidden=true;$('clNext').focus();};
   if(i===4){$('hud').hidden=true;const t0=performance.now();const go=()=>{if(voBusy()&&performance.now()-t0<20000){setTimeout(go,250);return;}hush();playEnding(showClear);};setTimeout(go,900);}else setTimeout(showClear,1300);
   if(AC){const t=AC.currentTime;[392,523,659,784].forEach((f,k)=>tone(t+k*0.12,'triangle',f,f,0.12,0.5));}}
+/* where am I: the real length of this run (the fixed scenes stretch it) and the next landmark */
+const FIXED_T={madness:1,cliff:1,crater:1,clock:1,loop:1,maw:1,twin:1,spiral:1,factory:1,seatube:1,godback:1,skyisles:1,falls:1,voyage:1,damexit:1,harbor:1};
+function landmarkName(x){if(x.type==='zone')return ZONE_NAME[x.sub]||'異象';if(x.type==='mega')return MEGA_NAME[x.sub]||'巨型遺跡';if(x.type==='seatube')return '海底隧道';if(x.type==='factory')return '夢境維修中心';if(x.type==='voyage')return '漂向南極';if(x.type==='damexit')return '大壩隧道';return (TERR_NAME[x.type]||'').split('：')[0].split('・')[0];}
+function hudNext(ch,cd){let goal=null,nx=null;for(const x of segs){if(x.goal)goal=x;if(!nx&&x.az0>st.dist+4&&(x.type==='zone'||x.type==='mega'||FIXED_T[x.type]))nx=x;}
+  const unplaced=ch.zones.length-st.zq;const est=goal?goal.az1-st.chStart:Math.max(ch.len+unplaced*500,segEnd-st.chStart+unplaced*550+250);
+  st.progShown=Math.max(st.progShown||0,Math.min(1,cd/est));$('progFill').style.width=(st.progShown*100).toFixed(1)+'%';
+  let name,dd;if(nx){name=landmarkName(nx);dd=nx.az0-st.dist;}else if(unplaced>0){const z=ch.zones[st.zq];name=ZONE_NAME[z[0]]||landmarkName({type:z[0]==='atlantis'?'seatube':z[0]});dd=Math.max(st.chStart+ch.len*z[1],segEnd)-st.dist;}else{name='本章終點';dd=Math.max(0,est-cd);}
+  const el=$('nextLbl');el.hidden=false;el.innerHTML=dd<30?'<b>'+name+'</b>　就在前方':'下一站：<b>'+name+'</b>　還有 '+(dd>=1000?(dd/1000).toFixed(1)+' 公里':Math.round(dd/10)*10+' 公尺');}
 function refreshTitle(){const nx=Math.min(chCleared,4);$('startBtn').textContent=chCleared>=5?'重玩第五章':(chCleared?'繼續・':'開始遊戲・')+CHAPTERS[nx].n+'　'+CHAPTERS[nx].t;$('replayBtn').hidden=!(chCleared>0||intro.seen);
   $('bestTitle').textContent=best?('無盡模式最佳 '+best+' 分'):'';}
 function endIntro(skipped){
@@ -3473,7 +3486,7 @@ function endIntro(skipped){
   $('cine').hidden=true;$('sub').textContent='';cartW.visible=false;flashL.intensity=0;
   if(skipped&&st.dist<84)st.dist=84;st.speed=Math.max(st.speed,skipped?12:20);st.flash=1.2;st.shake=0.3;
   st.mode='play';$('hud').hidden=false;renderPips();syncPad();
-  $('chapLbl').textContent=CH()?CH().n+'　'+CH().t:'無盡模式';$('prog').hidden=!CH();
+  $('chapLbl').textContent=CH()?CH().n+'　'+CH().t:'無盡模式';$('prog').hidden=!CH();$('nextLbl').hidden=true;
   document.querySelector('.tc-s').textContent=CH()?CH().n+'　'+CH().t:'這條河，不在任何地圖上。';
   const tc=$('tcard');tc.hidden=false;tc.style.animation='none';void tc.offsetWidth;tc.style.animation='';setTimeout(()=>tc.hidden=true,3500);
   if(AC){const a=AC.currentTime;noiseHit(a,'lowpass',500,0.7,1.4);}
@@ -3571,7 +3584,8 @@ function spawn(az){
   if(!en.length){st.nextSpawn=az+6;return;}
   /* the dream maintenance hall: the mechanical Cthulhus keep coming even while a story card is up (just spaced out) */
   {const fc=nearType(az,'factory',0);if(fc&&az>fc.az0+40&&az<fc.az1-20){const r=rnd();if(r<0.24)add({t:'mechA',lane:pick(en),az});else if(r<0.46)add({t:'mechB',lane:pick(en),az});else if(r<0.64)add({t:'mechC',az});else if(r<0.82&&en.some(L=>L))add({t:'mechD',lane:pick(en.filter(L=>L)),az});else if(r<0.9)add({t:'arm',az});else gearLine(pick(en),az,5);st.nextSpawn=az+(az<(st.calmUntil||0)?36:24)+rnd()*8;return;}}
-  if(az<(st.calmUntil||0)){if(rnd()<0.5)gearLine(pick(en),az,4);st.nextSpawn=az+20;return;}
+  /* while a story card is up obstacles keep coming, just further apart; only the stretch the camera turns to look at stays clear */
+  const calmNow=az<(st.calmUntil||0);if(calmNow&&st.focus&&az<st.focus.az+25&&az>st.focus.az-90){if(rnd()<0.5)gearLine(pick(en),az,4);st.nextSpawn=az+20;return;}
   if(nearType(az,'cliff',0)||nearType(az,'seatube',8)||isSet(az,10)){if(rnd()<0.55)gearLine(pick(en),az,6);st.nextSpawn=az+24;return;}
   if(nearType(az,'damexit',0)&&az<nearType(az,'damexit',0).az0+100){st.nextSpawn=az+20;return;}
   if(nearType(az,'coaster',0)){if(rnd()<0.65)gearLine(pick(en),az,6);st.nextSpawn=az+20;return;}
@@ -3579,6 +3593,14 @@ function spawn(az){
   const zb=nearType(az,'zone',0);if(zb&&zb.sub==='black'&&rnd()<0.5){st.nextSpawn=az+22;return;}
   if(nearType(az,'weave',0)){if(rnd()<0.5)gearLine(pick(en),az,3);st.nextSpawn=az+16;return;}
   const tun=inTunnel(az);
+  /* filler events: every few hundred metres of ordinary track something happens */
+  if(st.mode==='play'&&!calmNow&&en.length===3&&az>(st.nextEvent||0)&&st.dist>(ch?st.chStart+150:400)){st.nextEvent=az+380+rnd()*180;const ek=(st.evN=(st.evN||0)+1)%3;
+    const lowE=[-4,0,8,16,30].every(k=>trackH(az+k)<0.25);
+    if(ek===0||(ek===2&&(!lowE||st.chapter<1||krakens.length))){toast('前方連續障礙！看準空的那條軌道','warn',1600);let free=pick([-1,0,1]);
+      for(let i=0;i<5;i++){for(const L of [-1,0,1]){if(L===free)continue;if(rnd()<0.5)add({t:'gap',lane:L,az:az+i*11,len:3.2});else add({t:'barrel',lane:L,az:az+i*11});}free=Math.max(-1,Math.min(1,free+pick([-1,1])));}
+      st.nextSpawn=az+5*11+14;return;}
+    if(ek===1){toast('落石！','warn',1300);const ls=shuffle([-1,0,1]);for(let i=0;i<3;i++)add({t:'boulder',lane:ls[i],az:az+i*13});st.nextSpawn=az+3*13+14;return;}
+    {const k={br:true,ti:false,az:st.dist+160,x:rnd()<.5?1:-1,t:0,roared:false};k.g=leviMesh(k)||breachMesh(k);world.add(k.g);krakens.push(k);}}
   if(d>600&&az>st.nextTsunami&&!tun&&!inTunnel(az+40)){if(spawnTsunami(az))return;}
   const lanes=shuffle(en.slice()),n=lanes.length;
   const low=[-4,0,4].every(k=>trackH(az+k)<0.25);
@@ -3603,7 +3625,7 @@ function spawn(az){
   const single=['shark','mine','tentacle','barrel','croc','gap','whirl','deepone'];
   if(single.includes(t)&&n>=3&&(ch?st.chapter>=2&&cd>400:d>1000)&&rnd()<0.3){const jt=low?pick(['barrel','croc','gap']):pick(['barrel','gap']);add(jt==='gap'?{t:jt,lane:lanes[1],az,len:3.4}:{t:jt,lane:lanes[1],az});}
   if(n>=2&&rnd()<.35&&single.concat(['gears','wrench']).includes(t))gearLine(lanes[n-1],az-3,3);
-  st.nextSpawn=az+(ch?Math.max(17,33-st.chapter*2.4-cd*0.004):Math.max(18,36-d*0.003))*(0.9+rnd()*0.5);
+  st.nextSpawn=az+(ch?Math.max(17,33-st.chapter*2.4-cd*0.004):Math.max(18,36-d*0.003))*(0.9+rnd()*0.5)*(calmNow?1.7:1);
 }
 
 /* ================= per-frame obstacle placement & animation ================= */
@@ -3621,6 +3643,8 @@ function placeObs(o){
     case 'arm':{g.position.set(0,th,-o.az);const k=ss((z-7)/16);p.piv.rotation.y=o.sd*k*1.35;p.piv.position.y=Math.sin(t*20)*0.03;if(!o.wh&&z<22){o.wh=1;if(AC)noiseHit(AC.currentTime,'bandpass',1200,0.3,0.4,4);}break;}
     case 'gear':g.position.set(x,th,-o.az);p.m.rotation.y=t*3+o.az;p.m.position.y=0.9+Math.sin(t*4+o.az)*0.08;g.visible=!o.got;break;
     case 'wrench':g.position.set(x,th,-o.az);p.m.rotation.set(0,t*2.5,0.6);g.visible=!o.got;break;
+    case 'boulder':{const fz=Math.max(0,z-13);const y=Math.min(34,fz*fz*0.09);g.position.set(x,th+y,-o.az);p.b.rotation.x+=0.12;p.b.rotation.z+=0.05;
+      if(!o.ld&&y<0.05&&z>0){o.ld=1;st.shake=Math.max(st.shake,0.5);splash(x,z,26);if(AC&&!playS('land',0.7,0.6))noiseHit(AC.currentTime,'lowpass',140,0.5,0.6);}break;}
     case 'mechA':{g.position.set(x,th,-o.az);const dv=ss((34-z)/14);p.b.position.y=1.05+(1-dv)*14+Math.sin(t*2.6+o.az)*0.16;if(!o.dv&&dv>0.05&&z>0){o.dv=1;if(AC&&!playS('jump',0.7,0.7))noiseHit(AC.currentTime,'bandpass',700,0.3,0.4);}p.b.rotation.z=Math.sin(t*1.7+o.az)*0.06;break;}
     case 'mechB':{const sdB=o.lane>0?1:o.lane<0?-1:(hsh(o.az)<0.5?-1:1);const kin=ss((36-z)/16);g.position.set(x+sdB*(1-kin)*9+Math.sin(t*9+o.az)*0.12,th,-o.az);p.b.position.y=Math.abs(Math.sin(t*14+o.az))*0.06;p.b.rotation.z=Math.sin(t*11+o.az)*0.05;if(!o.cr&&z<18&&z>0){o.cr=1;if(AC)noiseHit(AC.currentTime,'bandpass',2400,0.25,0.35,6);}break;}
     case 'mechC':{const k=Math.max(0,Math.min(1.4,(24-z)/(24-PZ)));g.position.set(o.sd*15*(1-k),th,-o.az);p.b.position.y=0.9+Math.sin(t*6)*0.05;p.b.rotation.z=Math.sin(t*5)*0.04;
@@ -3679,7 +3703,7 @@ function toast(msg,kind,ms){const t=$('toast');t.textContent=msg;t.className='to
 function snapLane(){const az=st.dist+PZ+2;const opts=[-1,0,1].filter(L=>laneOn(L,az));if(!opts.length||opts.includes(st.lane))return;
   opts.sort((a,b)=>Math.abs(a-st.lane)-Math.abs(b-st.lane));st.lane=opts[0];}
 /* thrill: dodging something at the last instant scores a combo; three in a row kicks the cart into a short boost */
-const NEARMISS={barrel:'jump',croc:'jump',shark:'lane',tentacle:'lane',deepone:'lane',mine:'lane',beam:'duck',arm:'duck',bats:'duck',sweep:'jump',serpent:'jump',mechA:'lane',mechB:'jump',mechC:'duck',mechD:'lane'};
+const NEARMISS={boulder:'jump',barrel:'jump',croc:'jump',shark:'lane',tentacle:'lane',deepone:'lane',mine:'lane',beam:'duck',arm:'duck',bats:'duck',sweep:'jump',serpent:'jump',mechA:'lane',mechB:'jump',mechC:'duck',mechD:'lane'};
 function nearMiss(o){st.combo=(st.combo||0)+1;st.comboT=4;const pts=30*st.combo;st.bonus+=pts;st.fovKick=Math.max(st.fovKick||0,1);st.shake=Math.max(st.shake,0.18);
   if(AC&&!playS('jump',0.6,1.5))noiseHit(AC.currentTime,'highpass',3000,0.2,0.3);
   if(st.combo>=3&&!(st.boostT>0)){st.boostT=3.2;toast('狂飆！連續閃過 ×'+st.combo+'　+'+pts,'good',1500);if(AC){const t=AC.currentTime;[523,659,784,1046].forEach((f,i)=>tone(t+i*0.06,'sawtooth',f,f*1.02,0.06,0.25));}}
@@ -3700,14 +3724,14 @@ function resetTrack(){segs=[];segEnd=0;lastType='normal';while(segEnd<st.dist+VI
 function reset(){
   clearWorld();
   Object.assign(st,{dist:80,speed:12,lane:0,camX:0,camH:0,jumpY:0,jumpV:0,duck:0,duckT:0,hearts:MAXH,inv:0,shake:0,gears:0,bonus:0,slow:1,
-    nextSpawn:150,red:0,bump:0,paused:false,opened:0,iceK:1,whiteout:0,combo:0,comboT:0,boostT:0,fovKick:0,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
+    nextSpawn:150,red:0,bump:0,paused:false,progShown:0,hudT:0,nextEvent:0,evN:0,opened:0,iceK:1,whiteout:0,combo:0,comboT:0,boostT:0,fovKick:0,cause:'',nextTsunami:st.chapter>=0?1e9:650+rnd()*250,nextKraken:st.chapter>=1?st.chStart+380:(st.chapter===0?1e9:330),surge:0,finQ:0,beat:0,bq:0,beatAz:{},zq:0,lastSeg:null,lift:false,shield:0,green:0,healDue:false,nextBottle:210,mood:0,clackD:0,calmUntil:0});hush();
   resetTrack();spawnWreck(165,0.75);wreckTimer=150;if(cartW)cartW.visible=false;
   for(let i=0;i<TREE_N;i++)placeTree(i,105+rnd()*VIEW);
   for(const f of fins)f.az=120+rnd()*100;
 }
 function startGame(force){clearNarr(true);clearProps();$('lbox').hidden=true;try{showKeyHint();}catch(e){}
   if(!ready)return;st.chStart=st.chapter>0?105:100;if(force===true||(!intro.seen&&st.chapter<=0)){playIntro();return;}initAudio();reset();if(st.chapter>0){st.dist=105;}st.mode='play';
-  $('chapLbl').textContent=CH()?CH().n+'　'+CH().t:'無盡模式';$('prog').hidden=!CH();
+  $('chapLbl').textContent=CH()?CH().n+'　'+CH().t:'無盡模式';$('prog').hidden=!CH();$('nextLbl').hidden=true;
   $('titleScreen').hidden=true;$('overScreen').hidden=true;$('pauseScreen').hidden=true;$('hud').hidden=false;renderPips();syncPad();
   try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>wakeLock=l).catch(()=>{});}catch(e){}
   toast('抓緊！');
@@ -3749,13 +3773,13 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
     else{const h=trackH(st.dist+PZ);const v=Math.min(64,Math.sqrt(144+2*9.8*Math.max(0,cs.H-h))*0.95);st.speed+=(Math.max(v,12)-st.speed)*Math.min(1,dt*3);}}
   else if(cs&&cs.type==='seatube'){st.slow=1;const u=st.dist+PZ-cs.az0;const tg=cs.ext?(u<cs.V0?14:u<cs.V1?21:u<cs.A1?16:15):14;st.speed+=(tg-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.type==='falls'){st.slow=1;const u=st.dist+PZ-cs.az0;if(u<cs.C1+14){st.speed+=(18-st.speed)*Math.min(1,dt*1.5);}else{const h=trackH(st.dist+PZ);const v=Math.min(40,Math.sqrt(324+2*9.8*Math.max(0,cs.FH-h))*0.95);st.speed+=(Math.max(v,15)-st.speed)*Math.min(1,dt*3);}}
-  else if(cs&&cs.type==='madness'){const u=st.dist+PZ-cs.az0;const tg=cs.cut&&cs.cut.on?1.1:(u>370&&u<1000)?7.5:17;st.slow=1;st.speed+=(tg-st.speed)*Math.min(1,dt*1.0);}
+  else if(cs&&cs.type==='madness'){const u=st.dist+PZ-cs.az0;const tg=cs.cut&&cs.cut.on?1.1:(u>370&&u<1000)?9.5:17;st.slow=1;st.speed+=(tg-st.speed)*Math.min(1,dt*1.0);}
   else if(cs&&cs.type==='crater'){st.slow=1;const u=st.dist+PZ-cs.az0;const tg=(u>190&&u<530)?14:23;st.speed+=(tg-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.type==='maw'){st.slow=1;st.speed+=(15-st.speed)*Math.min(1,dt*1.2);}
   else if(cs&&cs.spd&&playing){st.slow=1;st.speed+=(cs.spd-st.speed)*Math.min(1,dt*1.2);}
   else{const chh=CH();let target=playing?(chh?Math.min(chh.speed[1],chh.speed[0]+(st.dist-st.chStart)*0.005):Math.min(28,11+st.dist*0.0038)):11;if(cs&&cs.type==='leap')target=Math.max(target,21);if(st.boostT>0)target*=1.15;st.slow=Math.min(1,st.slow+dt*0.45);st.speed+=(target*st.slow-st.speed)*Math.min(1,dt*(st.speed>target?0.8:2));}
   for(let i=READZ.length-1;i>=0;i--){const R=READZ[i],z=R.az-st.dist;if(z<-3){READZ.splice(i,1);continue;}if(playing&&z<R.from&&z>2&&!st.focus)st.focus={x:R.x,y:R.y,az:R.az,t0:st.time,read:1};}
-  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.5:1;const F=st.focus;
+  {const slowOK=narrBusy&&playing&&cs&&!['leap','coaster','cliff','crater'].includes(cs.type)&&!cs.voidR;let tk=slowOK?0.75:1;const F=st.focus;
    if(F&&F.read&&playing){const dzT=F.az-st.dist;if(dzT<36&&dzT>-1)tk=Math.min(tk,quickOn?0.6:0.4);}
    if(F&&slowOK){const dzT=F.az-st.dist;const near=Math.abs(F.x)>2?(dzT<(F.far?24:9)&&dzT>-1):(dzT<16&&dzT>2);tk=near?0.03:(dzT>14?1:0.45);}
    if(F&&(F.az-st.dist<-2.5||(Math.abs(F.x)<=2&&F.az-st.dist<6)))st.focus=null;
@@ -3778,7 +3802,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
   updateProps(st.time);
   const chB=CH();if(chB&&playing){const cd=st.dist-st.chStart;const bt=chB.beats[st.beat];if(bt){const w=(BEAT_WHERE[st.chapter]||[])[st.beat],at=st.beatAz[st.beat];
     const cs0=segAt(st.dist);if(w?((at!=null&&st.dist>=at)||(cd>=bt[0]+1200&&!(cs0&&{tunnel:1,crystal:1,seatube:1,maw:1,factory:1}[cs0.type]))):cd>=bt[0]){st.beat++;showBeat(chB,bt[1]);}}
-    $('progFill').style.width=Math.min(100,cd/chB.len*100).toFixed(1)+'%';}
+    if((st.hudT=(st.hudT||0)-dt)<=0){st.hudT=0.4;hudNext(chB,cd);}}
   if(segs.some(q=>q.curtain&&!q.wet&&st.dist+PZ>q.curtain)){const q=segs.find(q=>q.curtain&&!q.wet&&st.dist+PZ>q.curtain);q.wet=1;lensDrops(30);sfx.splash(true);st.shake=Math.max(st.shake,0.3);}
   while(segEnd<st.dist+VIEW+60)genSeg();
   segs=segs.filter(s=>{const keep=s.az1>st.dist-20;if(!keep&&s.g){world.remove(s.g);disposeOwn(s.g);}if(!keep&&s.skyG){skyRig.remove(s.skyG);disposeOwn(s.skyG);}return keep;});
@@ -3838,6 +3862,7 @@ function update(dt){if(AC&&AC.state!=='running'&&AC.state!=='closed'&&!st.paused
         case 'mine':if(pl===o.lane){burst(o.lane*LANE,0.6,2.5,60);st.flash=0.6;hit(o,'撞上漂流水雷',true);}break;
         case 'beam':if(st.duck<0.45)hit(o,'一頭撞上倒塌的桅杆');break;
         case 'arm':if(st.duck<0.45)hit(o,'被機械手臂掃了下來');break;
+        case 'boulder':if(pl===o.lane&&air<0.65)hit(o,'被落石砸中');break;
         case 'mechA':if(pl===o.lane&&st.duck<0.45)hit(o,'被機械章魚的觸手捲住');break;
         case 'mechB':if(pl===o.lane&&air<0.62)hit(o,'撞上爬行的機械克蘇魯');break;
         case 'mechC':if(st.duck<0.45)hit(o,'被機械魚雷咬了一口');break;
@@ -3989,7 +4014,7 @@ function render(){
   if(st.red>0){const rg=fctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.2,W/2,H/2,Math.max(W,H)*0.7);rg.addColorStop(0,'rgba(200,40,20,0)');rg.addColorStop(1,`rgba(200,40,20,${st.red*0.55})`);fctx.fillStyle=rg;fctx.fillRect(0,0,W,H);}
   if(st.mode==='intro')drawIntro2D();else{drawSpeed();drawDanger();}
 }
-const DANGER={shark:['↔ 換軌',2.2],tentacle:['↔ 換軌',3],mine:['↔ 換軌',0.6],deepone:['↔ 換軌',2.6],croc:['↑ 跳',0.6],serpent:['↑ 跳',1],sweep:['↑ 跳',0.6],whirl:['↑ 跳',0.2],gap:['↑ 跳',0.2],barrel:['↑ 跳',0.6],beam:['↓ 蹲',1.4],arm:['↓ 蹲',1.4],mechA:['↔ 或 ↓',3.9],mechB:['↑ 跳',2.1],mechC:['↓ 蹲',2.8],mechD:['↔ 換軌',7.6],bats:['↓ 蹲',1.6]};
+const DANGER={shark:['↔ 換軌',2.2],tentacle:['↔ 換軌',3],mine:['↔ 換軌',0.6],deepone:['↔ 換軌',2.6],croc:['↑ 跳',0.6],serpent:['↑ 跳',1],sweep:['↑ 跳',0.6],whirl:['↑ 跳',0.2],gap:['↑ 跳',0.2],barrel:['↑ 跳',0.6],beam:['↓ 蹲',1.4],arm:['↓ 蹲',1.4],boulder:['↔ 或 ↑',1.9],mechA:['↔ 或 ↓',3.9],mechB:['↑ 跳',2.1],mechC:['↓ 蹲',2.8],mechD:['↔ 換軌',7.6],bats:['↓ 蹲',1.6]};
 const _dv=new T.Vector3();
 const SPL=[...Array(46)].map(()=>[Math.random()*6.283,Math.random(),Math.random()]);
 function drawSpeed(){if(st.mode!=='play'||st.paused)return;const k=Math.min(1,Math.max(0,(st.speed-19)/10)+(st.boostT>0?0.55:0)+(st.fovKick||0)*0.4);if(k<0.04)return;
