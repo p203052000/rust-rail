@@ -383,6 +383,7 @@ html,body{overscroll-behavior:none}
       <div class="res"><span>總分</span><b id="rScore">0</b></div>
     </div>
     <div class="best" id="bestOver"></div>
+    <button class="go" id="reviveBtn" hidden>從這裡繼續</button>
     <button class="go" id="retryBtn">再衝一次</button>
   </div>
 </div>
@@ -3741,10 +3742,16 @@ function gameOver(){
   st.mode='over';clearNarr();const sc=score();const nb=!CH()&&sc>best;if(nb){best=sc;try{localStorage.setItem('rustrail-best',best)}catch(e){}}
   $('cause').textContent=st.cause;$('rDist').textContent=Math.floor(st.dist)+'m';$('rGears').textContent=st.gears;$('rScore').textContent=sc;
   $('overTitle').textContent=st.dist<300?'才剛出發':st.dist<1200?'沉入河底':st.dist<2500?'差一點就到出海口':'河道傳說';
-  $('bestOver').innerHTML=nb?'<span class="newbest">新紀錄！</span>':'最佳紀錄 '+best;
-  syncPad();setTimeout(()=>{$('overScreen').hidden=false;$('hud').hidden=true;$('retryBtn').focus();},700);
+  $('bestOver').innerHTML=CH()?'':nb?'<span class="newbest">新紀錄！</span>':'最佳紀錄 '+best;
+  const chm=!!CH();$('reviveBtn').hidden=!chm;$('retryBtn').textContent=chm?'整章重來':'再衝一次';$('retryBtn').className=chm?'ghost':'go';
+  syncPad();setTimeout(()=>{$('overScreen').hidden=false;$('hud').hidden=true;(chm?$('reviveBtn'):$('retryBtn')).focus();},700);
   try{wakeLock&&wakeLock.release();}catch(e){}
 }
+/* chapter mode: pick up right where the cart went over, with full repairs and a few seconds of grace */
+function revive(){$('overScreen').hidden=true;$('hud').hidden=false;st.mode='play';st.paused=false;st.hearts=MAXH;renderPips();st.inv=3.2;st.shield=Math.max(st.shield||0,3.2);st.red=0;st.combo=0;st.boostT=0;st.jumpY=0;st.jumpV=0;st.duckT=0;
+  for(const o of st.obs){const z=o.az-st.dist;if(z>-3&&z<75&&!CALM_KEEP[o.t])o.kill=1;}st.nextSpawn=Math.max(st.nextSpawn,st.dist+65);
+  if(!laneOn(st.lane,st.dist+PZ+0.5))snapLane();st.speed=Math.max(8,st.speed*0.6);st.slow=0.5;syncPad();if(AC)AC.resume();
+  try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>wakeLock=l).catch(()=>{});}catch(e){}toast('修好了，繼續衝！','good',1600);}
 function setPause(p){if(!p&&AC)AC.resume();if(st.mode!=='play')return;st.paused=p;$('pauseScreen').hidden=!p;if(AC){p?AC.suspend():AC.resume();}try{if(VO.au&&VO.want)p?VO.au.pause():VO.au.play().catch(()=>{});}catch(e){}try{if(window.speechSynthesis)p?speechSynthesis.pause():speechSynthesis.resume();}catch(e){}if(p)$('resumeBtn').focus();syncPad();}
 function renderPips(){const el=$('pips');el.innerHTML='';for(let i=0;i<MAXH;i++)el.insertAdjacentHTML('beforeend',`<svg class="pip ${i<st.hearts?'':'off'}" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.4C.9 8 3 4 6.8 4c2.2 0 3.7 1.2 5.2 3 1.5-1.8 3-3 5.2-3C21 4 23.1 8 21.6 11.6 19.5 16.4 12 21 12 21z"/></svg>`);}
 $('bestTitle').textContent=best?('最佳紀錄 '+best+' 分'):'';
@@ -4150,7 +4157,7 @@ function novelShow(i){i=Math.max(0,Math.min(NOVEL.length-1,i));const [t,ps]=NOVE
 NOVEL.forEach(([t],i)=>{const b=document.createElement('button');b.textContent=t.split('　')[0];b.onclick=()=>novelShow(i);$('nvTabs').appendChild(b);});
 $('novelBtn').onclick=()=>{$('novel').hidden=false;let i=0;try{i=+localStorage.getItem('rustrail-novel')||0}catch(e){}novelShow(i);};
 $('nvClose').onclick=()=>{$('novel').hidden=true;};
-$('startBtn').onclick=()=>showChapterCard(Math.min(chCleared,4));$('retryBtn').onclick=()=>{$('overScreen').hidden=true;startGame();};
+$('startBtn').onclick=()=>showChapterCard(Math.min(chCleared,4));$('retryBtn').onclick=()=>{$('overScreen').hidden=true;startGame();};$('reviveBtn').onclick=revive;
 $('chGo').onclick=()=>{$('chapScreen').hidden=true;const reading=voBusy();startGame();if(reading&&st.mode==='play'){const c=CHAPTERS[st.chapter];narrateSilent(c.n+'・'+c.t,c.intro);}};$('chBack').onclick=()=>{$('chapScreen').hidden=true;$('titleScreen').hidden=false;refreshTitle();};
 $('endlessBtn').onclick=()=>{st.chapter=-1;startGame();};
 $('selBtn').onclick=()=>{const el=$('selList');el.innerHTML='';CHAPTERS.forEach((c,i)=>{const b=document.createElement('button');b.className='chap';
