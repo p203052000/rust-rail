@@ -855,7 +855,9 @@ function buildAssets(){
   const std=(o)=>bend(new T.MeshStandardMaterial(o));
   M.rust=std({map:TX.rust.map,bumpMap:TX.rust.bump,bumpScale:0.02,roughness:0.88,metalness:0.35});
   M.rustRed=std({map:TX.rust.map,bumpMap:TX.rust.bump,bumpScale:0.02,roughness:0.75,metalness:0.4,color:new T.Color('#e09080')});
-  M.rail=std({map:TX.rust.map,roughness:0.42,metalness:0.75,color:new T.Color('#d8b8a0')});
+  M.rail=std({map:TX.rust.map,bumpMap:TX.rust.bump,bumpScale:0.03,roughness:0.86,metalness:0.28,color:new T.Color('#8a5a40')});
+  /* the running track: white base so each rail length and sleeper gets its own weathered tint */
+  M.railI=std({map:railRustTex(),roughness:0.92,metalness:0.18,color:new T.Color('#ffffff')});M.woodI=std({map:TX.wood.map,bumpMap:TX.wood.bump,bumpScale:0.012,roughness:0.92,color:new T.Color('#ffffff')});
   M.wood=std({map:TX.wood.map,bumpMap:TX.wood.bump,bumpScale:0.01,roughness:0.82});
   M.paint=std({map:TX.paint.map,bumpMap:TX.paint.bump,bumpScale:0.015,roughness:0.8,metalness:0.1});
   M.paintDark=std({map:TX.rust.map,roughness:0.95,color:new T.Color('#5a4438')});
@@ -1081,13 +1083,27 @@ function spawnWreck(az,sc){const g=buildWreck(sc);const x=7+14*sc+rnd()*6;g.posi
 /* ================= track instancing ================= */
 const SLP=1.1,NSL=Math.ceil(TRACKV/SLP)+2;
 let sleepers,rails,stilts,braces;
+/* flaky, pitted rail rust: dark brown iron under orange-brown scale, black pits, pale flakes — no red cast */
+function railRustTex(){return canvasTex(128,128,(c,w,h)=>{const id=c.createImageData(w,h),d=id.data;let sd=91;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
+  const N=(x,y,f)=>{const a=Math.sin(x*f*12.9898+y*f*78.233)*43758.5453;return a-Math.floor(a);};
+  const sm=(x,y,f)=>{const X=Math.floor(x*f),Y=Math.floor(y*f),fx=x*f-X,fy=y*f-Y,q=t=>t*t*(3-2*t);const g=(i,j)=>N(((X+i)%f+f)%f,((Y+j)%f+f)%f,1);return g(0,0)*(1-q(fx))*(1-q(fy))+g(1,0)*q(fx)*(1-q(fy))+g(0,1)*(1-q(fx))*q(fy)+g(1,1)*q(fx)*q(fy);};
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const u=x/w,v=y/h;const n=sm(u,v,4)*0.5+sm(u,v,9)*0.3+sm(u,v,23)*0.2;const sc=sm(u,v,31);
+    let r=58,g=38,b=26;const t=Math.max(0,Math.min(1,(n-0.38)*2.4));r+=(150-58)*t;g+=(84-38)*t;b+=(40-26)*t;
+    if(sc>0.82){const k=(sc-0.82)*5;r+=(205-r)*k;g+=(128-g)*k;b+=(70-b)*k;}
+    if(sm(u,v,47)<0.12){r*=0.45;g*=0.42;b*=0.4;}
+    const gr=(R()-0.5)*18;const i=(y*w+x)*4;d[i]=Math.max(0,Math.min(255,r+gr));d[i+1]=Math.max(0,Math.min(255,g+gr*0.8));d[i+2]=Math.max(0,Math.min(255,b+gr*0.6));d[i+3]=255;}
+  c.putImageData(id,0,0);});}
 function buildTrack(){
-  sleepers=new T.InstancedMesh(G.box,M.wood,NSL*3);rails=new T.InstancedMesh(G.box,M.rail,NSL*6);
+  sleepers=new T.InstancedMesh(G.box,M.woodI,NSL*3);rails=new T.InstancedMesh(G.box,M.railI,NSL*6);
   stilts=new T.InstancedMesh(G.box,M.wood,Math.ceil(TRACKV/3.3)*6+6);braces=new T.InstancedMesh(G.box,M.wood,Math.ceil(TRACKV/3.3)*6+6);
   towers=new T.InstancedMesh(G.box,M.iron,520);pontoons=new T.InstancedMesh(G.cyl,M.rustRed,NSL*3);
   for(const m of [sleepers,rails,stilts,braces,towers,pontoons]){m.frustumCulled=false;m.instanceMatrix.setUsage(T.DynamicDrawUsage);scene.add(m);}
+  sleepers.setColorAt(0,_c.set('#fff'));rails.setColorAt(0,_c.set('#fff'));sleepers.instanceColor.setUsage(T.DynamicDrawUsage);rails.instanceColor.setUsage(T.DynamicDrawUsage);
 }
 let towers,pontoons;
+const _rc=new T.Color();
+const rustAt=(az,k)=>{const n=0.82+0.16*Math.sin(az*0.37+k*1.9)+0.1*Math.sin(az*1.13+k*4.1)+(hsh(az*0.61+k)-0.5)*0.22;return _rc.setRGB(n,n*0.97,n*0.94);};
+const WOODC=['#d6ccbc','#bab0a0','#e2d8c6','#a49a8a','#c8bead','#b0a698'].map(c=>new T.Color(c));
 const _z=new T.Matrix4();_z.makeScale(0,0,0);
 function updateTrack(){
   const gaps=st.obs.filter(o=>o.t==='gap');
@@ -1097,9 +1113,10 @@ function updateTrack(){
     const vd=isVoid(az),fl=nearType(az,'floating',0);
     for(const L of [-1,0,1]){const on=laneOn(L,az)&&!inGap(L,az)&&z<TRACKV&&!vd;
       if(fl&&on&&k%2===0&&pi<pontoons.count){_o.position.set(L*LANE,h-0.28,-z);_o.rotation.set(pitch,0,Math.PI/2);_o.scale.set(0.34,1.3,0.34);_o.updateMatrix();pontoons.setMatrixAt(pi++,_o.matrix);}const x=L*LANE;
-      if(on){_o.position.set(x,h+(h>0.35?0:0.0),-z);_o.rotation.set(pitch,0,0);_o.scale.set(1.36,0.13,0.24);_o.updateMatrix();sleepers.setMatrixAt(si,_o.matrix);}else sleepers.setMatrixAt(si,_z);si++;
+      if(on){const hs=hsh(az*0.731+L*7.3),miss=hs<0.05&&!isSet(az,4);if(miss)sleepers.setMatrixAt(si,_z);else{_o.position.set(x+(hsh(az*1.3+L)-.5)*0.08,h-(hs>0.9?0.03:0),-z+(hsh(az*2.1+L)-.5)*0.07);_o.rotation.set(pitch,(hs-.5)*0.14,(hsh(az*3.3+L)-.5)*0.04);_o.scale.set(hs>0.93?1.0:1.36,0.13,0.24);_o.updateMatrix();sleepers.setMatrixAt(si,_o.matrix);}
+        sleepers.setColorAt(si,WOODC[Math.floor(hsh(az*0.53+L*3.1)*WOODC.length)]);}else sleepers.setMatrixAt(si,_z);si++;
       const onR=on&&laneOn(L,az+SLP*0.5)&&!inGap(L,az+SLP*0.5)&&!isVoid(az+SLP);
-      for(const sd of [-1,1]){if(onR){_o.position.set(x+sd*RAIL,(h+h2_)/2+0.13,-(z+SLP/2));_o.rotation.set(pitch,0,0);_o.scale.set(0.075,0.13,SLP*1.02);_o.updateMatrix();rails.setMatrixAt(ri,_o.matrix);}else rails.setMatrixAt(ri,_z);ri++;}}}
+      for(const sd of [-1,1]){if(onR){_o.position.set(x+sd*RAIL,(h+h2_)/2+0.13,-(z+SLP/2));_o.rotation.set(pitch,0,0);_o.scale.set(0.075,0.13,SLP*1.02);_o.updateMatrix();rails.setMatrixAt(ri,_o.matrix);rails.setColorAt(ri,rustAt(az,L*3+sd));}else rails.setMatrixAt(ri,_z);ri++;}}}
   for(;pi<pontoons.count;pi++)pontoons.setMatrixAt(pi,_z);pontoons.instanceMatrix.needsUpdate=true;
   let ti=0,bi=0;const b0=Math.ceil((st.dist+NEAR)/3.3)*3.3;
   let wi=0;const c0=Math.ceil((st.dist+NEAR)/6.6)*6.6;const tw=(px,py,pz,sx,sy,sz,rz)=>{if(wi>=towers.count)return;_o.position.set(px,py,pz);_o.rotation.set(0,0,rz||0);_o.scale.set(sx,sy,sz);_o.updateMatrix();towers.setMatrixAt(wi++,_o.matrix);};
@@ -1114,7 +1131,7 @@ function updateTrack(){
       for(const sd of [-1,1]){_o.position.set(x+sd*0.58,h/2-0.2,-z);_o.rotation.set(0,0,0);_o.scale.set(0.16,h+0.4,0.16);_o.updateMatrix();stilts.setMatrixAt(ti++,_o.matrix);}
       const len=Math.hypot(1.16,h);_o.position.set(x,h/2,-z);_o.rotation.set(0,0,Math.atan2(h,1.16));_o.scale.set(len,0.09,0.09);_o.updateMatrix();braces.setMatrixAt(bi++,_o.matrix);}}
   for(;ti<stilts.count;ti++)stilts.setMatrixAt(ti,_z);for(;bi<braces.count;bi++)braces.setMatrixAt(bi,_z);
-  for(const m of [sleepers,rails,stilts,braces])m.instanceMatrix.needsUpdate=true;
+  for(const m of [sleepers,rails,stilts,braces])m.instanceMatrix.needsUpdate=true;sleepers.instanceColor.needsUpdate=true;rails.instanceColor.needsUpdate=true;
 }
 
 /* ================= cart + hands (child of camera) ================= */
