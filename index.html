@@ -1602,9 +1602,12 @@ const SCENIC={
     for(const k of [-1,1])mesh(G.box,dm,g,TX0+5.6,-D+6.5,tz+k*9,0.2,2.4,1.6).userData.keep=true;
     const tg=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffb860')}));own.push(tg);
     const tgl=mesh(G.plane,tg,g,TX0+12,-D+4,tz,26,22,1);tgl.rotation.y=Math.PI/2;tgl.userData.keep=true;anim.push(t=>{tg.opacity=0.75+0.25*Math.sin(t*1.7);});
-    const hd=new T.Group();hd.position.set(TX0+20,-D-1.4,tz+16);B(3.4,3,3.4,4,M.marble,TX0+20,-D-2.6,tz+16);mesh(G.sph,M.marble,hd,0,2.6,0,1.9,2.4,2);
+    /* the laurel-crowned youth: a sea-worn marble bust before the temple door, smiling far too peacefully */
+    const lb=sprite('laurel',8.8,0.38);if(lb){B(4.6,3,4.6,4,M.marble,TX0+24,-D-2.6,tz+16);lb.position.set(TX0+24,-D-1.12,tz+16);g.add(lb);own.push(lb.userData.sprGeo);
+      const lg=bend(new T.MeshBasicMaterial({map:TX.glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending,color:new T.Color('#ffc880'),opacity:0.45}));own.push(lg);const lgl=mesh(G.plane,lg,g,TX0+24,-D+3.4,tz+15.4,12,12,1);lgl.userData.keep=true;}
+    else{const hd=new T.Group();hd.position.set(TX0+20,-D-1.4,tz+16);B(3.4,3,3.4,4,M.marble,TX0+20,-D-2.6,tz+16);mesh(G.sph,M.marble,hd,0,2.6,0,1.9,2.4,2);
     const lr=mesh(G.torus,M.laurel,hd,0,3.6,0,2.05,2.05,3);lr.rotation.x=Math.PI/2.2;for(let i=0;i<14;i++){const a=i/14*Math.PI*2;const lf=mesh(G.sph,M.laurel,hd,Math.cos(a)*2.05,3.7+Math.sin(a*2)*0.1,Math.sin(a)*2.05,0.35,0.12,0.6);lf.rotation.y=-a;}
-    mesh(G.box,M.marble,hd,1.9,2.4,0,0.5,0.9,0.35);for(const k of [-0.6,0.6])mesh(G.sphLo,M.dark,hd,1.8,3.0,k,0.2,0.12,0.25);hd.rotation.y=-0.3;g.add(hd);
+    mesh(G.box,M.marble,hd,1.9,2.4,0,0.5,0.9,0.35);for(const k of [-0.6,0.6])mesh(G.sphLo,M.dark,hd,1.8,3.0,k,0.2,0.12,0.25);hd.rotation.y=-0.3;g.add(hd);}
     const shM=bend(new T.MeshBasicMaterial({color:new T.Color('#9ae8f0'),transparent:true,opacity:0.07,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));own.push(shM);
     for(let i=0;i<14;i++){const sh=mesh(G.plane,shM,g,(rnd()-.5)*60,-D/2,-100-rnd()*(LT-200),5+rnd()*6,D+8,1);sh.rotation.set(0,rnd()*3,0.25);sh.userData.keep=true;}
     const dol=[];for(let i=0;i<6;i++){const d=dolphinMesh();d.scale.setScalar(1.05+rnd()*0.25);d.userData={ph:i*1.05,r:6.3+rnd()*2.2,off:6+i*3.2};g.add(d);dol.push(d);}
@@ -1614,7 +1617,7 @@ const SCENIC={
         d.children.forEach(c=>{if(c.userData.tail)c.rotation.x=Math.sin(t*6+p.ph)*0.35;if(c.userData.fluke)c.rotation.x=-Math.PI/2+Math.sin(t*6+p.ph-0.9)*0.45;});}
       const cx=-12+Math.sin(t*0.3)*6,cz=-(u+40);for(let i=0;i<fishN;i++){const f=fseed[i];const a=f[0]+t*(0.8+f[3]*0.4);_o.position.set(cx+Math.cos(a)*(3+f[2]),yc+f[1]-1+Math.sin(a*2)*0.6,cz+Math.sin(a)*(3+f[2])*1.6);_o.rotation.set(0,-a,0);_o.scale.setScalar(1);_o.updateMatrix();fsh.setMatrixAt(i,_o.matrix);}
       fsh.instanceMatrix.needsUpdate=true;});
-    anim.push(storyAnim(s,'temple',[70,LS*0.36,LS*0.68]));
+    anim.push(storyAnim(s,'temple',[70,LS*0.36,LS*0.68],[null,null,()=>({x:TX0+24,y:-D+5.2,az:s.az0+tu-16})]));
     if(s.ext)buildAbyss(s,g,own,anim,B);
     finishSet(s,g,own,anim);},
 
@@ -4160,7 +4163,7 @@ async function loadHQ(){
   HQ.anim={};await Promise.all(Object.keys(ANIMS).map(n=>load('assets/a_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.anim[n]={tex:t,meta:ANIMS[n]};}).catch(()=>{})));
   HQ.tx={};await Promise.all(['alienwall','rlstone','levskin','levskin_n'].map(n=>load('assets/t_'+n+'.jpg',!n.endsWith('_n')).then(t=>{HQ.tx[n]=t;}).catch(()=>{})));
   HQ.mur=[];await Promise.all([1,2,3,4,5,6].map(i=>load('assets/mural'+i+'.jpg',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.mur[i-1]=t;}).catch(()=>{})));
-  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead','mech0','mech1','mech2','mech3','rlsky'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
+  HQ.spr={};await Promise.all(['eye','shark','deepone','kraken','shoggoth','maw','bat','titan','tentacle','serpent','croc','deepone_p1','kraken_p1','croc_p1','deepone_p3','shoggoth_p1','serpent2','serpent2_p1','king','skytemple','templeA','templeB','miner','kingY','kingYf','kingYb','vill','villL','idol','guard','villJ','villF','elder','peng','seahead','mech0','mech1','mech2','mech3','rlsky','laurel'].map(n=>load('assets/g_'+n+'.webp',true).then(t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;HQ.spr[n]=t;}).catch(()=>{})));
   HQ.geo={};for(const k in idx){const {count,offset}=idx[k];const g=new T.BufferGeometry();
     g.setAttribute('position',new T.BufferAttribute(new Float32Array(bin,offset,count*3),3));g.setAttribute('normal',new T.BufferAttribute(new Float32Array(bin,offset+count*12,count*3),3));
     g.setAttribute('uv',new T.BufferAttribute(new Float32Array(bin,offset+count*24,count*2),2));g.computeBoundingSphere();HQ.geo[k]=g;}
